@@ -1,5 +1,3 @@
-# Copyright (C) 2020 Hyy2001X <https://github.com/Hyy2001X>
-
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for AutoBuild Firmware/AutoUpdate.sh
