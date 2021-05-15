@@ -29,16 +29,15 @@ pass=s:option(Value,"minute",translate("xMinute"))
 pass.datatype = "range(0,59)"
 pass.rmempty = false
 
-local github_url = luci.sys.exec("cat /etc/openwrt_info | awk 'NR==2'")
+local github_url = luci.sys.exec("grep Github= /etc/openwrt_info | cut -c8-100")
 o=s:option(Value,"github",translate("Github Url"))
 o.default=github_url
 
 luci.sys.call ( "/usr/share/autoupdate/Check_Update.sh > /dev/null")
 local cloud_version = luci.sys.exec("cat /tmp/cloud_version")
-local current_version = luci.sys.exec("cat /etc/openwrt_info | awk 'NR==1'")
+local current_version = luci.sys.exec("grep CURRENT_Version= /etc/openwrt_info | cut -c17-100")
 local current_model = luci.sys.exec("jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_'")
-
-local firmware_type = luci.sys.exec("cat /etc/openwrt_info | awk 'NR==4'")
+local firmware_type = luci.sys.exec("grep Firmware_Type= /etc/openwrt_info | cut -c15-100")
 
 button_upgrade_firmware = s:option (Button, "_button_upgrade_firmware", translate("Upgrade to Latested Version"),
 translatef("点击上方 手动更新 后请耐心等待至路由器重启.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>固件类型: " .. firmware_type)
