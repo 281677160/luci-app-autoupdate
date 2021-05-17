@@ -7,8 +7,8 @@ if [ ! -f /bin/AutoUpdate.sh ];then
 	echo "未检测到 /bin/AutoUpdate.sh" > /tmp/cloud_version
 	exit
 fi
-[ -f /etc/openwrt_info ] && source /etc/openwrt_info || {
-	echo -e "\n未检测到 /etc/openwrt/info,无法运行更新程序!"
+[ -f /etc/openwrt_upgrade ] && source /etc/openwrt_upgrade || {
+	echo -e "\n未检测到 /etc/openwrt_upgrade,无法运行更新程序!"
 	exit
 }
 [[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
