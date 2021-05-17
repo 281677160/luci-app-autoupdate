@@ -18,11 +18,11 @@ run_autoupdate()
 	else
 		sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1	
 	fi
-	if [ -f /bin/AutoUpdate.sh ] && [ -f /etc/openwrt_info ];then
+	if [ -f /bin/AutoUpdate.sh ] && [ -f /etc/openwrt_upgrade ];then
 		custom_github_url="$(uci get autoupdate.@login[0].github)"
 		if [[ ! -z "${custom_github_url}" ]];then
-			current_github_url="$(cat /etc/openwrt_info | awk 'NR==2')"
-			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_info > /dev/null 2>&1
+			current_github_url="$(cat /etc/openwrt_upgrade | awk 'NR==2')"
+			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_upgrade > /dev/null 2>&1
 		fi
 	fi
 	/etc/init.d/cron restart
