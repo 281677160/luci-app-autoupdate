@@ -23,6 +23,7 @@ run_autoupdate()
 		if [[ ! -z "${custom_github_url}" ]];then
 			current_github_url="$(cat /etc/openwrt_info | awk 'NR==1')"
 			sed -i "s?${current_github_url}?Github=${custom_github_url}?g" /etc/openwrt_info > /dev/null 2>&1
+			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/config/autoupdate > /dev/null 2>&1
 		fi
 	fi
 	/etc/init.d/cron restart
