@@ -13,7 +13,6 @@ fi
 }
 [[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
 [[ -z "${Github}" ]] && exit
-Github_Tags="https://api.github.com/repos/${Apidz}/releases/tags/update_Firmware"
 wget -q ${Github_Tags} -O - > /tmp/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
