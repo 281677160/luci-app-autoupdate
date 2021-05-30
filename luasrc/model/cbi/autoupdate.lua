@@ -1,6 +1,6 @@
 require("luci.sys")
 
-m=Map("autoupdate",translate("AutoUpdate"),translate("Scheduled Update is a timed run Openwrt-AutoUpdate application"))
+m=Map("autoupdate",translate("AutoUpdate"),translate("AutoUpdate LUCI supports one-click firmware upgrade and scheduled upgrade"))
 
 s=m:section(TypedSection,"login","")
 s.addremove=false
