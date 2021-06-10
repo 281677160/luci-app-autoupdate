@@ -17,15 +17,15 @@ wget -q ${Github_Tags} -O - > /tmp/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
 	if [ -d /sys/firmware/efi ];then
-		Firmware_SFX="-UEFI.${Firmware_Type}"
+		Firmware_SFX="-UEFI.tar.gz"
 		BOOT_Type="-UEFI"
 	else
-		Firmware_SFX="-Legacy.${Firmware_Type}"
+		Firmware_SFX="-Legacy.tar.gz"
 		BOOT_Type="-Legacy"
 	fi
 ;;
 *)
-	Firmware_SFX=".${Firmware_Type}"
+	Firmware_SFX=".tar.gz"
 	BOOT_Type=""
 ;;
 esac
