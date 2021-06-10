@@ -42,6 +42,6 @@ if [[ ! -z "${Cloud_Version}" ]];then
 		echo "您当前的版本高于云端现有版本" > /tmp/cloud_version		
 	fi
 else
-	echo "当前网络不佳,请检查网络或者再次刷新网页  、或者云端固件已删除,请检查云端地址的固件是否已删除  、或者您使用的是私人仓库,云端地址不能访问,检测不到云端固件" > /tmp/cloud_version
+	echo "网络检测失败，没翻墙或者您的是私有仓库，或者云端固件已删除" > /tmp/cloud_version
 fi
 exit
