@@ -13,6 +13,7 @@ fi
 }
 [[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
 [[ -z "${Github}" ]] && exit
+[ ! -d /tmp/Downloads ] && mkdir -p /tmp/Downloads
 wget -q ${Github_Tags} -O - > /tmp/Downloads/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
