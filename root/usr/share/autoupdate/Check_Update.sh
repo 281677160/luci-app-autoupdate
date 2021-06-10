@@ -13,7 +13,7 @@ fi
 }
 [[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
 [[ -z "${Github}" ]] && exit
-wget -q ${Github_Tags} -O - > /tmp/Github_Tags
+wget -q ${Github_Tags} -O - > /tmp/Downloads/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
 	if [ -d /sys/firmware/efi ];then
