@@ -11,6 +11,12 @@ fi
 	echo -e "\n未检测到 /etc/openwrt_info,无法运行更新程序!"
 	exit
 }
+export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
+if [ ! "$Google_Check" == 301 ];then
+	DEFAULT_wang="DEFAULT_wang"
+else
+	DEFAULT_luo="DEFAULT_luo"
+fi
 [[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
 [[ -z "${Github}" ]] && exit
 [ ! -d /tmp/Downloads ] && mkdir -p /tmp/Downloads
@@ -43,6 +49,7 @@ if [[ ! -z "${Cloud_Version}" ]];then
 		echo "您当前的版本高于云端现有版本" > /tmp/cloud_version		
 	fi
 else
-	echo "网络检测失败，没翻墙或者您的是私有仓库，或者云端固件已删除" > /tmp/cloud_version
+	[[ -n "${DEFAULT_wang}" ]] && echo "网络检测失败，Github已筑墙，请翻墙或者您的是私有仓库!" > /tmp/cloud_version
+	[[ -n "${DEFAULT_luo}" ]] && echo "网络检测成功，但是没检测到云端固件版本，云端版本错误或您已把云端固件删除!" > /tmp/cloud_version
 fi
 exit
