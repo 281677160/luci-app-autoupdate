@@ -18,8 +18,8 @@ if [ ! "$Google_Check" == 301 ];then
 fi
 [[ -z ${CURRENT_Version} ]] && echo "本地固件版本获取失败,请检查/etc/openwrt_info文件的值!" > /tmp/cloud_version && exit 1
 [[ -z "${Github}" ]]  && echo "Github地址获取失败,请检查/etc/openwrt_info文件的值!" > /tmp/cloud_version && exit 1
-[ ! -d ${Download_Path} ] && mkdir -p /tmp/Downloads
-wget -q ${Github_Tags} -O - > ${Download_Path}/Github_Tags
+[ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
+wget -q --timeout 5 ${Github_Tags} -O ${Download_Path}/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
 	if [ -d /sys/firmware/efi ];then
