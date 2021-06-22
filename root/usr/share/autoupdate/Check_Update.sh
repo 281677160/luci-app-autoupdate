@@ -8,7 +8,7 @@ if [ ! -f /bin/AutoUpdate.sh ];then
 	exit 1
 fi
 [ -f /etc/openwrt_info ] && source /etc/openwrt_info || {
-	echo "未检测到定时更新插件程序!"
+	echo "未检测到定时更新插件程序!" > /tmp/cloud_version
 	exit 1
 }
 export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
