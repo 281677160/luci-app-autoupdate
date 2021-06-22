@@ -4,52 +4,51 @@
 
 rm -f /tmp/cloud_version
 if [ ! -f /bin/AutoUpdate.sh ];then
-	echo "未检测到 /bin/AutoUpdate.sh" > /tmp/cloud_version
-	exit
+	echo "未检测到定时更新插件程序" > /tmp/cloud_version
+	exit 1
 fi
 [ -f /etc/openwrt_info ] && source /etc/openwrt_info || {
-	echo -e "\n未检测到 /etc/openwrt_info,无法运行更新程序!"
-	exit
+	echo "未检测到定时更新插件程序!"
+	exit 1
 }
 export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
 if [ ! "$Google_Check" == 301 ];then
-	DEFAULT_wang="DEFAULT_wang"
-else
-	DEFAULT_luo="DEFAULT_luo"
+	echo "网络检测失败，Github已筑墙，请翻墙或者您的是私有仓库!" > /tmp/cloud_version
+	exit 1
 fi
-[[ -z "${DEFAULT_Device}" ]] && DEFAULT_Device="$(jsonfilter -e '@.model.id' < "/etc/board.json" | tr ',' '_')"
-[[ -z "${Github}" ]] && exit
-[ ! -d /tmp/Downloads ] && mkdir -p /tmp/Downloads
-wget -q ${Github_Tags} -O - > /tmp/Downloads/Github_Tags
+[[ -z ${CURRENT_Version} ]] && echo "本地固件版本获取失败,请检查/etc/openwrt_info文件的值!" > /tmp/cloud_version && exit 1
+[[ -z "${Github}" ]]  && echo "Github地址获取失败,请检查/etc/openwrt_info文件的值!" > /tmp/cloud_version && exit 1
+[ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
+wget -q ${Github_Tags} -O - > ${Download_Path}/Github_Tags
 case ${DEFAULT_Device} in
 x86-64)
 	if [ -d /sys/firmware/efi ];then
-		Firmware_SFX="-UEFI.tar.gz"
+		Firmware_SFX="-UEFI.${Firmware_Type}"
 		BOOT_Type="-UEFI"
 	else
-		Firmware_SFX="-Legacy.tar.gz"
+		Firmware_SFX="-Legacy.${Firmware_Type}"
 		BOOT_Type="-Legacy"
 	fi
 ;;
 *)
-	Firmware_SFX=".tar.gz"
+	Firmware_SFX=".${Firmware_Type}"
 	BOOT_Type=""
 ;;
 esac
-Cloud_Ver="$(cat /tmp/Downloads/Github_Tags | egrep -o "${Firmware_COMP1}-${Firmware_COMP2}-${DEFAULT_Device}-[0-9]+.*?[0-9]+${Firmware_SFX}" | awk 'END {print}' | egrep -o '[a-zA-Z0-9_-]+.*?[0-9]+')"
-Cloud_Version="${Cloud_Ver#*${Firmware_COMP1}-}"
-if [[ ! -z "${Cloud_Version}" ]];then
-	if [[ "${CURRENT_Version}" -eq "${Cloud_Version}" ]];then
+export CLOUD_Firmware="$(egrep -o "${Firmware_COMP1}-${Firmware_COMP2}-${DEFAULT_Device}-[0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
+export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${Firmware_COMP2}-${DEFAULT_Device}-[0-9]+")"
+if [[ ! -z "${CLOUD_Version}" ]];then
+	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
-		echo "${Cloud_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${CURRENT_Version}" -gt "${Cloud_Version}" ]];then
+		echo "${CLOUD_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version
+	elif [[ "${CURRENT_Version}" -gt "${CLOUD_Version}" ]];then
 		Checked_Type="发现更新"
-		echo "${Cloud_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${CURRENT_Version}" -lt "${Cloud_Version}" ]];then
-		echo "您当前的版本高于云端现有版本" > /tmp/cloud_version		
+		echo "${CLOUD_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version
+	elif [[ "${CURRENT_Version}" -lt "${CLOUD_Version}" ]];then
+		Checked_Type="当前的版本高于云端现有版本"
+		echo "${CLOUD_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	[[ -n "${DEFAULT_wang}" ]] && echo "网络检测失败，Github已筑墙，请翻墙或者您的是私有仓库!" > /tmp/cloud_version
-	[[ -n "${DEFAULT_luo}" ]] && echo "网络检测成功，但是没检测到云端固件版本，云端版本错误或您已把云端固件删除!" > /tmp/cloud_version
+	echo "网络检测成功，但是没检测到云端固件版本，云端版本错误或您已把云端固件删除!" > /tmp/cloud_version
 fi
-exit
+exit 0
