@@ -35,8 +35,8 @@ x86-64)
 	BOOT_Type=""
 ;;
 esac
-export CLOUD_Firmware="$(egrep -o "${Firmware_COMP1}-${Firmware_COMP2}-${DEFAULT_Device}-[0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
-export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${Firmware_COMP2}-${DEFAULT_Device}-[0-9]+")"
+export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
+export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAULT_Device}-[0-9]+")"
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
