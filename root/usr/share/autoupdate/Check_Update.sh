@@ -49,6 +49,6 @@ if [[ ! -z "${CLOUD_Version}" ]];then
 		echo "${CLOUD_Version}${BOOT_Type} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "网络检测成功，但是没检测到云端固件版本，云端版本和此固件不对称，或您已把云端固件删除!" > /tmp/cloud_version
+	echo "没检测到云端固件版本，云端版本和此固件名称格式不对称，或您已把云端固件删除!" > /tmp/cloud_version
 fi
 exit 0
