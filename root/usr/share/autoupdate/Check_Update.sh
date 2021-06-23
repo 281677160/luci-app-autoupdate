@@ -7,6 +7,7 @@ if [ ! -f /bin/AutoUpdate.sh ];then
 	echo "未检测到定时更新插件程序" > /tmp/cloud_version
 	exit 1
 fi
+[ -f /etc/openwrt_info ] && chmod +x /etc/openwrt_info
 [ -f /etc/openwrt_info ] && source /etc/openwrt_info || {
 	echo "未检测到定时更新插件程序!" > /tmp/cloud_version
 	exit 1
