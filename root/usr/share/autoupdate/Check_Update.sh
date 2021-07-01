@@ -35,7 +35,7 @@ x86-64)
 ;;
 *)
 	Firmware_SFX=".${Firmware_Type}"
-	BOOT_Type=""
+	BOOT_Type="Sysupg"
 ;;
 esac
 export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
