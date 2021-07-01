@@ -37,7 +37,6 @@ start()
 stop()
 {
 	sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
-	bash /bin/AutoUpdate.sh -d >/dev/null 2>&1
 }
 
 restart()
