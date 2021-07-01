@@ -12,6 +12,8 @@ fi
 	echo "未检测到定时更新插件程序!" > /tmp/cloud_version
 	exit 1
 }
+Apidz="${Github##*com/}"
+Github_Tags=https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate
 export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
 if [ ! "$Google_Check" == 301 ];then
 	echo "网络检测失败，Github已筑墙，请翻墙或者您的是私有仓库!" > /tmp/cloud_version
