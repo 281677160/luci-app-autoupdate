@@ -9,6 +9,7 @@ if [ ! "$Google_Check" == 301 ];then
 	exit 1
 fi
 rm -f /tmp/cloud_version
+rm -f /tmp/Version_Tags
 if [ ! -f /bin/AutoUpdate.sh ];then
 	echo "未检测到定时更新插件程序" > /tmp/cloud_version
 	exit 1
