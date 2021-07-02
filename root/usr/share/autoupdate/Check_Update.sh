@@ -2,14 +2,14 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
+rm -f /tmp/cloud_version
+rm -f /tmp/Version_Tags
 export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
 if [ ! "$Google_Check" == 301 ];then
 	echo "网络检测失败,因Github现在也筑墙了,请先使用梯子翻墙再来尝试!" > /tmp/cloud_version
 	sleep 2
 	exit 1
 fi
-rm -f /tmp/cloud_version
-rm -f /tmp/Version_Tags
 if [ ! -f /bin/AutoUpdate.sh ];then
 	echo "未检测到定时更新插件程序" > /tmp/cloud_version
 	exit 1
