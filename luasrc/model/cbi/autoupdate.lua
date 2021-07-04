@@ -49,8 +49,7 @@ end
 
 local e=luci.http.formvalue("cbi.apply")
 if e then
-  io.popen("/etc/init.d/autoupdate restart")
+	io.popen("/etc/init.d/autoupdate restart")
 end
 
-m.reset  = false
 return m
