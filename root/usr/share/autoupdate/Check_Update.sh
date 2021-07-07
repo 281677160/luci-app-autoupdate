@@ -8,7 +8,7 @@ if [[ -f /bin/AutoUpdate.sh ]] && [[ -f /etc/openwrt_info ]]; then
 	chmod +x /etc/openwrt_info
 	bash /bin/AutoUpdate.sh	-w
 else
-	echo "未检测到定时更新插件程序" > /tmp/cloud_version
+	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
 	exit 1
 fi
 source /tmp/Version_Tags
