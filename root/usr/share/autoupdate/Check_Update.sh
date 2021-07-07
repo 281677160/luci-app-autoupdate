@@ -4,7 +4,7 @@
 
 rm -f /tmp/cloud_version
 rm -f /tmp/Version_Tags
-if [[ /etc/openwrt_info ]]; then
+if [[ -f /etc/openwrt_info ]]; then
 	chmod +x /etc/openwrt_info
 	bash /bin/AutoUpdate.sh	-w
 else
