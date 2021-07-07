@@ -4,12 +4,6 @@
 
 rm -f /tmp/cloud_version
 rm -f /tmp/Version_Tags
-export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
-if [ ! "$Google_Check" == 301 ];then
-	echo "网络检测失败,因Github现在也筑墙了,请先使用梯子翻墙再来尝试!" > /tmp/cloud_version
-	sleep 2
-	exit 1
-fi
 if [ ! -f /bin/AutoUpdate.sh ];then
 	echo "未检测到定时更新插件程序" > /tmp/cloud_version
 	exit 1
@@ -17,6 +11,7 @@ else
 	bash /bin/AutoUpdate.sh	-w
 fi
 source /tmp/Version_Tags
+[[ -n ${Download_Path}/Github_Tags ]] && echo "因网络原因,未能检测到云端版本" > /tmp/cloud_version && exit 1
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
