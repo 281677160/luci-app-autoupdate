@@ -11,8 +11,8 @@ else
 	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
 	exit 1
 fi
+[[ -z ${Download_Path}/Github_Tags ]] && echo "因网络原因,未能检测到云端版本,请检测网络或您需要翻墙!" > /tmp/cloud_version && exit 1
 source /tmp/Version_Tags
-[[ -z ${Download_Path}/Github_Tags ]] && echo "因网络原因,未能检测到云端版本" > /tmp/cloud_version && exit 1
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
