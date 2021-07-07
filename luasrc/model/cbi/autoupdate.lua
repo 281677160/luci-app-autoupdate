@@ -35,7 +35,7 @@ o.default=github_url
 
 luci.sys.call ( "/usr/share/autoupdate/Check_Update.sh > /dev/null")
 local cloud_version = luci.sys.exec("cat /tmp/cloud_version")
-local current_version = luci.sys.exec("grep CURRENT_Version= /tmp/Version_Tags | cut -c17-100")
+local current_version = luci.sys.exec("grep CURRENT_Version= /etc/openwrt_version | cut -c17-100")
 local current_model = luci.sys.exec("jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_'")
 local firmware_type = luci.sys.exec("grep Firmware_Type= /etc/openwrt_info | cut -c15-100")
 local luci_edition = luci.sys.exec("grep Luci_Edition= /etc/openwrt_info | cut -c14-100")
