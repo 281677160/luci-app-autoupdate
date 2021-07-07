@@ -4,14 +4,14 @@
 
 rm -f /tmp/cloud_version
 rm -f /tmp/Version_Tags
-if [ ! -f /bin/AutoUpdate.sh ];then
+if [[ -f /bin/AutoUpdate.sh ]] && [[ -f /etc/openwrt_info ]]; then
+	bash /bin/AutoUpdate.sh	-w
+else
 	echo "未检测到定时更新插件程序" > /tmp/cloud_version
 	exit 1
-else
-	bash /bin/AutoUpdate.sh	-w
 fi
-[[ -z ${Download_Path}/Github_Tags ]] && echo "因网络原因,未能检测到云端版本,或许您要翻墙了!" > /tmp/cloud_version && exit 1
 source /tmp/Version_Tags
+[[ -z ${Download_Path}/Github_Tags ]] && echo "因网络原因,未能检测到云端版本" > /tmp/cloud_version && exit 1
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
