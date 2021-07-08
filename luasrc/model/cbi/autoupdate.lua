@@ -38,10 +38,10 @@ local cloud_version = luci.sys.exec("cat /tmp/cloud_version")
 local current_version = luci.sys.exec("grep CURRENT_Version= /etc/openwrt_ver | cut -c17-100")
 local current_model = luci.sys.exec("jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_'")
 local firmware_type = luci.sys.exec("grep CURRENT_Model= /etc/openwrt_ver | cut -c15-100")
-local luci_edition = luci.sys.exec("grep Luci_Edition= /etc/openwrt_info | cut -c14-100")
+local luci_edition = luci.sys.exec("grep NEI_Luci= /etc/openwrt_ver | cut -c10-100")
 
 button_upgrade_firmware = s:option (Button, "_button_upgrade_firmware", translate("Upgrade to Latested Version"),
-translatef("点击上方 手动更新 后请耐心等待至路由器重启.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>Luci版本: " .. luci_edition .. "<br>固件类型: " .. firmware_type)
+translatef("点击上方 手动更新 后请耐心等待至路由器重启.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>内核版本: " .. luci_edition .. "<br>固件类型: " .. firmware_type)
 button_upgrade_firmware.inputtitle = translate ("Do Upgrade")
 button_upgrade_firmware.write = function()
 	luci.sys.call ("bash /bin/AutoUpdate.sh -u > /dev/null")
