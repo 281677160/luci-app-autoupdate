@@ -25,6 +25,6 @@ if [[ ! -z "${CLOUD_Version}" ]];then
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "没检测到云端固件，您可能把云端固件删除了，或您修改的Github地址错误，或格式不对称，比如爱快虚拟机安装EIF格式都会变成Legacy引导!" > /tmp/cloud_version
+	echo "没检测到云端固件，您可能把云端固件删除了，或您修改的Github地址有错误，或格式不对称，比如爱快虚拟机安装EIF格式都会变成Legacy引导!" > /tmp/cloud_version
 fi
 exit 0
