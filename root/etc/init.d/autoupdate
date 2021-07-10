@@ -17,7 +17,7 @@ run_autoupdate()
 	else
 		sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1	
 	fi
-	if [ -f /bin/AutoUpdate.sh ] && [ -f /bin/openwrt_info ];then
+	if [ -f /bin/AutoUpdate.sh ];then
 		custom_github_url="$(uci get autoupdate.@login[0].github)"
 		current_github_url="$(grep Github= /bin/openwrt_info | cut -c8-100)"
 		[[ -n "${custom_github_url}" ]] && {
