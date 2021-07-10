@@ -11,7 +11,7 @@ else
 	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
 	exit 1
 fi
-[[ ! -e /tmp/Version_Tags ]] && echo "因网络原因,未能检测到云端版本,请检查网络或您需要翻墙!" > /tmp/cloud_version && exit 1
+[[ ! -e /tmp/Version_Tags ]] && echo "因网络原因,未能检测到云端版本,请检查网络或您需要翻墙,或再次刷新网页试试!" > /tmp/cloud_version && exit 1
 source /tmp/Version_Tags
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
