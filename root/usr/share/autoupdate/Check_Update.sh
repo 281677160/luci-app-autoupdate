@@ -4,8 +4,8 @@
 
 rm -f /tmp/cloud_version
 rm -f /tmp/Version_Tags
-if [[ -f /etc/openwrt_info ]]; then
-	chmod +x /etc/openwrt_info
+if [[ -f /bin/openwrt_info ]]; then
+	chmod +x /bin/openwrt_info
 	bash /bin/AutoUpdate.sh	-w
 else
 	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
