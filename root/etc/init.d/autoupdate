@@ -22,7 +22,7 @@ run_autoupdate()
 		current_github_url="$(grep Github= /bin/openwrt_info | cut -c8-100)"
 		[[ -n "${custom_github_url}" ]] && {
 			[[ "${custom_github_url}" != "${current_github_url}" ]] && {
-				sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_info
+				sed -i "s?${current_github_url}?${custom_github_url}?g" /bin/openwrt_info
 			}
 		}
 	fi
