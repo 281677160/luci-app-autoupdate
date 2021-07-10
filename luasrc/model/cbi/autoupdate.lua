@@ -29,7 +29,7 @@ pass=s:option(Value,"minute",translate("xMinute"))
 pass.datatype = "range(0,59)"
 pass.rmempty = false
 
-local github_url = luci.sys.exec("grep Github= /etc/openwrt_info | cut -c8-100")
+local github_url = luci.sys.exec("grep Github= /bin/openwrt_info | cut -c8-100")
 o=s:option(Value,"github",translate("Github Url"))
 o.default=github_url
 
