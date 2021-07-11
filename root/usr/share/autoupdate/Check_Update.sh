@@ -11,7 +11,7 @@ else
 	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
 	exit 1
 fi
-[[ ! -e /tmp/Version_Tags ]] && echo "因网络原因,未能检测到云端版本,请检查网络或您需要翻墙,或再次刷新网页试试!" > /tmp/cloud_version && exit 1
+[[ ! -e /tmp/Version_Tags ]] && echo "因网络原因,未能检测到云端版本,请检查网络或您需要翻墙,或您修改的Github地址有错误,或再次刷新网页试试!" > /tmp/cloud_version && exit 1
 source /tmp/Version_Tags
 if [[ ! -z "${CLOUD_Version}" ]];then
 	if [[ "${CURRENT_Version}" -eq "${CLOUD_Version}" ]];then
@@ -25,6 +25,6 @@ if [[ ! -z "${CLOUD_Version}" ]];then
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "没检测到云端固件，您可能把云端固件删除了，或您修改的Github地址有错误，或格式不对称，比如爱快虚拟机安装EIF格式都会变成Legacy引导!" > /tmp/cloud_version
+	echo "没检测到云端固件，您可能把云端固件删除了，或格式不对称，比如爱快虚拟机安装EIF格式都会变成Legacy引导!" > /tmp/cloud_version
 fi
 exit 0
