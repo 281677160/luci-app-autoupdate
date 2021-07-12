@@ -21,7 +21,7 @@ if [[ ! -z "${CLOUD_Version}" ]];then
 		Checked_Type="发现更新"
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${CURRENT_Version}" -lt "${CLOUD_Version}" ]];then
-		Checked_Type="当前的版本高于云端现有版本"
+		Checked_Type="云端最高版本,低于您现在的版本"
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
