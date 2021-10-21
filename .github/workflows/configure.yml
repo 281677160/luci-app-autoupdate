@@ -55,7 +55,7 @@ jobs:
         cd main
         chmod -R 777 $GITHUB_WORKSPACE/main
         git add .
-        git commit -m "Update build-openwrt.yml" |tee build.log
+        git commit -m "Update autoupdate" |tee build.log
         if [[ `grep -c "Your branch is up to date with" build.log` -eq '1' ]]; then
           echo "配置文件无更新,所以无需要覆盖!"
         else
