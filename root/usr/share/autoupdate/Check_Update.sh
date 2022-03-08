@@ -18,10 +18,10 @@ if [[ -n "${CLOUD_Version}" ]];then
 		Checked_Type="已是最新"
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${CURRENT_Version}" -gt "${CLOUD_Version}" ]];then
-		Checked_Type="发现更新"
+		Checked_Type="发现更高版本固件可更新"
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${CURRENT_Version}" -lt "${CLOUD_Version}" ]];then
-		Checked_Type="云端最高版本,低于您现在的版本"
+		Checked_Type="云端最高版本固件,低于您现在所安装的版本"
 		echo "${CLOUD_Version} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
