@@ -8,7 +8,7 @@ if [[ -f /bin/openwrt_info ]]; then
 	chmod +x /bin/openwrt_info
 	bash /bin/AutoUpdate.sh	-w
 else
-	echo "未检测到定时更新插件所需程序" > /tmp/cloud_version
+	echo "未检测到openwrt_info文件,无法运行更新程序!" > /tmp/cloud_version
 	exit 1
 fi
 [[ ! -f /tmp/Version_Tags ]] && echo "未检测到云端版本,请检查网络,或您的仓库为私库,或您修改的Github地址有错误,或发布已被删除,或再次刷新网页试试!" > /tmp/cloud_version && exit 1
