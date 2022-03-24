@@ -25,6 +25,6 @@ if [[ -n "${CLOUD_Firmware}" ]];then
 		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "没检测到云端固件，您可能把云端固件删除了，或格式不对称，比如爱快虚拟机安装EIF格式都会变成Legacy引导!" > /tmp/cloud_version
+	echo "没检测到云端固件，您可能把云端固件删除了，或格式不对称，比如很多虚拟机安装UEIF格式都会变成Legacy引导!" > /tmp/cloud_version
 fi
 exit 0
