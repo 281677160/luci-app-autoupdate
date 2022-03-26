@@ -8,8 +8,7 @@
 [[ -f /tmp/baidu.html ]] && rm -rf /tmp/baidu.html
 
 wget -q -p /tmp http://www.baidu.com/ -O /tmp/baidu.html
-if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]];then
-	echo "OK"
+if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
 	rm -rf /tmp/baidu.html
 else
 	echo "您可能没进行联网,请检查网络!" > /tmp/cloud_version
@@ -36,14 +35,14 @@ fi
 
 [[ ! -f /tmp/Version_Tags ]] && echo "未检测到云端版本,或您的仓库为私库,或您修改的Github地址有错误,或发布已被删除!" > /tmp/cloud_version && exit 1
 chmod +x /tmp/Version_Tags && source /tmp/Version_Tags
-if [[ -n "${CLOUD_Firmware}" ]];then
-	if [[ "${LOCAL_Firmware}" -eq "${CLOUD_Firmware}" ]];then
+if [[ -n "${CLOUD_Firmware}" ]]; then
+	if [[ "${LOCAL_Firmware}" -eq "${CLOUD_Firmware}" ]]; then
 		Checked_Type="已是最新"
 		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${LOCAL_Firmware}" -gt "${CLOUD_Firmware}" ]];then
+	elif [[ "${LOCAL_Firmware}" -gt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="发现更高版本固件可更新"
 		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${LOCAL_Firmware}" -lt "${CLOUD_Firmware}" ]];then
+	elif [[ "${LOCAL_Firmware}" -lt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="云端最高版本固件,低于您现在所安装的版本"
 		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
