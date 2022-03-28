@@ -25,7 +25,7 @@ if [[ -f /bin/openwrt_info ]]; then
 	chmod +x /bin/AutoUpdate.sh
 	bash /bin/AutoUpdate.sh	-w
         if [[ $? -ne 0 ]];then
-		echo "您现在所用的Github地址上没有云端存在,或者AutoUpdate.sh运行失败,请检查AutoUpdate.sh文件!" > /tmp/cloud_version
+		echo "您现在所用的Github地址上没检测到云端存在,,或您的仓库为私库!" > /tmp/cloud_version
 		exit 1
         fi
 else
