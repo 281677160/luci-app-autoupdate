@@ -22,14 +22,20 @@ if [[ -f /bin/openwrt_info ]]; then
 		echo "openwrt_info数据有误运行失败,请检查openwrt_info文件!" > /tmp/cloud_version
 		exit 1
         fi
+else
+	echo "固件不存在openwrt_info执行文件!" > /tmp/cloud_version
+	exit 1
+fi
+
+if [[ -f /bin/AutoUpdate.sh ]]; then
 	chmod +x /bin/AutoUpdate.sh
 	bash /bin/AutoUpdate.sh	-w
-        if [[ $? -ne 0 ]];then
-		echo "您现在所用的Github地址上没检测到云端存在,,或您的仓库为私库!" > /tmp/cloud_version
+	if [[ $? -ne 0 ]];then
+		echo "您现在所用的Github地址上没检测到云端存在,或您的仓库为私库!" > /tmp/cloud_version
 		exit 1
         fi
 else
-	echo "未检测到openwrt_info文件,无法运行更新程序!" > /tmp/cloud_version
+	echo "固件不存在AutoUpdate.sh执行文件!" > /tmp/cloud_version
 	exit 1
 fi
 
