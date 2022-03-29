@@ -46,6 +46,7 @@ if [[ -f /tmp/Version_Tags ]]; then
 	source /tmp/Version_Tags
 else
 	echo "未知原因获取不了版本信息" > /tmp/cloud_version
+	exit 1
 fi
 if [[ -n "${CLOUD_Firmware}" ]]; then
 	if [[ "${LOCAL_Firmware}" -eq "${CLOUD_Firmware}" ]]; then
