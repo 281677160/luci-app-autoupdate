@@ -31,7 +31,7 @@ run_autoupdate()
 		[[ -n "${custom_github_url}" ]] && {
 			[[ "${custom_github_url}" != "${current_github_url}" ]] && {
 				sed -i "s?${current_github_url}?${custom_github_url}?g" /bin/openwrt_info
-        				Input_Other="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
+        			Input_Other="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
 				Other
 			}
 		}
