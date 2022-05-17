@@ -3,9 +3,15 @@
 # AutoBuild Module by Hyy2001
 
 
-[[ -f "/tmp/cloud_version" ]] && rm -f /tmp/cloud_version
-[[ -f "/tmp/Version_Tags" ]] && rm -f /tmp/Version_Tags
-[[ -f "/tmp/baidu.html" ]] && rm -rf /tmp/baidu.html
+if [[ -f "/tmp/cloud_version" ]]; then
+	rm -f /tmp/cloud_version
+fi
+if [[ -f "/tmp/Version_Tags" ]]; then
+	rm -f /tmp/Version_Tags
+fi
+if [[ -f "/tmp/baidu.html" ]]; then
+	rm -rf /tmp/baidu.html
+fi
 
 curl -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
 if [[ -f "/tmp/baidu.html" ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
