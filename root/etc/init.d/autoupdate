@@ -13,7 +13,7 @@ run_autoupdate()
 		config_get hour $1 hour
 		[ "$week" == 7 ] && week="*"
 		sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
-		echo "$minute $hour * * $week AutoUpdate -u > /dev/null 2>&1" >> /etc/crontabs/root
+		echo "$minute $hour * * $week AutoUpdate -u" >> /etc/crontabs/root
 		/etc/init.d/cron restart
 	else
 		stop	
