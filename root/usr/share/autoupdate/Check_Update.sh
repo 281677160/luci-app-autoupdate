@@ -38,7 +38,10 @@ else
 	exit 1
 fi
 
-[[ -f "/tmp/format_tags" ]] && echo "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,比如很多虚拟机安装UEIF格式都会变成Legacy引导,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!" > /tmp/cloud_version && exit 1
+if [[ -f "/tmp/format_tags" ]]; then
+	echo "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,比如很多虚拟机安装UEIF格式都会变成Legacy引导,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!" > /tmp/cloud_version
+	exit 1
+fi
 
 if [[ -f "/tmp/Version_Tags" ]]; then
 	LOCAL_Firmware="$(grep 'LOCAL_Firmware=' "/tmp/Version_Tags" | cut -d "=" -f2)"
