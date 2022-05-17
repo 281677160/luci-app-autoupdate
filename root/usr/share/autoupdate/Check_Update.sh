@@ -3,19 +3,19 @@
 # AutoBuild Module by Hyy2001
 
 
-[[ -f /tmp/cloud_version ]] && rm -f /tmp/cloud_version
-[[ -f /tmp/Version_Tags ]] && rm -f /tmp/Version_Tags
-[[ -f /tmp/baidu.html ]] && rm -rf /tmp/baidu.html
+[[ -f "/tmp/cloud_version" ]] && rm -f /tmp/cloud_version
+[[ -f "/tmp/Version_Tags" ]] && rm -f /tmp/Version_Tags
+[[ -f "/tmp/baidu.html" ]] && rm -rf /tmp/baidu.html
 
 curl -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
-if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
+if [[ -f "/tmp/baidu.html" ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
 	rm -rf /tmp/baidu.html
 else
 	echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
 	exit 1
 fi
 
-if [[ -f /bin/openwrt_info ]]; then
+if [[ -f "/bin/openwrt_info" ]]; then
 	chmod +x /bin/openwrt_info
 	source /bin/openwrt_info
 	if [[ $? -ne 0 ]];then
@@ -27,9 +27,8 @@ else
 	exit 1
 fi
 
-if [[ -f /bin/AutoUpdate.sh ]]; then
-	chmod +x /bin/AutoUpdate.sh
-	bash /bin/AutoUpdate.sh	-w
+if [[ -f "/usr/bin/AutoUpdate" ]]; then
+	AutoUpdate -w
 	if [[ $? -ne 0 ]];then
 		echo "您现在所用的Github地址上没检测到云端存在,或您的仓库为私库!" > /tmp/cloud_version
 		exit 1
