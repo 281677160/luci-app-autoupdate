@@ -56,13 +56,13 @@ fi
 if [[ -n "${CLOUD_Firmware}" ]]; then
 	if [[ "${LOCAL_Firmware}" == "${CLOUD_Firmware}" ]]; then
 		Checked_Type="已是最新"
-		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${LOCAL_Firmware}" -lt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="发现更高版本固件可更新"
-		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${LOCAL_Firmware}" -gt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="云端最高版本固件,低于您现在所安装的版本,请到云端查看原因"
-		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
 	echo "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,比如很多虚拟机安装UEIF格式都会变成Legacy引导,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!" > /tmp/cloud_version
