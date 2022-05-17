@@ -38,11 +38,6 @@ else
 	exit 1
 fi
 
-if [[ -f "/tmp/format_tags" ]]; then
-	echo "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,比如很多虚拟机安装UEIF格式都会变成Legacy引导,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!" > /tmp/cloud_version
-	exit 1
-fi
-
 if [[ -f "/tmp/Version_Tags" ]]; then
 	LOCAL_Firmware="$(grep 'LOCAL_Firmware=' "/tmp/Version_Tags" | cut -d "=" -f2)"
 	CLOUD_Firmware="$(grep 'CLOUD_Firmware=' "/tmp/Version_Tags" | cut -d "=" -f2)"
@@ -50,6 +45,7 @@ else
 	echo "未知原因获取不了版本信息" > /tmp/cloud_version
 	exit 1
 fi
+
 if [[ -n "${CLOUD_Firmware}" ]]; then
 	if [[ "${LOCAL_Firmware}" -eq "${CLOUD_Firmware}" ]]; then
 		Checked_Type="已是最新"
@@ -61,5 +57,8 @@ if [[ -n "${CLOUD_Firmware}" ]]; then
 		Checked_Type="云端最高版本固件,低于您现在所安装的版本,请到云端查看原因"
 		echo "${CLOUD_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
+else
+	echo "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,比如很多虚拟机安装UEIF格式都会变成Legacy引导,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!" > /tmp/cloud_version
 fi
+
 exit 0
