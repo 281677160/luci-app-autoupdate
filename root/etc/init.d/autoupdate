@@ -13,12 +13,12 @@ run_autoupdate()
 		config_get hour $1 hour
 		[ "$week" == 7 ] && week="*"
 		sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
-		echo "$minute $hour * * $week bash /bin/AutoUpdate.sh -u" >> /etc/crontabs/root
+		echo "$minute $hour * * $week AutoUpdate -u > /dev/null 2>&1" >> /etc/crontabs/root
 		/etc/init.d/cron restart
 	else
 		stop	
 	fi
-	if [ -f /bin/AutoUpdate.sh ] && [ -f /bin/openwrt_info ];then
+	if [ -f "/usr/bin/AutoUpdate" ] && [ -f "/bin/openwrt_info" ];then
 		cus_url="$(uci get autoupdate.@login[0].github)"
 		if [[ "$(echo ${cus_url} |grep -c 'https://github.com/.*/.*')" == '0' ]]; then
         		Input_Other="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
