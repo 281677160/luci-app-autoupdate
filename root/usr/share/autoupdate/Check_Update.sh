@@ -35,7 +35,7 @@ if [[ -n "${CLOUD_Firmware}" ]]; then
 		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "未知原因获取不了版本信息" > /tmp/cloud_version
+	echo "未知原因获取不了云端固件的版本信息" > /tmp/cloud_version
 	exit 1
 fi
 
