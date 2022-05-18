@@ -34,6 +34,9 @@ if [[ -n "${CLOUD_Firmware}" ]]; then
 		Checked_Type="云端最高版本固件,低于您现在所安装的版本,请到云端查看原因"
 		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
+else
+	echo "未知原因获取不了版本信息" > /tmp/cloud_version
+	exit 1
 fi
 
 exit 0
