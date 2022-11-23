@@ -29,16 +29,16 @@ pass=s:option(Value,"minute",translate("xMinute"))
 pass.datatype = "range(0,59)"
 pass.rmempty = false
 
-local github_url = luci.sys.exec("grep Github= /bin/openwrt_info | cut -c8-100")
+local github_url = luci.sys.exec("grep GITHUB_LINK= /etc/openwrt_update | cut -c13-100")
 o=s:option(Value,"github",translate("Github Url"))
 o.default=github_url
 
 luci.sys.call ( "/usr/share/autoupdate/Check_Update.sh > /dev/null")
 local cloud_version = luci.sys.exec("cat /tmp/cloud_version")
-local current_version = luci.sys.exec("grep LOCAL_Firmware= /etc/openwrt_upgrade | cut -c16-100")
-local current_model = luci.sys.exec("grep CURRENT_Device= /etc/openwrt_upgrade | cut -c16-100")
-local MODEL_type = luci.sys.exec("grep MODEL_type= /etc/openwrt_upgrade | cut -c12-100")
-local KERNEL_type = luci.sys.exec("grep KERNEL_type= /etc/openwrt_upgrade | cut -c13-100")
+local current_version = luci.sys.exec("grep LUCI_Firmware= /tmp/Version_Tags | cut -c15-100")
+local current_model = luci.sys.exec("grep CURRENT_Device= /tmp/Version_Tags | cut -c16-100")
+local MODEL_type = luci.sys.exec("grep MODEL_type= /tmp/Version_Tags | cut -c12-100")
+local KERNEL_type = luci.sys.exec("grep KERNEL_type= /tmp/Version_Tags | cut -c13-100")
 
 button_upgrade_firmware = s:option (Button, "_button_upgrade_firmware", translate("Upgrade to Latested Version"),
 translatef("若有更新可点击上方 手动更新 后请耐心等待至路由器重启.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>内核版本: " .. KERNEL_type .. "<br>固件类型: " .. MODEL_type)
