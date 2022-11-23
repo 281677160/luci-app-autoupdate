@@ -51,4 +51,4 @@ msgid "Please wait patiently after clicking Do Upgrade button"
 msgstr "点击手动更新按钮后请耐心等待至路由器重启"
 
 msgid "If there is an update, click above to manually update. Please wait patiently until the router restarts"
-msgstr "点击手动更新按钮后请耐心等待至路由器重启"
+msgstr "若有更新可点击上方 手动更新 后请耐心等待至路由器重启"
