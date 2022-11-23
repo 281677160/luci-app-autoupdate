@@ -2,7 +2,7 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
-if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/bin/openwrt_info" ]]; then
+if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/etc/openwrt_update" ]]; then
 	AutoUpdate
 	if [[ $? -ne 0 ]]; then
 		exit 1
