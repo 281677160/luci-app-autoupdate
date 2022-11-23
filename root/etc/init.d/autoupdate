@@ -3,7 +3,7 @@ START=99
 
 run_autoupdate()
 {
-	if [ -f "/usr/bin/AutoUpdate" ] && [ -f "/bin/openwrt_info" ]; then
+	if [ -f "/usr/bin/AutoUpdate" ] && [ -f "/etc/openwrt_update" ]; then
 		local enable
 		config_get_bool enable $1 enable
 		if [ $enable == "1" ]; then
