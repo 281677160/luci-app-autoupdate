@@ -2,8 +2,6 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
-[[ -f "/tmp/Version_Tags" ]] && rm -rf /tmp/Version_Tags
-
 if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/bin/openwrt_info" ]]; then
 	AutoUpdate
 	if [[ $? -ne 0 ]]; then
