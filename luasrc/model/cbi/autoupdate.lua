@@ -41,7 +41,7 @@ local MODEL_type = luci.sys.exec("grep MODEL_type= /tmp/Version_Tags | cut -c12-
 local KERNEL_type = luci.sys.exec("grep KERNEL_type= /tmp/Version_Tags | cut -c13-100")
 
 button_upgrade_firmware = s:option (Button, "_button_upgrade_firmware", translate("Upgrade to Latested Version"),
-translatef("若有更新可点击上方 手动更新 后请耐心等待至路由器重启.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>内核版本: " .. KERNEL_type .. "<br>固件类型: " .. MODEL_type)
+translatef("If there is an update, click above to manually update. Please wait patiently until the router restarts.") .. "<br><br>当前固件版本: " .. current_version .. "<br>云端固件版本: " .. cloud_version.. "<br><br>设备名称: " .. current_model .. "<br>内核版本: " .. KERNEL_type .. "<br>固件类型: " .. MODEL_type)
 button_upgrade_firmware.inputtitle = translate ("Do Upgrade")
 button_upgrade_firmware.write = function()
 	luci.sys.call ("AutoUpdate -u > /dev/null")
