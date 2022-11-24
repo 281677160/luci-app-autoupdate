@@ -20,9 +20,9 @@ run_autoupdate()
 			stop	
 		fi
 		cus_url="$(uci get autoupdate.@login[0].github)"
-		if [[ "$(echo "${cus_url}" |head -n 5|cut -d '/' -f 1-3)" == 'https://github.com' ]]; then
-                	custom_github_url="$(echo "${cus_url}" |head -n 5|cut -d '/' -f 4-5)"
-			current_github_url="$(grep GIT_REPOSITORY= /etc/openwrt_update | cut -c16-100)"
+		if [[ "$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 1-3)" == 'https://github.com' ]]; then
+                	custom_github_url="$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 4-5)"
+			current_github_url="$(grep GITHUB_LINK= /etc/openwrt_update |head -n 5 |cut -d '/' -f 4-5)"
 		fi
 		if [[ -n "${custom_github_url}" ]] && [[ "${custom_github_url}" != "${current_github_url}" ]]; then
 			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_update
