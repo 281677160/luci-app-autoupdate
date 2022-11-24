@@ -5,6 +5,7 @@
 if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/etc/openwrt_update" ]]; then
 	AutoUpdate
 	if [[ $? -ne 0 ]]; then
+		echo "AutoUpdate.sh运行出错,文件代码或许有错误" > /tmp/cloud_version
 		exit 1
 	fi
 else
@@ -12,10 +13,12 @@ else
 	exit 1
 fi
 
-source /tmp/Version_Tags
+LOCAL_Version=$(grep LOCAL_Version= /tmp/Version_Tags | cut -c15-100)
+CLOUD_Version=$(grep CLOUD_Version= /tmp/Version_Tags | cut -c15-100)
+LUCI_Firmware=$(grep LUCI_Firmware= /tmp/Version_Tags | cut -c15-100)
 
-if [[ -n "${CLOUD_Version}" ]]; then
-	if [[ "${LOCAL_Version}" == "${CLOUD_Version}" ]]; then
+if [[ -n "${LOCAL_Version}" ]] && [[ -n "${CLOUD_Version}" ]]; then
+	if [[ ${LOCAL_Version} -eq ${CLOUD_Version} ]]; then
 		Checked_Type="已是最新"
 		echo "${LUCI_Firmware} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
@@ -26,7 +29,7 @@ if [[ -n "${CLOUD_Version}" ]]; then
 		echo "${LUCI_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "未知原因获取不了云端固件的版本信息" > /tmp/cloud_version
+	echo "未知原因获取不了云端固件的版本信息请查看/tmp/Version_Tags" > /tmp/cloud_version
 	exit 1
 fi
 
