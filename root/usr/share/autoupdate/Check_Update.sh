@@ -2,10 +2,11 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
-if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/etc/openwrt_update" ]]; then
-	AutoUpdate
+[[ -f "/tmp/Version_Tags" ]] && rm -rf /tmp/Version_Tags
+
+if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/bin/openwrt_info" ]]; then
+	AutoUpdate -w
 	if [[ $? -ne 0 ]]; then
-		echo "AutoUpdate.sh运行出错,文件代码或许有错误" > /tmp/cloud_version
 		exit 1
 	fi
 else
@@ -13,23 +14,28 @@ else
 	exit 1
 fi
 
-LOCAL_Version=$(grep LOCAL_Version= /tmp/Version_Tags | cut -c15-100)
-CLOUD_Version=$(grep CLOUD_Version= /tmp/Version_Tags | cut -c15-100)
-LUCI_Firmware=$(grep LUCI_Firmware= /tmp/Version_Tags | cut -c15-100)
+if [[ -f "/tmp/Version_Tags" ]]; then
+	LOCAL_Firmware="$(grep 'LOCAL_Firmware=' "/tmp/Version_Tags" | cut -d "-" -f4)"
+	CLOUD_Firmware="$(grep 'CLOUD_Firmware=' "/tmp/Version_Tags" | cut -d "-" -f4)"
+	CLOUD_Firmware2="$(grep 'CLOUD_Firmware=' "/tmp/Version_Tags" | cut -d "=" -f2)"
+else
+	echo "未知原因获取不了版本信息" > /tmp/cloud_version
+	exit 1
+fi
 
-if [[ -n "${LOCAL_Version}" ]] && [[ -n "${CLOUD_Version}" ]]; then
-	if [[ ${LOCAL_Version} -eq ${CLOUD_Version} ]]; then
+if [[ -n "${CLOUD_Firmware}" ]]; then
+	if [[ "${LOCAL_Firmware}" == "${CLOUD_Firmware}" ]]; then
 		Checked_Type="已是最新"
-		echo "${LUCI_Firmware} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version
+	elif [[ "${LOCAL_Firmware}" -lt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="发现更高版本固件可更新"
-		echo "${LUCI_Firmware} [${Checked_Type}]" > /tmp/cloud_version
-	elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version
+	elif [[ "${LOCAL_Firmware}" -gt "${CLOUD_Firmware}" ]]; then
 		Checked_Type="云端最高版本固件,低于您现在所安装的版本,请到云端查看原因"
-		echo "${LUCI_Firmware} [${Checked_Type}]" > /tmp/cloud_version	
+		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version	
 	fi
 else
-	echo "未知原因获取不了云端固件的版本信息请查看/tmp/Version_Tags" > /tmp/cloud_version
+	echo "未知原因获取不了云端固件的版本信息" > /tmp/cloud_version
 	exit 1
 fi
 
