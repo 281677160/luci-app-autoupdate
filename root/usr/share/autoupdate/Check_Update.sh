@@ -5,6 +5,7 @@
 if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/etc/openwrt_update" ]]; then
 	AutoUpdate
 	if [[ $? -ne 0 ]]; then
+		echo "AutoUpdate.sh运行出错,文件代码或许有错误" > /tmp/cloud_version
 		exit 1
 	fi
 else
