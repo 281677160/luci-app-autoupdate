@@ -111,6 +111,8 @@ if [[ "${CHN_NET}" == "0" ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可畅游全世界!]"
   sleep 2
   ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
+  sleep 2
+  echo
   ${WGETGNU} ${Github_API1} ${WGETO} ${API_PATH}
 else
   DOWNLOAD=https://ghproxy.com/${Release_download}
@@ -118,6 +120,7 @@ else
   sleep 2
   ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
   sleep 2
+  echo
   ${WGETGNU} ${Github_API2} ${WGETO} ${API_PATH}
 fi
 
