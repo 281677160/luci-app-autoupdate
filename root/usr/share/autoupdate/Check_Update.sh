@@ -2,7 +2,7 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
-if [[ -f "/usr/bin/AutoUpdate" ]] && [[ -f "/etc/openwrt_update" ]]; then
+if [[ -f "/etc/openwrt_update" ]]; then
 	AutoUpdate
 	if [[ $? -ne 0 ]]; then
 		echo "AutoUpdate.sh运行出错,文件代码或许有错误" > /tmp/cloud_version
