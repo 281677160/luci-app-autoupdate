@@ -85,7 +85,7 @@ let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
 let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]" >> /tmp/AutoUpdate.log
-  exit 1
+  exit 0
 else
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M]]" > /tmp/AutoUpdate.log
 fi
@@ -112,7 +112,7 @@ if [[ $? -ne 0 ]];then
 fi
 if [[ $? -ne 0 ]];then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件失败,请检查网络再尝试或手动安装固件]" >> /tmp/AutoUpdate.log
-  exit 1
+  exit 0
 else
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件成功!]" >> /tmp/AutoUpdate.log
 fi
@@ -142,11 +142,11 @@ export CLOUD_MD5="$(echo "${MD5_256}" | cut -c1-3)"
 export CLOUD_256="$(echo "${MD5_256}" | cut -c 4-)"
 if [[ ! "${LOCAL_MD5}" == "${CLOUD_MD5}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比失败,固件可能在下载时损坏,请检查网络后重试!]" >> /tmp/AutoUpdate.log
-  exit 1
+  exit 0
 fi
 if [[ ! "${LOCAL_256}" == "${CLOUD_256}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") SHA256对比失败,固件可能在下载时损坏,请检查网络后重试!]" >> /tmp/AutoUpdate.log
-  exit 1
+  exit 0
 fi
 
 cd "${Download_Path}"
