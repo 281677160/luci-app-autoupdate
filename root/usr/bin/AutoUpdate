@@ -63,7 +63,7 @@ LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]
 CLOUD_Firmware=$(egrep -o "${CLOUD_CHAZHAO}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')
 CLOUD_Version=$(echo "${CLOUD_Firmware}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
 LUCI_Firmware=$(echo ${CLOUD_Firmware} | egrep -o "${SOURCE}-${DEFAULT_Device}-[0-9]+")
-if [[ -z "${CLOUD_Firmware}" ]]; then
+if [[ -n "${LOCAL_Version}" ]] && [[ -n "${CLOUD_Version}" ]] && [[ -n "${LUCI_Firmware}" ]]; then
   echo "获取云端信息失败,x86注意本地跟云端固件显示的引导模式是否一致,或者就是云端压根就没您同类型的固件存在,或者作者更了固件获取条件导致您本地跟云端信息不一直!" > /tmp/cloud_version
   exit 0
 fi
