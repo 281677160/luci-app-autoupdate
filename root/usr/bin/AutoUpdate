@@ -14,7 +14,7 @@ PKG_List="${Download_Path}/Installed_PKG_List"
 
 
 wget -qT 10 --no-check-certificate ${Github_API1} -O ${API_PATH}
-if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
+if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
   CHN_NET="1"
 else
   CHN_NET="0"
