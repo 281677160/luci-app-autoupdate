@@ -9,7 +9,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "AutoUpdate"
-msgstr "定时更新"
+msgstr "在线更新"
 
 msgid "xWeek Day"
 msgstr "更新时间"
