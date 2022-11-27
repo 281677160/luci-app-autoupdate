@@ -41,7 +41,7 @@ if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
   echo "获取API数据成功!" > /tmp/cloud_version
 else
   echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库!" > /tmp/cloud_version
-  exit 1
+  exit 0
 fi
 
 case "${TARGET_BOARD}" in
@@ -130,7 +130,7 @@ if [[ $? -ne 0 ]];then
 fi
 if [[ $? -ne 0 ]];then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件失败,请检查网络再尝试或手动安装固件]" >> /tmp/AutoUpdate.log
-  exit 1
+  exit 0
 else
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件成功!]" >> /tmp/AutoUpdate.log
 fi
