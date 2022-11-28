@@ -137,17 +137,14 @@ else
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件成功!]" >> /tmp/AutoUpdate.log
 fi
 
-export LOCAL_MD5=$(md5sum ${CLOUD_Firmware} | cut -c1-3)
-export LOCAL_256=$(sha256sum ${CLOUD_Firmware} | cut -c1-3)
-export MD5_256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
-export CLOUD_MD5="$(echo "${MD5_256}" | cut -c1-3)"
-export CLOUD_256="$(echo "${MD5_256}" | cut -c 4-)"
-if [[ ! "${LOCAL_MD5}" == "${CLOUD_MD5}" ]]; then
+ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 对比固件MD5和SHA256SUM值,预防固件下载过程中有损坏]"
+LOCAL_MD5256="$(md5sum ${CLOUD_Firmware} |cut -c1-3)$(sha256sum ${CLOUD_Firmware} |cut -c1-3)"
+CLOUD__MD5256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+if [[ "${CLOUD__MD5256}" == "${LOCAL_MD5256}" ]]; then
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") $(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比成功!]" >> /tmp/AutoUpdate.log
+  sleep 2
+else
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比失败,固件可能在下载时损坏,请检查网络后重试!]" >> /tmp/AutoUpdate.log
-  exit 0
-fi
-if [[ ! "${LOCAL_256}" == "${CLOUD_256}" ]]; then
-  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") SHA256对比失败,固件可能在下载时损坏,请检查网络后重试!]" >> /tmp/AutoUpdate.log
   exit 0
 fi
 
