@@ -416,14 +416,6 @@ function Bendi_xuanzhe() {
     cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
     ECHOG " ******************************************************************" 
     ECHORR " 云端没发现有您现在所用的同类型固件，您可以进行转换其他源码作者固件操作"
-    echo
-    if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
-      echo "  当前版本跟云端同类型固件版本是一致的"
-    elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
-      echo "  云端同类型固件有更高版本固件,可进行更新操作"
-    elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
-      echo "  不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
-    fi
     ECHOG " 转换其他源码作者固件，都不保留配置升级"
     ECHOB " 请输入您要升级或者转换的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
   ;;
