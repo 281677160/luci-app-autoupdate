@@ -26,6 +26,7 @@ function ECHOY() {
 }
 function ECHOR() {
   echo -e "${Red} $1 ${Font}"
+  echo
 }
 function ECHOB() {
   echo
@@ -376,8 +377,8 @@ function Bendi_xuanzhe() {
   cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
   ECHOG " ******************************************************************" 
   if [[ "${XYZDSZ}" == "1" ]]; then
-    ECHOR " 没发现有其他源码作者固件存在,想要转换其他固件请先编译"
     echo
+    ECHOR " 没发现有其他源码作者固件存在,想要转换其他固件请先编译"
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
       echo "当前版本跟云端版本是一致的,好像没必要升级"
     elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
