@@ -111,9 +111,9 @@ else
 fi
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测网络类型]"
-if [[ "${CHN_NET}" == "0" ]]; then
+if [[ "${CHN_NET}" == "1" ]]; then
   DOWNLOAD=${Release_download}
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可畅游全世界!]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可连接Github!]"
   sleep 2
   ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
   sleep 2
