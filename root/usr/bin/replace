@@ -235,8 +235,10 @@ EOF
 sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
 local_firmw="${LUCI_EDITION}-${SOURCE}"
+LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
 kk=$(grep "${local_firmw}" "${GUJIAN_liebiaoone}")
 if [[ -n "${kk}" ]]; then
+  CLOUD_Version=$(echo "${kk}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   sed -i "/${kk}/d" "${GUJIAN_liebiaoone}"
   sed -i "1i${kk}" "${GUJIAN_liebiaoone}"
 fi
@@ -307,11 +309,11 @@ else
 fi
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 对比固件MD5和SHA256SUM值,预防固件下载过程中有损坏]"
-export LOCAL_MD5=$(md5sum ${CLOUD_Firmware} | cut -c1-3)
-export LOCAL_256=$(sha256sum ${CLOUD_Firmware} | cut -c1-3)
-export MD5_256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
-export CLOUD_MD5="$(echo "${MD5_256}" | cut -c1-3)"
-export CLOUD_256="$(echo "${MD5_256}" | cut -c 4-)"
+LOCAL_MD5=$(md5sum ${CLOUD_Firmware} | cut -c1-3)
+LOCAL_256=$(sha256sum ${CLOUD_Firmware} | cut -c1-3)
+MD5_256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CLOUD_MD5="$(echo "${MD5_256}" | cut -c1-3)"
+CLOUD_256="$(echo "${MD5_256}" | cut -c 4-)"
 if [[ ! "${LOCAL_MD5}" == "${CLOUD_MD5}" ]]; then
   ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比失败,固件可能在下载时损坏,请检查网络后重试!]"
   exit 1
@@ -373,9 +375,21 @@ function Bendi_xuanzhe() {
   echo
   cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
   ECHOG " ******************************************************************" 
+  if [[ "${XYZDSZ}" == "1" ]]; then
+    ECHOR " 没发现有其他源码作者固件存在,想要转换其他固件请先编译"
+    echo
+    if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
+      echo "当前版本跟云端版本是一致的,好像没必要升级"
+    elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
+      echo "发现云端有更高版本固件,可进行更新操作"
+    elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
+      echo "不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+    fi
+  else
+    ECHOG " 第一选择为您现在所用固件的同类型，可进行选择保留配置或者不保留配置升级"
+    ECHOG " 其他的固件因为作者或者LUCI不同型号，都不保留配置升级"
+  fi
   ECHOB " 请输入您要升级固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
-  ECHOG " 有多选时,第一个为您现在所用固件的同类型，可进行选择保留配置或者不保留配置升级"
-  ECHOG " 其他的固件因为作者或者LUCI不同型号，都不保留配置升级"
   echo
   export YUMINGIP="  请输入数字(1~N)"
   while :; do
