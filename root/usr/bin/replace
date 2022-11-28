@@ -451,7 +451,7 @@ function menu() {
   break
   ;;
   *)
-    XUANZop="请输入正确的数字编号："
+    XUANZop="请输入正确的数字编号"
   ;;
   esac
   done
