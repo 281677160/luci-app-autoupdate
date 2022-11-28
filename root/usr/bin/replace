@@ -324,24 +324,14 @@ else
 fi
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 对比固件MD5和SHA256SUM值,预防固件下载过程中有损坏]"
-LOCAL_MD5=$(md5sum ${CLOUD_Firmware} | cut -c1-3)
-LOCAL_256=$(sha256sum ${CLOUD_Firmware} | cut -c1-3)
-MD5_256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
-CLOUD_MD5="$(echo "${MD5_256}" | cut -c1-3)"
-CLOUD_256="$(echo "${MD5_256}" | cut -c 4-)"
-if [[ ! "${LOCAL_MD5}" == "${CLOUD_MD5}" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比失败,固件可能在下载时损坏,请检查网络后重试!]"
-  exit 1
-else
+LOCAL_MD5256=$(md5sum ${CLOUD_Firmware} |cut -c1-3)$(sha256sum ${CLOUD_Firmware} |cut -c1-3)
+CLOUD__MD5256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+if [[ "${CLOUD__MD5256}" == "${LOCAL_MD5256}" ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比成功!]"
   sleep 2
-fi
-if [[ ! "${LOCAL_256}" == "${CLOUD_256}" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") SHA256对比失败,固件可能在下载时损坏,请检查网络后重试!]"
-  exit 1
 else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") SHA256对比成功!]"
-  sleep 2
+  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比失败,固件可能在下载时损坏,请检查网络后重试!]"
+  exit 1
 fi
 
 cd "${Download_Path}"
