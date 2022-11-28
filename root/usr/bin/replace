@@ -235,16 +235,25 @@ ${CLOUD_Firmware_42}
 EOF
 sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
-local_firmw="${LUCI_EDITION}-${SOURCE}"
-LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
-kk=$(grep "${local_firmw}" "${GUJIAN_liebiaoone}")
-if [[ -n "${kk}" ]]; then
+if [[ -s "${GUJIAN_liebiaoone}" ]]; then
+  local_firmw="${LUCI_EDITION}-${SOURCE}"
+  LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+  kk=$(grep "${local_firmw}" "${GUJIAN_liebiaoone}")
   CLOUD_Version=$(echo "${kk}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
-  sed -i "/${kk}/d" "${GUJIAN_liebiaoone}"
-  sed -i "1i${kk}" "${GUJIAN_liebiaoone}"
+  cat "${GUJIAN_liebiaoone}" |awk '$0=NR" "$0' > "/tmp/Downloads/GUJIAN_liebiaotw"
+  XYZDSZ="$(cat "/tmp/Downloads/GUJIAN_liebiaotw" | awk 'END {print}' |awk '{print $(1)}')"
+  if [[ -n "${kk}" ]] && [[ "${XYZDSZ}" == "1" ]]; then
+    yunduan_shuju="1"
+  elif [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -gt "1" ]]; then
+    yunduan_shuju="2"
+    sed -i "/${kk}/d" "${GUJIAN_liebiaoone}"
+    sed -i "1i${kk}" "${GUJIAN_liebiaoone}"
+  fi
+else
+  echo "没有获取到任何数据"
+  yunduan_shuju="0"
 fi
 cat "${GUJIAN_liebiaoone}" |awk '$0=NR" "$0' > ${GUJIAN_liebiaotwo}
-XYZDSZ="$(cat "${GUJIAN_liebiaotwo}" | awk 'END {print}' |awk '{print $(1)}')"
 }
 
 function firmware_upgrade() {
@@ -366,64 +375,88 @@ function Bendi_xuanzhe() {
   echo " Openwrt-AutoUpdate Script ${Version}"
   echo
   echo
-  echo -e "${Green} 当前使用固件${Font}：${Blue}${SOURCE} / ${LUCI_EDITION} / ${Kernel}${Font}"
+  echo -e "${Green} 当前使用固件${Font}：${Blue}${CURRENT_Version}${Font}"
+  echo -e "${Green} 当前固件内核${Font}：${Blue}${Kernel}${Font}"
   echo -e "${Green} 当前固件格式${Font}：${Blue}${BOOT_Type}${Firmware_SFX}${Font}"
   echo -e "${Green} 当前设备型号${Font}：${Blue}${DEFAULT_Device}${Font}"
   echo
   echo
-  ECHOR " 以下为可选升级固件："
-  ECHOG " ******************************************************************" 
-  echo
-  cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
-  ECHOG " ******************************************************************" 
-  if [[ "${XYZDSZ}" == "1" ]]; then
+  case "${yunduan_shuju}" in
+  0)
+    ECHOR " 没有获取到任何数据"
+  ;;
+  1)
+    ECHOR " 以下为可选升级固件："
+    ECHOG " ******************************************************************" 
     echo
-    ECHOR " 没发现有其他源码作者固件存在,想要转换其他固件请先编译"
+    cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
+    ECHOG " ******************************************************************" 
+    ECHOG " 没发现云端有您同源码作者和luci的固件存在,您可以选择其他固件升级"
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
-      echo "当前版本跟云端版本是一致的,好像没必要升级"
+      echo " 当前版本跟云端同类型固件版本是一致的"
     elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
-      echo "发现云端有更高版本固件,可进行更新操作"
+      echo " 云端同类型固件有更高版本固件,可进行更新操作"
     elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
-      echo "不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+      echo " 不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
     fi
-  else
+    ECHOG " 跟您现在所用的为同类型固件，可进行选择保留配置或者不保留配置升级"
+    ECHOB " 请输入您要升级的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
+    echo
+  ;;
+  2)
+    ECHOR " 以下为可选升级固件："
+    ECHOG " ******************************************************************" 
+    echo
+    cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
+    ECHOG " ******************************************************************" 
+    ECHOB " 请输入您要升级固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
+    if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
+      echo " 当前版本跟云端同类型固件版本是一致的"
+    elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
+      echo " 云端同类型固件有更高版本固件,可进行更新操作"
+    elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
+      echo " 不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+    fi
     ECHOG " 第一选择为您现在所用固件的同类型，可进行选择保留配置或者不保留配置升级"
     ECHOG " 其他的固件因为作者或者LUCI不同型号，都不保留配置升级"
-  fi
-  ECHOB " 请输入您要升级固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
-  echo
-  export YUMINGIP="  请输入数字(1~N)"
-  while :; do
-  YMXZ=""
-  read -p "${YUMINGIP}：" YMXZ
-  if [[ "${YMXZ}" == "0" ]] || [[ "${YMXZ}" == "N" ]] || [[ "${YMXZ}" == "n" ]]; then
-    CUrrenty="N"
-  elif [[ -z "${YMXZ}" ]]; then
-    CUrrenty="x"
-  elif [[ "${YMXZ}" -le "${XYZDSZ}" ]]; then
-    CUrrenty="Y"
-    YMXZ=${YMXZ}
-  else
-    CUrrenty="x"
-  fi
-  case $CUrrenty in
-  Y)
-    CLOUD_Firmware=$(cat ${GUJIAN_liebiaoone} |awk ''NR==${YMXZ}'')
-    ECHOY " 您选择了[${CLOUD_Firmware}]固件"
-    sleep 2
-    firmware_upgrade
-  break
-  ;;
-  N)
+    ECHOB " 请输入您要升级或者转换的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
     echo
-    exit 0
-  break
-  ;;
-  *)
-    export YUMINGIP="  敬告,请输入正确数值："
   ;;
   esac
-  done
+  if [[ ! "${yunduan_shuju}" == "0" ]]; then
+    export YUMINGIP="  请输入数字(1~N)"
+    while :; do
+    YMXZ=""
+    read -p "${YUMINGIP}：" YMXZ
+    if [[ "${YMXZ}" == "0" ]] || [[ "${YMXZ}" == "N" ]] || [[ "${YMXZ}" == "n" ]]; then
+      CUrrenty="N"
+    elif [[ -z "${YMXZ}" ]]; then
+      CUrrenty="x"
+    elif [[ "${YMXZ}" -le "${XYZDSZ}" ]]; then
+      CUrrenty="Y"
+      YMXZ=${YMXZ}
+    else
+      CUrrenty="x"
+    fi
+    case $CUrrenty in
+    Y)
+      CLOUD_Firmware=$(cat ${GUJIAN_liebiaoone} |awk ''NR==${YMXZ}'')
+      ECHOY " 您选择了[${CLOUD_Firmware}]固件"
+      sleep 2
+      firmware_upgrade
+    break
+    ;;
+    N)
+      echo
+      exit 0
+    break
+    ;;
+    *)
+      export YUMINGIP="  敬告,请输入正确数值："
+    ;;
+    esac
+    done
+  fi
 }
 
 function menu() {
