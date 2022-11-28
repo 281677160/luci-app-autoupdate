@@ -246,10 +246,12 @@ if [[ -s "${GUJIAN_liebiaoone}" ]]; then
   CLOUD_Version=$(echo "${kk}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   cat "${GUJIAN_liebiaoone}" |awk '$0=NR" "$0' > "/tmp/Downloads/GUJIAN_liebiaotw"
   XYZDSZ="$(cat "/tmp/Downloads/GUJIAN_liebiaotw" | awk 'END {print}' |awk '{print $(1)}')"
-  if [[ -n "${kk}" ]] && [[ "${XYZDSZ}" == "1" ]]; then
+  if [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -eq "1" ]]; then
     yunduan_shuju="1"
-  elif [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -gt "1" ]]; then
+  elif [[ -z "${kk}" ]] && [[ "${XYZDSZ}" -ge "1" ]]; then
     yunduan_shuju="2"
+  elif [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -gt "1" ]]; then
+    yunduan_shuju="3"
     sed -i "/${kk}/d" "${GUJIAN_liebiaoone}"
     sed -i "1i${kk}" "${GUJIAN_liebiaoone}"
   fi
@@ -395,7 +397,7 @@ function Bendi_xuanzhe() {
     echo
     cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
     ECHOG " ******************************************************************" 
-    ECHORR " 没发现云端有您同源码作者和luci的固件存在,您可以选择其他固件升级"
+    ECHORR " 没发现云端其他作者源码的固件存在,需要转换其他作者源码固件请先编译"
     ECHOG " 云端固件跟您现在所用的为同类型固件，可进行选择保留配置或者不保留配置升级"
     echo
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
@@ -406,9 +408,26 @@ function Bendi_xuanzhe() {
       echo "  不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
     fi
     ECHOB " 请输入您要升级的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
-    echo
   ;;
   2)
+    ECHOYY " 以下为可选升级固件："
+    ECHOG " ******************************************************************" 
+    echo
+    cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
+    ECHOG " ******************************************************************" 
+    ECHORR " 云端没发现有您现在所用的同类型固件，您可以进行转换其他源码作者固件操作"
+    echo
+    if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
+      echo "  当前版本跟云端同类型固件版本是一致的"
+    elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
+      echo "  云端同类型固件有更高版本固件,可进行更新操作"
+    elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
+      echo "  不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+    fi
+    ECHOG " 转换其他源码作者固件，都不保留配置升级"
+    ECHOB " 请输入您要升级或者转换的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
+  ;;
+  3)
     ECHOYY " 以下为可选升级固件："
     ECHOG " ******************************************************************" 
     echo
@@ -425,10 +444,10 @@ function Bendi_xuanzhe() {
     fi
     ECHOG " 其他的固件因为作者或者LUCI不同型号，都不保留配置升级"
     ECHOB " 请输入您要升级或者转换的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
-    echo
   ;;
   esac
   if [[ ! "${yunduan_shuju}" == "0" ]]; then
+    echo
     export YUMINGIP="  请输入数字(1~N)"
     while :; do
     YMXZ=""
