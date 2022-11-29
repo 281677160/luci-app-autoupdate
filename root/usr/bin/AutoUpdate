@@ -98,11 +98,10 @@ else
 fi
 
 cd "${Download_Path}"
-curl --connect-timeout 10 "https://github.com" > "/dev/null" 2>&1 || gitcom='1'
-if [ "${gitcom}" == "1" ]; then
-  DOWNLOAD=https://ghproxy.com/${Release_download}
-else
+if [[  "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" == "301" ]]; then
   DOWNLOAD=${Release_download}
+else
+  DOWNLOAD=https://ghproxy.com/${Release_download}
 fi
 echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 正在下载云端固件,请耐心等待..]" >> /tmp/AutoUpdate.log
 curl -fsSL -o ${CLOUD_Firmware} ${DOWNLOAD}/${CLOUD_Firmware}
