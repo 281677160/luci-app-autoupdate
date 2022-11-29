@@ -15,7 +15,6 @@ Font="\033[0m"
 GreenBG="\033[1;36m"
 RedBG="\033[41;37m"
 OK="${Green}[OK]${Font}"
-GX=" ${Red}[恭喜]${Font}"
 ERROR="${Red}[ERROR]${Font}"
 Input_Option=$1
 
@@ -394,11 +393,11 @@ function Bendi_xuanzhe() {
     ECHOG " 云端固件跟您现在所用的为同类型固件，可进行选择保留配置或者不保留配置升级"
     echo
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
-      echo "  当前版本跟云端同类型固件版本是一致的"
+      echo "  提示：当前版本跟云端同类型固件版本是一致的"
     elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
-      echo "  云端同类型固件有更高版本固件,可进行更新操作"
+      echo "  提示：云端同类型固件有更高版本固件,可进行更新操作"
     elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
-      echo "  不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+      echo "  提示：不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
     fi
     ECHOB " 请输入您要升级的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
   ;;
@@ -421,11 +420,11 @@ function Bendi_xuanzhe() {
     ECHORR " 第一选择为您现在所用固件的同类型，可进行选择保留配置或者不保留配置升级"
     echo
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
-      echo "  当前版本跟云端同类型固件版本是一致的"
+      echo "  提示：当前版本跟云端同类型固件版本是一致的"
     elif [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
-      echo "  云端同类型固件有更高版本固件,可进行更新操作"
+      echo "  提示：云端同类型固件有更高版本固件,可进行更新操作"
     elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
-      echo "  不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
+      echo "  提示：不得了啊,兄弟,云端最高版本固件,低于您现在所安装的版本"
     fi
     ECHOG " 其他的固件因为作者或者LUCI不同型号，都不保留配置升级"
     ECHOB " 请输入您要升级或者转换的固件名称前面对应的数值(1~X),输入[0或N]则为退出程序"
