@@ -7,7 +7,7 @@ Input_Option=$1
 Version=V7.2
 function information_acquisition() {
 source /etc/openwrt_update
-Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |egrep -o "[0-9]+\.[0-9]+\.[0-9]+")
+Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 
 wget -qT 10 --no-check-certificate ${Github_API1} -O ${API_PATH}
@@ -56,10 +56,10 @@ x86)
   BOOT_Type=sysupgrade
 esac
 
-LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
-CLOUD_Firmware=$(egrep -o "${CLOUD_CHAZHAO}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')
-CLOUD_Version=$(echo "${CLOUD_Firmware}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
-LUCI_Firmware=$(echo ${CLOUD_Firmware} | egrep -o "${SOURCE}-${DEFAULT_Device}-[0-9]+")
+LOCAL_Version=$(echo "${CURRENT_Version}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+CLOUD_Firmware=$(grep -Eo "${CLOUD_CHAZHAO}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')
+CLOUD_Version=$(echo "${CLOUD_Firmware}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+LUCI_Firmware=$(echo ${CLOUD_Firmware} | grep -Eo "${SOURCE}-${DEFAULT_Device}-[0-9]+")
 if [[ -n "${CLOUD_Firmware}" ]] && [[ -n "${CLOUD_Version}" ]] && [[ -n "${LUCI_Firmware}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端信息失败" >> /tmp/AutoUpdate.log
 else
@@ -81,7 +81,7 @@ echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 信息检测完毕]"
 function firmware_upgrade() {
 TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
 let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
-let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
+let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]" >> /tmp/AutoUpdate.log
   exit 0
@@ -134,7 +134,7 @@ else
 fi
 
 LOCAL_MD5256=$(md5sum ${CLOUD_Firmware} |cut -c1-3)$(sha256sum ${CLOUD_Firmware} |cut -c1-3)
-CLOUD__MD5256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CLOUD__MD5256=$(echo ${CLOUD_Firmware} | grep -Eo "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
 if [[ "${CLOUD__MD5256}" == "${LOCAL_MD5256}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") $(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比成功!]" >> /tmp/AutoUpdate.log
   sleep 2
