@@ -82,15 +82,13 @@ fi
 
 Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |egrep -o "[0-9]+\.[0-9]+\.[0-9]+")
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
-opkg list | awk '{print $1}' > ${Download_Path}/Installed_PKG_List
-PKG_List="${Download_Path}/Installed_PKG_List"
 GUJIAN_liebiaoone="${Download_Path}/gujianliebiaoone"
 GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotwo"
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测您网络是否联网]"
 sleep 2
 wget -qT 10 --no-check-certificate ${Github_API1} -O ${API_PATH}
-if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
+if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
   CHN_NET="1"
 else
   CHN_NET="0"
@@ -130,7 +128,7 @@ fi
 
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端API下载完成,开始获取固件信息]"
-  sleep 3
+  sleep 2
 else
   ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取数据失败,Github地址不正确,或此地址没云端存在,或您的仓库为私库,或网络抽风了再试试看!]"
   exit 1
@@ -344,7 +342,9 @@ while [ $seconds -gt 0 ];do
   echo -ne "\r	\r"
 done
 chmod 777 "${CLOUD_Firmware}"
-[[ "$(cat ${PKG_List})" =~ "gzip" ]] && opkg remove gzip > /dev/null 2>&1
+if [[ `opkg list | awk '{print $1}' | grep -c gzip` -ge '1' ]]; then
+  opkg remove gzip > /dev/null 2>&1
+fi
 sleep 2
 if [[ "${upgrade_tions}" == "1" ]]; then
   if [[ -f "/etc/deletefile" ]]; then
