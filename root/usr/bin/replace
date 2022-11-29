@@ -286,7 +286,7 @@ if [[ "${local_firmw}" == "${cloud_firmw}" ]]; then
   read -p " ${xuzqxz}： " Bendi_Wsl
   case ${Bendi_Wsl} in
   [Yy])
-    Upgrade_Options='sysupgrade -f /mnt/upback.tar.gz'
+    Upgrade_Options='sysupgrade -F -f /mnt/upback.tar.gz'
     upgrade_tions="1"
     tongzhi="保留配置"
   break
