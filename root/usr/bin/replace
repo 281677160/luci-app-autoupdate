@@ -69,7 +69,7 @@ ECHOY " 开始执行资料读取,读取完毕显示选择固件界面"
 
 source /etc/openwrt_update
 
-A="$(wget -V |grep 'GNU Wget' |egrep -o "[0-9]+\.[0-9]+\.[0-9]+")"
+A="$(wget -V |grep 'GNU Wget' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
 B="1.16.1"
 if [[ `awk -v num1=${A} -v num2=${B} 'BEGIN{print(num1>num2)?"0":"1"}'` -eq '0' ]]; then
   WGETGNU="wget -q --show-progress"
@@ -79,7 +79,7 @@ else
   WGETO="-o"
 fi
 
-Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |egrep -o "[0-9]+\.[0-9]+\.[0-9]+")
+Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 GUJIAN_liebiaoone="${Download_Path}/gujianliebiaoone"
 GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotwo"
@@ -144,48 +144,48 @@ x86)
 esac
 
 
-CLOUD_Firmware_1="$(egrep -o "${ledezx}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_2="$(egrep -o "${lienolzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_3="$(egrep -o "${lienolzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_4="$(egrep -o "${lienolzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_5="$(egrep -o "${lienolzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_6="$(egrep -o "${immortalwrtzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_7="$(egrep -o "${immortalwrtzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_8="$(egrep -o "${immortalwrtzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_9="$(egrep -o "${immortalwrtzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_10="$(egrep -o "${officialzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_11="$(egrep -o "${officialzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_12="$(egrep -o "${officialzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_13="$(egrep -o "${officialzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_14="$(egrep -o "${xwrtzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_15="$(egrep -o "${xwrtzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_16="$(egrep -o "${xwrtzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_17="$(egrep -o "${xwrtzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_18="$(egrep -o "${xwrtzx5}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_19="$(egrep -o "${xwrtzx6}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_20="$(egrep -o "${xwrtzx7}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_21="$(egrep -o "${xwrtzx8}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_22="$(egrep -o "${xwrtzx9}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_23="$(egrep -o "${xwrtzx10}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_24="$(egrep -o "${xwrtzx11}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_25="$(egrep -o "${xwrtzx12}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_26="$(egrep -o "${xwrtzx13}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_27="$(egrep -o "${xwrtzx14}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_28="$(egrep -o "${xwrtzx15}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_29="$(egrep -o "${xwrtzx16}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_30="$(egrep -o "${xwrtzx17}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_31="$(egrep -o "${xwrtzx18}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_32="$(egrep -o "${xwrtzx19}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_33="$(egrep -o "${xwrtzx20}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_34="$(egrep -o "${xwrtzx21}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_35="$(egrep -o "${xwrtzx22}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_36="$(egrep -o "${xwrtzx23}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_37="$(egrep -o "${xwrtzx24}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_38="$(egrep -o "${xwrtzx25}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_39="$(egrep -o "${xwrtzx26}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_40="$(egrep -o "${xwrtzx27}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_41="$(egrep -o "${xwrtzx28}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-CLOUD_Firmware_42="$(egrep -o "${xwrtzx29}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_1="$(grep -Eo "${ledezx}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_2="$(grep -Eo "${lienolzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_3="$(grep -Eo "${lienolzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_4="$(grep -Eo "${lienolzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_5="$(grep -Eo "${lienolzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_6="$(grep -Eo "${immortalwrtzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_7="$(grep -Eo "${immortalwrtzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_8="$(grep -Eo "${immortalwrtzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_9="$(grep -Eo "${immortalwrtzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_10="$(grep -Eo "${officialzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_11="$(grep -Eo "${officialzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_12="$(grep -Eo "${officialzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_13="$(grep -Eo "${officialzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_14="$(grep -Eo "${xwrtzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_15="$(grep -Eo "${xwrtzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_16="$(grep -Eo "${xwrtzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_17="$(grep -Eo "${xwrtzx4}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_18="$(grep -Eo "${xwrtzx5}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_19="$(grep -Eo "${xwrtzx6}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_20="$(grep -Eo "${xwrtzx7}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_21="$(grep -Eo "${xwrtzx8}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_22="$(grep -Eo "${xwrtzx9}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_23="$(grep -Eo "${xwrtzx10}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_24="$(grep -Eo "${xwrtzx11}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_25="$(grep -Eo "${xwrtzx12}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_26="$(grep -Eo "${xwrtzx13}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_27="$(grep -Eo "${xwrtzx14}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_28="$(grep -Eo "${xwrtzx15}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_29="$(grep -Eo "${xwrtzx16}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_30="$(grep -Eo "${xwrtzx17}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_31="$(grep -Eo "${xwrtzx18}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_32="$(grep -Eo "${xwrtzx19}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_33="$(grep -Eo "${xwrtzx20}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_34="$(grep -Eo "${xwrtzx21}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_35="$(grep -Eo "${xwrtzx22}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_36="$(grep -Eo "${xwrtzx23}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_37="$(grep -Eo "${xwrtzx24}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_38="$(grep -Eo "${xwrtzx25}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_39="$(grep -Eo "${xwrtzx26}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_40="$(grep -Eo "${xwrtzx27}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_41="$(grep -Eo "${xwrtzx28}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_42="$(grep -Eo "${xwrtzx29}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 
 cat > "${GUJIAN_liebiaoone}" <<-EOF
 ${CLOUD_Firmware_1}
@@ -235,9 +235,9 @@ sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
 if [[ -s "${GUJIAN_liebiaoone}" ]]; then
   local_firmw="${LUCI_EDITION}-${SOURCE}"
-  LOCAL_Version=$(echo "${CURRENT_Version}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+  LOCAL_Version=$(echo "${CURRENT_Version}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   kk=$(grep "${local_firmw}" "${GUJIAN_liebiaoone}")
-  CLOUD_Version=$(echo "${kk}"|egrep -o [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+  CLOUD_Version=$(echo "${kk}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   cat "${GUJIAN_liebiaoone}" |awk '$0=NR" "$0' > "/tmp/Downloads/GUJIAN_liebiaotw"
   XYZDSZ="$(cat "/tmp/Downloads/GUJIAN_liebiaotw" | awk 'END {print}' |awk '{print $(1)}')"
   if [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -eq "1" ]]; then
@@ -263,7 +263,7 @@ cloud_firmw=$(echo "${CLOUD_Firmware}" |sed "s/${bb}//g")
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查固件剩余空间值"
 TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
 let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
-let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
+let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
   ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
   exit 1
@@ -325,7 +325,7 @@ fi
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 对比固件MD5和SHA256SUM值,预防固件下载过程中有损坏]"
 LOCAL_MD5256=$(md5sum ${CLOUD_Firmware} |cut -c1-3)$(sha256sum ${CLOUD_Firmware} |cut -c1-3)
-CLOUD__MD5256=$(echo ${CLOUD_Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CLOUD__MD5256=$(echo ${CLOUD_Firmware} | grep -Eo "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
 if [[ "${CLOUD__MD5256}" == "${LOCAL_MD5256}" ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比成功!]"
   sleep 2
