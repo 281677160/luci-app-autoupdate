@@ -334,7 +334,8 @@ fi
 
 cd "${Download_Path}"
 ECHOG "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电源或重启设备 ...]"
-seconds=10
+sleep 1
+seconds=9
 while [ $seconds -gt 0 ];do
   echo -n $seconds
   sleep 1
