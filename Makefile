@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=LuCI Support for AutoBuild Firmware/AutoUpdate.sh
+LUCI_TITLE:=LuCI Support for AutoBuild Firmware/AutoUpdate
 LUCI_DEPENDS:=+curl +grep +wget +wget-ssl
 LUCI_PKGARCH:=all
 PKG_VERSION:=1
