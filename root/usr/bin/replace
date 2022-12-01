@@ -260,18 +260,6 @@ function firmware_upgrade() {
 bb="$(echo ${CLOUD_Firmware} |grep -o "\-${DEFAULT_Device}.*")"
 cloud_firmw=$(echo "${CLOUD_Firmware}" |sed "s/${bb}//g")
 
-ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查固件剩余空间值"
-TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
-let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
-let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
-if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
-  exit 1
-else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
-  sleep 2
-fi
-
 if [[ "${local_firmw}" == "${cloud_firmw}" ]]; then
   echo
   ECHOYY "此固件跟您现在所用的固件为同一个源码作者同一个LUCI版本,"
@@ -301,6 +289,18 @@ if [[ "${local_firmw}" == "${cloud_firmw}" ]]; then
 else
    Upgrade_Options='sysupgrade -F -n'
    tongzhi="不保留配置"
+fi
+
+ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查固件剩余空间值"
+TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
+let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
+let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
+if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
+  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
+  exit 1
+else
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
+  sleep 2
 fi
 
 cd "${Download_Path}"
