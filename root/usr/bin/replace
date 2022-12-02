@@ -83,7 +83,7 @@ Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |grep -Eo "[0-9]+\.[0-
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 GUJIAN_liebiaoone="${Download_Path}/gujianliebiaoone"
 GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotwo"
-GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotw"
+GUJIAN_liebiaotw="${Download_Path}/gujianliebiaotw"
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测您网络是否联网]"
 sleep 2
