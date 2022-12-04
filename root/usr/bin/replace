@@ -110,7 +110,7 @@ fi
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测网络类型]"
 if [[ "${CHN_NET}" == "1" ]]; then
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可连接Github!]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可以直连Github!]"
   sleep 2
   ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
   sleep 2
@@ -125,7 +125,7 @@ else
 fi
 
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端API下载完成,开始获取固件信息]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API完成,开始获取固件信息]"
   sleep 2
 else
   ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取数据失败,Github地址不正确,或此地址没云端存在,或您的仓库为私库,或网络抽风了再试试看!]"
@@ -292,15 +292,15 @@ else
    tongzhi="不保留配置"
 fi
 
-ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查固件剩余空间值"
+ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查路由器剩余空间"
 TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
 let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
 let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
+  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
   exit 1
 else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 固件tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
   sleep 2
 fi
 
@@ -461,7 +461,7 @@ function Bendi_xuanzhe() {
     break
     ;;
     *)
-      export YUMINGIP="  敬告,请输入正确数值："
+      export YUMINGIP="  敬告,请输入正确数值"
     ;;
     esac
     done
