@@ -295,14 +295,14 @@ fi
 
 cd "${Download_Path}"
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检查路由器剩余空间"
-TMP_Available=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
+TMP_Available=$(df -hT $PWD|awk 'NR==2'|awk '{print $(3)}')
 let X=$(grep -n "${CLOUD_Firmware}" ${API_PATH} | tail -1 | cut -d : -f 1)-4
-CLOUD_Firmware_Size=$(df -hT $PWD|awk 'NR==2'|awk '{print $(3)}')
+let CLOUD_Firmware_Size=$(sed -n "${X}p" ${API_PATH} | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
+  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}],云端固件体积[${CLOUD_Firmware_Size}M],空间不足，不能下载]"
   exit 1
 else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
   sleep 2
 fi
 
