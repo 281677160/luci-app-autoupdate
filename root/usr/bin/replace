@@ -369,6 +369,80 @@ else
 fi
 }
 
+function Bendi_githuburl() {
+Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_update" | cut -d "=" -f2)"
+ECHOY "提示：您现在检测云端的地址为：
+
+ ${Github}
+
+ 是否更换地址检测?"
+read -p " 输入[Y/y]为选择需要,任意键回车则为不需要：" dogithub
+case $dogithub in
+[Yy])
+  export Input_Oth="Y"
+;;
+*)
+  export Input_Oth="n"
+;;
+esac
+}
+
+function Bendi_githuy() {
+if [[ "${Input_Oth}" == "Y" ]]; then
+  ECHOG "正确地址格式：https://github.com/帐号/仓库"
+  export YUMING=" 请输入新的地址"      
+  while :; do
+  read -p "${YUMING}：" cus_url
+  if [[ "${cus_url}" == "${Github}" ]]; then
+    dogithu="x"
+  elif [[ -z "${cus_url}" ]]; then
+    dogithu="z"
+  elif [[ "$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 1-3)" == 'https://github.com' ]]; then
+    custom_github_url="$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 4-5)"
+		current_github_url="$(grep GITHUB_LINK= /etc/openwrt_update |head -n 5 |cut -d '/' -f 4-5)"
+		if [[ -n "${custom_github_url}" ]] && [[ `echo "${custom_github_url}" |grep -c '/'` -eq '1' ]]; then
+			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_update
+			uci set autoupdate.@login[0].github=${cus_url}
+ 			uci commit autoupdate
+      dogithu="t"
+    else
+      dogithu="n"
+    fi
+  else
+    dogithu="w"
+  fi
+  case $dogithu in
+  x)
+    ECHOY "您输入的新地址跟当前地址一致,无需修改,即将进入云端检测程序"
+    sleep 5
+  break
+  ;;
+  z)
+    ECHOR "地址不能为空"
+    Bendi_githuy
+  break
+  ;;
+  n)
+    ECHOR "不能获取地址,地址格式或者不正确"
+    Bendi_githuy
+  break
+  ;;
+  t)
+    ECHOG "地址修改成功"
+    Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_update" | cut -d "=" -f2)"
+    ECHOYY "您当前地址：${Github}"
+    sleep 8
+  break
+  ;;
+  w)
+    export YUMING="敬告：您输入的Github地址无效,请输入正确格式的Github地址,或留空回车退出!"
+  break
+  esac
+  done
+fi
+}
+
+
 function Bendi_xuanzhe() {
   clear
   echo
@@ -391,7 +465,7 @@ function Bendi_xuanzhe() {
     echo
     cat "${GUJIAN_liebiaoone}" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
     ECHOG " ******************************************************************" 
-    ECHORR " 没发现云端其他作者源码的固件存在,需要转换其他作者源码固件请先编译"
+    ECHORR " 没发现云端有其他作者源码的固件存在,需要转换其他作者源码固件请先编译"
     ECHOG " 云端固件跟您现在所用的为同类型固件，可进行选择保留配置或者不保留配置升级"
     echo
     if [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
@@ -484,6 +558,8 @@ function menu() {
   read -p " ${XUANZop}：" menu_num
   case $menu_num in
   1)
+    Bendi_githuburl
+    Bendi_githuy
     information_acquisition
     Bendi_xuanzhe
   break
@@ -505,6 +581,8 @@ if [[ -z "${Input_Option}" ]]; then
 else
   case ${Input_Option} in
   -u)
+    Bendi_githuburl
+    Bendi_githuy
     information_acquisition
     Bendi_xuanzhe
   ;;
