@@ -24,7 +24,7 @@ run_autoupdate()
                 	custom_github_url="$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 4-5)"
 			current_github_url="$(grep GITHUB_LINK= /etc/openwrt_update |head -n 5 |cut -d '/' -f 4-5)"
 		fi
-		if [[ -n "${custom_github_url}" ]] && [[ "${custom_github_url}" != "${current_github_url}" ]]; then
+		if [[ `echo "${custom_github_url}" |grep -c '/'` -eq '1' ]] && [[ "${custom_github_url}" != "${current_github_url}" ]]; then
 			sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_update
 			uci set autoupdate.@login[0].github=${cus_url}
  			uci commit autoupdate
