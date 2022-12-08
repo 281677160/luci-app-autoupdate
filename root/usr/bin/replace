@@ -67,7 +67,7 @@ clear
 echo
 ECHOY " 开始执行资料读取,读取完毕显示选择固件界面"
 
-source /etc/openwrt_update
+source /etc/openwrt_replace
 
 A="$(wget -V |grep 'GNU Wget' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
 B="1.16.1"
