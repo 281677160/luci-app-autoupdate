@@ -437,7 +437,7 @@ if [[ "${Input_Oth}" == "Y" ]]; then
   break
   ;;
   w)
-    export YUMING="敬告：您输入的Github地址无效,请输入正确格式的Github地址,或留空回车退出!"
+    export YUMING="敬告：您输入的Github地址无效,请输入正确格式的Github地址!"
   break
   esac
   done
