@@ -34,7 +34,7 @@ fi
 if [[ $? -ne 0 ]];then
   curl -fsSL -o ${API_PATH} ${Github_API2}
 fi
-if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
+if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
   echo "获取API数据成功!" > /tmp/cloud_version
 else
   echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库!" > /tmp/cloud_version
@@ -99,9 +99,9 @@ fi
 
 cd "${Download_Path}"
 if [[  "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" == "301" ]]; then
-  DOWNLOAD=${Release_download}
+  DOWNLOAD=${Release_download1}
 else
-  DOWNLOAD=https://ghproxy.com/${Release_download}
+  DOWNLOAD=${Release_download2}
 fi
 echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 正在下载云端固件,请耐心等待..]" >> /tmp/AutoUpdate.log
 curl -fsSL -o ${CLOUD_Firmware} ${DOWNLOAD}/${CLOUD_Firmware}
