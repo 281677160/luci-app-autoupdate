@@ -236,9 +236,9 @@ sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
 if [[ -s "${GUJIAN_liebiaoone}" ]]; then
   local_firmw="${LUCI_EDITION}-${SOURCE}"
-  LOCAL_Version=$(echo "${CURRENT_Version}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+  LOCAL_Version=$(echo "${CURRENT_Version}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   kk=$(grep "${local_firmw}" "${GUJIAN_liebiaoone}")
-  CLOUD_Version=$(echo "${kk}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
+  CLOUD_Version=$(echo "${kk}"|grep -Eo [0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+[0-9]+)
   cat "${GUJIAN_liebiaoone}" |awk '$0=NR" "$0' > "${GUJIAN_liebiaotw}"
   XYZDSZ="$(cat "${GUJIAN_liebiaotw}" | awk 'END {print}' |awk '{print $(1)}')"
   if [[ -n "${kk}" ]] && [[ "${XYZDSZ}" -eq "1" ]]; then
