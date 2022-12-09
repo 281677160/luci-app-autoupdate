@@ -303,7 +303,7 @@ if [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]]; then
   exit 1
 else
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 路由器tmp空间值[${TMP_Available}M],云端固件体积[${CLOUD_Firmware_Size}M],空间充足]"
-  sleep 2
+  sleep 1
 fi
 
 if [[  "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" == "301" ]]; then
