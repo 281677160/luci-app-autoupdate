@@ -91,7 +91,7 @@ fi
 
 if [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测到有可更新的固件版本,立即更新固件!]" >> /tmp/AutoUpdate.log
-else
+elif [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
   echo "${LOCAL_Version} = ${CLOUD_Version}"
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 已是最新版本，无需更新固件!]" >> /tmp/AutoUpdate.log
   exit 0
@@ -102,25 +102,6 @@ if [[  "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)"
   DOWNLOAD=${Release_download1}
 else
   DOWNLOAD=${Release_download2}
-fi
-echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 正在下载云端固件,请耐心等待..]" >> /tmp/AutoUpdate.log
-curl -fsSL -o ${CLOUD_Firmware} ${DOWNLOAD}/${CLOUD_Firmware}
-if [[ $? -ne 0 ]];then
-  wget -q "${DOWNLOAD}/${CLOUD_Firmware}" -O ${CLOUD_Firmware}
-fi
-if [[ $? -ne 0 ]];then
-  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件失败,请检查网络再尝试或手动安装固件]" >> /tmp/AutoUpdate.log
-  exit 0
-else
-  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件成功!]" >> /tmp/AutoUpdate.log
-fi
-
-cd "${Download_Path}"
-Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
-if [ ! "${Google_Check}" == 301 ]; then
-  DOWNLOAD=https://ghproxy.com/${Release_download}
-else
-  DOWNLOAD=${Release_download}
 fi
 wget -q --no-check-certificate ${DOWNLOAD}/${CLOUD_Firmware} -O ${CLOUD_Firmware}
 if [[ $? -ne 0 ]];then
@@ -143,7 +124,6 @@ else
   exit 0
 fi
 
-cd "${Download_Path}"
 echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 正在执行更新,更新期间请不要断开电源或重启设备 ...]" >> /tmp/AutoUpdate.log
 chmod 777 "${CLOUD_Firmware}"
 if [[ `opkg list | awk '{print $1}' | grep -c gzip` -ge '1' ]]; then
