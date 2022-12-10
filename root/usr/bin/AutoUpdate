@@ -92,8 +92,10 @@ fi
 if [[ "${LOCAL_Version}" -lt "${CLOUD_Version}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测到有可更新的固件版本,立即更新固件!]" >> /tmp/AutoUpdate.log
 elif [[ "${LOCAL_Version}" -eq "${CLOUD_Version}" ]]; then
-  echo "${LOCAL_Version} = ${CLOUD_Version}"
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 已是最新版本，无需更新固件!]" >> /tmp/AutoUpdate.log
+  exit 0
+elif [[ "${LOCAL_Version}" -gt "${CLOUD_Version}" ]]; then
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端最高版本固件,低于您现在所安装的版本,请到云端查看原因!]" >> /tmp/AutoUpdate.log
   exit 0
 fi
 
