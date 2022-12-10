@@ -117,7 +117,7 @@ else
 fi
 
 LOCAL_MD5256=$(md5sum ${CLOUD_Firmware} |cut -c1-3)$(sha256sum ${CLOUD_Firmware} |cut -c1-3)
-CLOUD__MD5256=$(echo ${CLOUD_Firmware} | grep -Eo "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CLOUD__MD5256=$(echo ${CLOUD_Firmware} |grep -Eo "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
 if [[ "${CLOUD__MD5256}" == "${LOCAL_MD5256}" ]]; then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") $(date "+%Y年%m月%d日%H时%M分%S秒") MD5对比成功!]" >> /tmp/AutoUpdate.log
   sleep 2
