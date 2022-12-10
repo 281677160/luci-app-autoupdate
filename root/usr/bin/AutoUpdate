@@ -107,7 +107,7 @@ else
 fi
 wget -q --no-check-certificate ${DOWNLOAD}/${CLOUD_Firmware} -O ${CLOUD_Firmware}
 if [[ $? -ne 0 ]];then
-  curl -fsSL -o ${CLOUD_Firmware} ${DOWNLOAD}/${CLOUD_Firmware}
+  curl -fsSL ${DOWNLOAD}/${CLOUD_Firmware} -o ${CLOUD_Firmware}
 fi
 if [[ $? -ne 0 ]];then
   echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件失败,请检查网络再尝试或手动安装固件]" >> /tmp/AutoUpdate.log
