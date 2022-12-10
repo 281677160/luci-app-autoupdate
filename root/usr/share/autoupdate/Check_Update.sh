@@ -24,7 +24,7 @@ else
 fi
 
 if [[ -n "${CLOUD_Firmware}" ]]; then
-	if [[ "${LOCAL_Firmware}" == "${CLOUD_Firmware}" ]]; then
+	if [[ "${LOCAL_Firmware}" -eq "${CLOUD_Firmware}" ]]; then
 		Checked_Type="已是最新"
 		echo "${CLOUD_Firmware2} [${Checked_Type}]" > /tmp/cloud_version
 	elif [[ "${LOCAL_Firmware}" -lt "${CLOUD_Firmware}" ]]; then
