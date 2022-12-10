@@ -318,10 +318,10 @@ if [[ $? -ne 0 ]];then
   wget --no-check-certificate ${DOWNLOAD}/${CLOUD_Firmware} -O ${CLOUD_Firmware}
 fi
 if [[ $? -ne 0 ]];then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件失败,请检查网络再尝试或手动安装固件]"
+  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端固件下载失败,请检查网络再尝试或手动安装固件]"
   exit 1
 else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 下载云端固件成功!]"
+  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端固件下载成功!]"
   sleep 2
 fi
 
