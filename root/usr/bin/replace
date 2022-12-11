@@ -341,10 +341,10 @@ ECHOG "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电�
 sleep 1
 seconds=9
 while [ $seconds -gt 0 ];do
-  echo -n $seconds
+  echo -n " ${seconds}"
   sleep 1
-  seconds=$(($seconds - 1))
-  echo -ne "\r	\r"
+  seconds=$((${seconds} - 1))
+  echo -ne "\r   \r"
 done
 chmod 777 "${CLOUD_Firmware}"
 if [[ `opkg list | awk '{print $1}' | grep -c gzip` -ge '1' ]]; then
