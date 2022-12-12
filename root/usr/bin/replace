@@ -354,10 +354,12 @@ sleep 2
 if [[ "${upgrade_tions}" == "1" ]]; then
   
   if [[ `ps | grep 'openclash' | grep -c 'yaml'` -eq '1' ]]; then
-  cat >/etc/clashqidong <<-EOF
-  uci -q set openclash.config.enable=1
-  uci -q commit openclash
+    cat >/etc/clashqidong <<-EOF
+    uci -q set openclash.config.enable=1
+    uci -q commit openclash
 EOF
+    sed -i '/^$/d' /etc/clashqidong
+    sed -i 's/^[ ]*//g' /etc/clashqidong
   fi
   
   if [[ -f "/etc/deletefile" ]]; then
