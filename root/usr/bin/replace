@@ -352,6 +352,14 @@ if [[ `opkg list | awk '{print $1}' | grep -c gzip` -ge '1' ]]; then
 fi
 sleep 2
 if [[ "${upgrade_tions}" == "1" ]]; then
+  
+  if [[ `ps | grep 'openclash' | grep -c 'yaml'` -eq '1' ]]; then
+  cat >/etc/clashqidong <<-EOF
+  uci -q set openclash.config.enable=1
+  uci -q commit openclash
+EOF
+  fi
+  
   if [[ -f "/etc/deletefile" ]]; then
     chmod +x "/etc/deletefile"
     source /etc/deletefile
