@@ -134,6 +134,7 @@ fi
 
 if [[ `ps | grep 'openclash' | grep -c 'yaml'` -eq '1' ]]; then
 cat >/etc/clashqidong <<-EOF
+#!/bin/sh
 uci -q set openclash.config.enable=1
 uci -q commit openclash
 EOF
