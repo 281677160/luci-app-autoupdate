@@ -132,14 +132,6 @@ if [[ `opkg list | awk '{print $1}' | grep -c gzip` -ge '1' ]]; then
   opkg remove gzip > /dev/null 2>&1
 fi
 
-if [[ `ps | grep 'openclash' | grep -c 'yaml'` -eq '1' ]]; then
-cat >/etc/clashqidong <<-EOF
-#!/bin/sh
-uci -q set openclash.config.enable=1
-uci -q commit openclash
-EOF
-fi
-
 sleep 2
 if [[ -f "/etc/deletefile" ]]; then
   chmod 775 "/etc/deletefile"
