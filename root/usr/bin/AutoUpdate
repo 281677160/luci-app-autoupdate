@@ -7,7 +7,7 @@ Input_Option=$1
 Version=V7.2
 function information_acquisition() {
 source /etc/openwrt_update
-Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")
+Kernel=$(uname -rs | cut -d ' ' -f2)
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 
 wget -qT 10 --no-check-certificate ${Github_API1} -O ${API_PATH}
