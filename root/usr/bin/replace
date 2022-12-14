@@ -79,7 +79,7 @@ else
   WGETO="-o"
 fi
 
-Kernel=$(grep 'Version' /usr/lib/opkg/info/kernel.control |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")
+Kernel=$(uname -rs | cut -d ' ' -f2)
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 GUJIAN_liebiaoone="${Download_Path}/gujianliebiaoone"
 GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotwo"
