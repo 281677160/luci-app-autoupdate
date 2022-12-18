@@ -4,7 +4,7 @@
 # AutoUpdate for Openwrt
 
 Input_Option=$1
-Version=V7.2
+Version=V8.0
 function information_acquisition() {
 source /etc/openwrt_update
 Kernel=$(uname -rs | cut -d ' ' -f2)
