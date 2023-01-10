@@ -351,7 +351,7 @@ fi
 
 function Bendi_githuburl() {
 Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_replace" | cut -d "=" -f2)"
-ECHOB "提示：您现在检测云端的地址为：
+ECHOG "提示：您现在检测云端的地址为：
 
  ${Github}
 
