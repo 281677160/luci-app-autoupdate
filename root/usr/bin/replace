@@ -87,16 +87,8 @@ GUJIAN_liebiaotw="${Download_Path}/gujianliebiaotw"
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测您网络是否联网]"
 sleep 1
-wget -qT 10 --no-check-certificate ${Github_API1} -O ${API_PATH}
-if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
-  CHN_NET="1"
-else
-  CHN_NET="0"
-fi
 
-if [[ "${CHN_NET}" == "0" ]]; then
-  curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || wangluo='1'
-fi
+curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || wangluo='1'
 if [[ "${wangluo}" == "1" ]]; then
   curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || wangluo='2'
 fi
@@ -108,21 +100,8 @@ else
   sleep 2
 fi
 
-ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测网络类型]"
-if [[ "${CHN_NET}" == "1" ]]; then
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络可以直连Github!]"
-  sleep 2
-  ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
-  sleep 2
-else
-  rm -rf ${API_PATH}
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络需要使用代理下载固件,网速或许有影响]"
-  sleep 2
-  ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
-  sleep 1
-  echo
-  ${WGETGNU} ${Github_API2} ${WGETO} ${API_PATH}
-fi
+ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
+curl -fsSL ${Github_API1} -o ${API_PATH}
 
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API完成,开始获取固件信息]"
