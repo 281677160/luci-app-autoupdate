@@ -9,6 +9,7 @@ if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '
 	rm -rf /tmp/baidu.html
 else
 	echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
+	echo "wuwanglou" > /tmp/Version_Tags
 	exit 0
 fi
 
