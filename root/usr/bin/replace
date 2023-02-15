@@ -86,17 +86,15 @@ GUJIAN_liebiaotwo="${Download_Path}/gujianliebiaotwo"
 GUJIAN_liebiaotw="${Download_Path}/gujianliebiaotw"
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 检测您网络是否联网]"
-curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || wangluo='1'
-if [[ "${wangluo}" == "1" ]]; then
-  curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || wangluo='2'
-fi
-if [[ "${wangluo}" == "1" ]] && [[ "${wangluo}" == "2" ]]; then
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您可能没进行联网,请检查网络?"
-  exit 1
+curl --connect-timeout 9 -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
+if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
+  rm -rf /tmp/baidu.html
+  ECHOB "您的网络正常!"
 else
-  ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 网络联网正常]"
-  sleep 2
+  ECHORR "您可能没进行联网,请检查网络,或您的网络不能连接百度?"
+  exit 0
 fi
+
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
 curl -fsSL ${Github_API2} -o ${API_PATH}
