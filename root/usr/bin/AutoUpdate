@@ -17,6 +17,7 @@ fi
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
   echo "获取API数据成功!" > /tmp/cloud_version
 else
+  echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库，或没有联网!"
   echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库!" > /tmp/cloud_version
   exit 0
 fi
