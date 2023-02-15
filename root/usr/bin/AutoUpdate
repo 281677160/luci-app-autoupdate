@@ -10,17 +10,6 @@ source /etc/openwrt_update
 Kernel=$(uname -rs | cut -d ' ' -f2)
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 
-
-if [[ -f /tmp/Version_Tags ]] && [[ `grep -c "youwanglou" /tmp/Version_Tags` -eq '0' ]]; then
-  curl --connect-timeout 6 -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
-  if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
-    rm -rf /tmp/baidu.html
-  else
-    echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
-    exit 0
-  fi
-fi
-
 wget -q --no-check-certificate ${Github_API2} -O ${API_PATH}
 if [[ $? -ne 0 ]];then
   curl -fsSL -o ${API_PATH} ${Github_API2}
