@@ -97,7 +97,7 @@ fi
 
 
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
-curl -fsSL ${Github_API2} -o ${API_PATH}
+wget -q --no-check-certificate ${Github_API2} -O ${API_PATH}
 if [[ $? -ne 0 ]];then
   curl -fsSL -o ${API_PATH} ${Github_API2}
 fi
