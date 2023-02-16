@@ -11,9 +11,9 @@ curl --connect-timeout 9 -o /tmp/baidu.html -s -w %{time_namelookup}: http://www
 if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
   rm -rf /tmp/baidu.html
   echo "您的网络正常!"
-  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络正常!]" >> /tmp/AutoUpdate.log
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络正常!]" > /tmp/AutoUpdate.log
 else
-  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您可能没进行联网,请检查网络,或您的网络不能连接百度?]" >> /tmp/AutoUpdate.log
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您可能没进行联网,请检查网络,或您的网络不能连接百度?]" > /tmp/AutoUpdate.log
   echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
   exit 0
 fi
