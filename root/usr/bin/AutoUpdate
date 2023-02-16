@@ -5,6 +5,20 @@
 
 Input_Option=$1
 Version=V8.0
+
+function Network_detection() {
+curl --connect-timeout 9 -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
+if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
+  rm -rf /tmp/baidu.html
+  echo "您的网络正常!"
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您的网络正常!]" >> /tmp/AutoUpdate.log
+else
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 您可能没进行联网,请检查网络,或您的网络不能连接百度?]" >> /tmp/AutoUpdate.log
+  echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
+  exit 0
+fi
+}
+
 function information_acquisition() {
 source /etc/openwrt_update
 Kernel=$(uname -rs | cut -d ' ' -f2)
@@ -15,9 +29,11 @@ if [[ $? -ne 0 ]];then
   curl -fsSL -o ${API_PATH} ${Github_API2}
 fi
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
-  echo "获取API数据成功!" > /tmp/cloud_version
+  echo "获取API数据成功!"
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取API数据成功!]" >> /tmp/AutoUpdate.log
 else
-  echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库，或没有联网!"
+  echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库!"
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库]" >> /tmp/AutoUpdate.log
   echo "获取API数据失败,Github地址不正确，或此地址没云端存在，或您的仓库为私库!" > /tmp/cloud_version
   exit 0
 fi
@@ -42,9 +58,11 @@ CLOUD_Firmware=$(grep -Eo "${CLOUD_CHAZHAO}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Fi
 CLOUD_Version=$(echo "${CLOUD_Firmware}" |sed "s/.*${DEFAULT_Device}//g" |sed "s/${BOOT_Type}.*//g" |grep -Eo [0-9]+)
 LUCI_Firmware="${SOURCE}-${DEFAULT_Device}-${CLOUD_Version}"
 if [[ -n "${CLOUD_Firmware}" ]] && [[ -n "${CLOUD_Version}" ]] && [[ -n "${LUCI_Firmware}" ]]; then
-  echo "获取云端信息成功" > /tmp/cloud_version
+  echo "获取云端信息成功"
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端信息成功]" >> /tmp/AutoUpdate.log
 else
   echo "获取云端信息失败,x86注意本地跟云端固件显示的引导模式是否一致,或者就是云端压根就没您同类型的固件存在,或者作者更了固件获取条件导致您本地跟云端信息不一直!" > /tmp/cloud_version
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端信息失败,x86注意本地跟云端固件显示的引导模式是否一致,或者就是云端压根就没您同类型的固件存在,或者作者更了固件获取条件导致您本地跟云端信息不一直!]" >> /tmp/AutoUpdate.log
   exit 0
 fi
 
@@ -57,6 +75,7 @@ KERNEL_type=${Kernel} - ${LUCI_EDITION}
 CURRENT_Device=${CURRENT_Device}
 EOF
 echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 信息检测完毕]"
+echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 信息检测完毕]" >> /tmp/AutoUpdate.log
 }
 
 function firmware_upgrade() {
@@ -136,6 +155,7 @@ if [[ -z "${Input_Option}" ]]; then
 else
   case ${Input_Option} in
   -u)
+  Network_detection
   information_acquisition
   firmware_upgrade
   ;;
