@@ -144,7 +144,7 @@ rm -rf /mnt/*upback.tar.gz && sysupgrade -b /mnt/upback.tar.gz
 if [[ `ls -1 /mnt | grep -c "upback.tar.gz"` -eq '1' ]]; then
   Upgrade_Options='sysupgrade -F -f /mnt/upback.tar.gz'
 else
-  Upgrade_Options='sysupgrade -q -F'
+  Upgrade_Options='sysupgrade -F'
 fi
 echo "[$(date "+%Y年%m月%d日%H时%M分%S秒") 升级固件中，请勿断开路由器电源，END]" >> /tmp/AutoUpdate.log
 ${Upgrade_Options} ${CLOUD_Firmware}
