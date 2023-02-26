@@ -435,7 +435,7 @@ function Bendi_xuanzhe() {
   echo
   echo
   echo -e "${Green} 当前使用固件${Font}：${Blue}${CURRENT_Version}${Font}"
-  echo -e "${Green} 当前固件内核${Font}：${Blue}${Kernel}${Font}"
+  echo -e "${Green} 当前固件内核${Font}：${Blue}${Kernel} - ${LUCI_EDITION}${Font}"
   echo -e "${Green} 当前固件格式${Font}：${Blue}${BOOT_Type}${Firmware_SFX}${Font}"
   echo -e "${Green} 当前设备型号${Font}：${Blue}${DEFAULT_Device}${Font}"
   echo
