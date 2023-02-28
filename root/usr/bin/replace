@@ -336,7 +336,7 @@ if [[ "${upgrade_tions}" == "1" ]]; then
     source /etc/deletefile
   fi
   rm -rf /etc/config/luci
-  echo "*/5 * * * * sh /etc/networkdetection > /dev/null 2>&1" >> /etc/crontabs/root
+  echo "*/5 * * * * sleep 240; sh /etc/networkdetection > /dev/null 2>&1" >> /etc/crontabs/root
   rm -rf /mnt/*upback.tar.gz && sysupgrade -b /mnt/upback.tar.gz
   if [[ `ls -1 /mnt | grep -c "upback.tar.gz"` -eq '1' ]]; then
     ${Upgrade_Options} ${CLOUD_Firmware}
