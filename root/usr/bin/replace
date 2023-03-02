@@ -243,7 +243,7 @@ cloud_firmw=$(echo "${CLOUD_Firmware}" |sed "s/${bb}//g")
 
 if [[ "${local_firmw}" == "${cloud_firmw}" ]]; then
   echo
-  ECHOYY "此固件跟您现在所用的固件为同一个源码作者同一个LUCI版本,"
+  ECHOYY "此固件跟现在所用的固件为同类型固件"
   echo
   ECHOYY "可以选择保留配置或不保留配置升级"
   echo
@@ -259,6 +259,7 @@ if [[ "${local_firmw}" == "${cloud_firmw}" ]]; then
   ;;
   [Nn])
     Upgrade_Options='sysupgrade -F -n'
+    upgrade_tions="0"
     tongzhi="不保留配置"
   break
   ;;
@@ -342,7 +343,7 @@ if [[ "${upgrade_tions}" == "1" ]]; then
   if [[ `ls -1 /mnt | grep -c "upback.tar.gz"` -eq '1' ]]; then
     ${Upgrade_Options} ${CLOUD_Firmware}
   else
-    ${Upgrade_Options} ${CLOUD_Firmware}
+    sysupgrade -F -q ${CLOUD_Firmware}
   fi
 else
   ${Upgrade_Options} ${CLOUD_Firmware}
