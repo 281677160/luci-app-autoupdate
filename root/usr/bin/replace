@@ -100,7 +100,7 @@ fi
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API]"
 wget -q --no-check-certificate ${Github_API2} -O ${API_PATH}
 if [[ $? -ne 0 ]];then
-  curl -fsSL -o ${API_PATH} ${Github_API2}
+  curl -fsSL -o ${API_PATH} ${Github_API2} > /dev/null 2>&1
 fi
 
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
