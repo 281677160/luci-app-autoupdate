@@ -107,7 +107,7 @@ if [[ -f "${API_PATH}" ]] && [[ `grep -c "url" ${API_PATH}` -ge '1' ]]; then
   ECHOB "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取云端API完成,开始获取固件信息]"
   sleep 2
 else
-  ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取数据失败,Github地址不正确,或此地址没云端存在,或您的仓库为私库,或网络抽风了再试试看!]"
+  ECHORR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 获取数据失败,Github地址不正确,或此地址没云端存在,或您的仓库为私库,或网络抽风了再试试看!]"
   exit 1
 fi
 
