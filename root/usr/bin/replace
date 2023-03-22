@@ -125,7 +125,7 @@ x86)
 esac
 
 
-CLOUD_Firmware_1="$(grep -Eo "${ledezx}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_1="$(grep -Eo "${ledezx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 CLOUD_Firmware_2="$(grep -Eo "${lienolzx1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 CLOUD_Firmware_3="$(grep -Eo "${lienolzx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 CLOUD_Firmware_4="$(grep -Eo "${lienolzx3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
@@ -168,6 +168,7 @@ CLOUD_Firmware_39="$(grep -Eo "${xwrtzx26}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}
 CLOUD_Firmware_40="$(grep -Eo "${xwrtzx27}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 CLOUD_Firmware_41="$(grep -Eo "${xwrtzx28}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 CLOUD_Firmware_42="$(grep -Eo "${xwrtzx29}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+CLOUD_Firmware_43="$(grep -Eo "${ledezx2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 
 cat > "${GUJIAN_liebiaoone}" <<-EOF
 ${CLOUD_Firmware_1}
