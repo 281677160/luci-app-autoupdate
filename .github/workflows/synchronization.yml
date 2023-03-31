@@ -44,7 +44,7 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
-        git clone -b ceshi https://github.com/281677160/luci-app-autoupdate shangyou
+        git clone -b main https://github.com/281677160/luci-app-autoupdate shangyou
         
     - name: 同步上游仓库
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
@@ -54,5 +54,5 @@ jobs:
         cd shangyou
         git add .
         git commit -m "up"
-        git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:ceshi
+        git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
         echo "同步完成，请注意查看[diy-part.sh]和[settings.ini]文件的变化和设置好!"
