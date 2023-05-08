@@ -26,9 +26,9 @@ source /etc/openwrt_update
 Kernel=$(uname -rs | cut -d ' ' -f2)
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 
-wget -q --no-check-certificate ${Github_API2} -O ${API_PATH}
-if [[ $? -ne 0 ]];then
-  curl -fsSL -o ${API_PATH} ${Github_API2}
+wget -q --no-check-certificate ${Github_API1} -O ${API_PATH}
+if [[ `grep -c "size" ${API_PATH}` -eq '0' ]]
+  curl -fsSL ${Github_API2} -o ${API_PATH}
 fi
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
   echo "获取API数据成功!"
