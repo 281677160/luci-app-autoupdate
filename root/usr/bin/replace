@@ -248,15 +248,17 @@ else
 fi
 
 if [[  "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" == "301" ]]; then
-  DOWNLOAD=${Release_download1}
+  DOWNLOAD1=${Release_download1}
+  DOWNLOAD2=${Release_download2}
 else
-  DOWNLOAD=${Release_download2}
+  DOWNLOAD1=${Release_download2}
+  DOWNLOAD2=${Release_download1}
 fi
 ECHOG "[$(date "+%Y年%m月%d日%H时%M分%S秒") 正在下载云端固件,请耐心等待..]"
 echo
-${WGETGNU} ${DOWNLOAD}/${CLOUD_Firmware} ${WGETO} ${CLOUD_Firmware}
+${WGETGNU} ${DOWNLOAD1}/${CLOUD_Firmware} ${WGETO} ${CLOUD_Firmware}
 if [[ $? -ne 0 ]];then
-  wget --no-check-certificate ${DOWNLOAD}/${CLOUD_Firmware} -O ${CLOUD_Firmware}
+  wget --no-check-certificate ${DOWNLOAD2}/${CLOUD_Firmware} -O ${CLOUD_Firmware}
 fi
 if [[ $? -ne 0 ]];then
   ECHOR "[$(date "+%Y年%m月%d日%H时%M分%S秒") 云端固件下载失败,请检查网络再尝试或手动安装固件]"
