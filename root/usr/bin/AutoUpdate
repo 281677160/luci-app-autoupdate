@@ -27,7 +27,7 @@ Kernel=$(uname -rs | cut -d ' ' -f2)
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path} || rm -rf "${Download_Path}"/*
 
 wget -q --no-check-certificate ${Github_API1} -O ${API_PATH}
-if [[ `grep -c "size" ${API_PATH}` -eq '0' ]]
+if [[ `grep -c "size" ${API_PATH}` -eq '0' ]]; then
   curl -fsSL ${Github_API2} -o ${API_PATH}
 fi
 if [[ -f "${API_PATH}" ]] && [[ `grep -c "size" ${API_PATH}` -ge '1' ]]; then
