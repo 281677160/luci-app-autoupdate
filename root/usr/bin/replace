@@ -172,6 +172,9 @@ $(grep -Eo "${xwrtzx30}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firm
 EOF
 
 sed -i '/^$/d' "${GUJIAN_liebiaoone}"
+if [[ "${LUCI_EDITION}" == "gl-ax1800" ]]; then
+  [ -n "$(grep "Xwrt" "$GUJIAN_liebiaoone")" ] && sed -i '/Xwrt/d' "$GUJIAN_liebiaoone"
+fi
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
 if [[ -s "${GUJIAN_liebiaoone}" ]]; then
   local_firmw="${LUCI_EDITION}-${SOURCE}"
