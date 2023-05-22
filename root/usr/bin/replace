@@ -280,7 +280,7 @@ fi
 }
 
 function Bendi_githuburl() {
-Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_replace" | cut -d "=" -f2)"
+Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_update" | cut -d "=" -f2)"
 clear
 echo
 echo
@@ -317,9 +317,9 @@ if [[ "${Input_Oth}" == "Y" ]]; then
     dogithu="z"
   elif [[ "$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 1-3)" == 'https://github.com' ]]; then
     custom_github_url="$(echo "${cus_url}" |head -n 5 |cut -d '/' -f 4-5)"
-    current_github_url="$(grep GITHUB_LINK= /etc/openwrt_replace |head -n 5 |cut -d '/' -f 4-5)"
+    current_github_url="$(grep GITHUB_LINK= /etc/openwrt_update |head -n 5 |cut -d '/' -f 4-5)"
     if [[ -n "${custom_github_url}" ]] && [[ `echo "${custom_github_url}" |grep -c '/'` -eq '1' ]]; then
-      sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_replace
+      sed -i "s?${current_github_url}?${custom_github_url}?g" /etc/openwrt_update
       dogithu="t"
     else
       dogithu="n"
@@ -345,7 +345,7 @@ if [[ "${Input_Oth}" == "Y" ]]; then
   ;;
   t)
     ECHOG "地址修改成功,即将进入云端检测程序"
-    Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_replace" | cut -d "=" -f2)"
+    Github="$(grep 'GITHUB_LINK=' "/etc/openwrt_update" | cut -d "=" -f2)"
     ECHOYY "您当前地址：${Github}"
     sleep 8
   break
