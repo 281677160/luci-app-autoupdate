@@ -136,10 +136,10 @@ for x in "${R1}" "${R2}" "${R3}" "${R4}" "${R5}" "${R6}" "${R7}" "${R8}" "${R9}"
   echo "$({ grep -Eo ${x}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX} ${API_PATH} | awk 'END {print}'; } 2>"/dev/null")" >> ${GUJIAN_liebiaoone}; \
 done
 
-sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 if [[ "${LUCI_EDITION}" == "gl-ax1800" ]]; then
   [ -n "$(grep "Xwrt" "$GUJIAN_liebiaoone")" ] && sed -i '/Xwrt/d' "$GUJIAN_liebiaoone"
 fi
+sed -i '/^$/d' "${GUJIAN_liebiaoone}"
 sed -i s/[[:space:]]//g "${GUJIAN_liebiaoone}"
 if [[ -s "${GUJIAN_liebiaoone}" ]]; then
   local_firmw="${LUCI_EDITION}-${SOURCE}"
