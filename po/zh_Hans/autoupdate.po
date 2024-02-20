@@ -33,7 +33,7 @@ msgid "Enable AutoUpdate"
 msgstr "启用定时更新"
 
 msgid "AutoUpdate LUCI supports one-click firmware upgrade and scheduled upgrade"
-msgstr "定时更新LUCI,也可以SSH连接OpenWrt或OpenWrt内使用TTYD输入openwrt命令进行命令在线更新"
+msgstr "定时更新LUCI,也可以SSH连接OpenWrt或OpenWrt内使用TTYD输入[openwrt]此命令进行命令在线更新"
 
 msgid "Do Upgrade"
 msgstr "手动更新"
