@@ -2,16 +2,18 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 
-
-[[ -f /tmp/baidu.html ]] && rm -rf /tmp/baidu.html
-curl --connect-timeout 9 -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
-if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
-	rm -rf /tmp/baidu.html
-else
-	echo "您可能没进行联网,请检查网络,或您的网络不能连接百度?" > /tmp/cloud_version
+PING_TARGETS="114.114.114.114 223.5.5.5 8.8.8.8"
+MAX_FAILS=3
+# 检测网络状态
+for target in $PING_TARGETS; do
+    if ping -c 1 -W 3 "$target" > /dev/null 2>&1; then
+        echo "网络正常 (成功Ping通: $target)"
+    else
+	echo "您可能没进行联网,请检查网络" > /tmp/cloud_version
 	echo "wuwanglou" > /tmp/Version_Tags
 	exit 0
-fi
+    fi
+done
 
 if [[ -f "/etc/openwrt_update" ]]; then
 	AutoUpdate
