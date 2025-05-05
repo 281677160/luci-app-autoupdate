@@ -55,7 +55,7 @@ function checkUpgradeStatus(retryCount = 0) {
     .then(res => res.json())
     .then(data => {
         if (data.running) {
-            updateUI(true, '升级中...', `PID ${data.pid} 运行中`);
+            updateUI(true, '升级中...', `升级中,请耐心等待路由器重启`);
         } else if (retryCount < 3) {  // 增加重试机制
             setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
         } else {  // 最终失败判定
