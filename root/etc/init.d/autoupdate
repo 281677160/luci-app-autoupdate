@@ -6,8 +6,11 @@ run_autoupdate() {
     # 检查自动更新脚本和配置文件是否存在
     if [ -f "/usr/bin/AutoUpdate" ] && [ -f "/etc/openwrt_update" ]; then
         local enable
-        # 从配置中获取启用状态
+        local use_no_config_update
+        # 从配置中获取启用状态和勾选框状态
         config_get_bool enable "$1" enable
+        config_get use_no_config_update "$1" use_no_config_update
+
         if [ "$enable" = "1" ]; then
             local minute
             local hour
@@ -20,8 +23,17 @@ run_autoupdate() {
             [ "$week" = "7" ] && week="*"
             # 从 crontab 中删除与 AutoUpdate 相关的任务
             sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
+
+            # 根据勾选框状态选择命令
+            local update_command
+            if [ "$use_no_config_update" = "1" ]; then
+                update_command="AutoUpdate -u"
+            else
+                update_command="AutoUpdate -k"
+            fi
+
             # 添加新的自动更新任务到 crontab
-            echo "$minute $hour * * $week AutoUpdate -u" >> /etc/crontabs/root
+            echo "$minute $hour * * $week $update_command" >> /etc/crontabs/root
             # 重启 cron 服务使新任务生效
             /etc/init.d/cron restart
         fi
