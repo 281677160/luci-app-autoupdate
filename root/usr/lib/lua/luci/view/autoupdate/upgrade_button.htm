@@ -1,0 +1,70 @@
+<%+cbi/valueheader%>
+<div class="cbi-value-field">
+    <input class="cbi-button cbi-button-apply" type="button" value="<%:检查更新%>" 
+        onclick="startUpgradeProcess()" id="upgrade-btn" />
+    <div id="status-message" style="margin-left:10px;display:inline-block"></div>
+</div>
+<script type="text/javascript">
+let isProcessing = false;
+let statusCheckInterval = null;
+
+function updateUI(disabled, btnText, statusText, isError) {
+    const btn = document.getElementById('upgrade-btn');
+    btn.disabled = disabled;
+    btn.value = btnText || btn.value;
+    const statusDiv = document.getElementById('status-message');
+    statusDiv.style.color = isError ? '#d44' : '#4a4';
+    statusDiv.textContent = statusText || '';
+}
+
+function startUpgradeProcess() {
+    if (isProcessing) return;
+    isProcessing = true;
+    updateUI(true, '检查中...', '正在检查更新...');
+
+    fetch('<%=url("admin/system/autoupdate/do_check")%>', { method: 'POST' })
+    .then(res => res.ok ? res.json() : Promise.reject())
+    .then(data => {
+        if (!data.success) throw new Error(data.message);
+        if (data.has_update && confirm(data.message)) {
+            startUpgrade();
+        } else {
+            updateUI(false, '<%:检查更新%>', data.message, false);
+        }
+    })
+    .catch(() => updateUI(false, '<%:检查更新%>', '检查更新失败', true))
+    .finally(() => isProcessing = false);
+}
+
+function startUpgrade() {
+    updateUI(true, '提交升级...', '正在启动升级进程');
+    
+    fetch('<%=url("admin/system/autoupdate/do_upgrade")%>', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) throw new Error(data.message);
+        updateUI(true, '升级中...', '后台升级已启动');
+        // 启动状态轮询
+        statusCheckInterval = setInterval(checkUpgradeStatus, 3000);
+    })
+    .catch(() => updateUI(false, '<%:检查更新%>', '启动升级失败', true));
+}
+
+function checkUpgradeStatus(retryCount = 0) {
+    fetch('<%=url("admin/system/autoupdate/check_status")%>')
+    .then(res => res.json())
+    .then(data => {
+        if (data.running) {
+            updateUI(true, '升级中...', `PID ${data.pid} 运行中`);
+        } else if (retryCount < 3) {  // 增加重试机制
+            setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
+        } else {  // 最终失败判定
+            updateUI(false, '<%:检查更新%>', '状态检测异常', true);
+        }
+    })
+    .catch(() => {
+        if (retryCount < 3) checkUpgradeStatus(retryCount+1);
+    });
+}
+</script>
+<%+cbi/valuefooter%>

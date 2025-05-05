@@ -1,0 +1,366 @@
+#!/bin/sh
+# https://github.com/281677160/build-actions
+# AutoUpgrade Module by 281677160
+# AutoUpdate for Openwrt
+# /usr/bin/AutoUpgrade
+DOWNLOAD_PATH="/tmp/Downloads"
+tmpfirmware_banben="/tmp/FIRMWARE_BANBEN"
+tmpapi_version="/tmp/api_version"
+
+function TIME() {
+    case $1 in
+       r)
+          echo -e "\033[31m${2}\033[0m"
+          echo
+          exit 1
+       ;;
+       z)
+          echo
+          echo -e "\033[31m${2}\033[0m"
+       ;;
+       g)
+          echo
+          echo -e "\033[32m${2}\033[0m"
+       ;;
+       b)
+          echo
+          echo -e "\033[34m${2}\033[0m"
+       ;;
+       y)
+          echo
+          echo -e "\033[33m${2}\033[0m"
+       ;;
+    esac
+}
+
+function Remote_githuburl() {
+    clear
+    # 清理临时版本文件
+    rm -rf /tmp/*_version
+
+    # 检查 openwrt_update 文件是否包含必要信息
+    if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
+       grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
+       chmod 755 /etc/openwrt_update
+        . /etc/openwrt_update
+    else
+        TIME r "缺少openwrt_update文件"
+    fi
+
+    TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
+    echo "仓库链接格式：https://github.com/账号/仓库"
+    TIME g "您现在仓库为：${GITHUB_LINK}"
+    read -p "请输入：" git_url
+    gith_url=${git_url:-"${GITHUB_LINK}"}
+    TIME b "您仓库链接为：${gith_url}"
+
+    TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
+    while :; do
+    read -p "请选择：" SNKC
+      case ${SNKC} in
+      [Yy])
+          sed -i "s?${GITHUB_LINK}?${gith_url}?g" /etc/openwrt_update
+          source /etc/openwrt_update
+          break
+      ;;
+      [Qq])
+          clear
+          Remote_githuburl
+          break
+      ;;
+      [Nn])
+          exit 0
+          break
+      ;;
+      *)
+          TIME r "请输入正确选项"
+      ;;
+      esac
+    done
+}
+
+# 远程检测函数，检查必要文件和获取 API 数据
+Remote_detection() {
+    # 尝试使用 wget 下载 API 数据
+    if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        # 若 wget 失败，使用 curl 下载
+        curl -# -L -k --max-time 40 "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+    fi
+
+    # 检查 API 数据是否包含有效信息
+    if ! grep -E "assets" "$tmpapi_version" >/dev/null 2>&1; then
+        TIME r "获取API数据失败,Github地址不正确?，或此地址没云端存在，或您的仓库为私库，或网络抽风了再次尝试看看?"
+    else
+        TIME g "获取API数据成功!"
+    fi
+}
+
+# 远程信息函数，获取固件信息并进行版本比较
+Remote_information() {
+    # 根据目标板和固件后缀确定引导类型
+    if [ "${TARGET_BOARD}" = "x86" ]; then
+        if [ -d '/sys/firmware/efi' ]; then
+            BOOT_TYPE=uefi
+        else
+            BOOT_TYPE=legacy
+        fi
+    elif [ "${FIRMWARE_SUFFIX}" = ".img.gz" ]; then
+        BOOT_TYPE=legacy
+    else
+        BOOT_TYPE=sysupgrade
+    fi
+
+    # 获取云端该机在使用的同类型固件
+    regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
+    # 查找匹配的目标行
+    target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
+    if [ -n "$target_line" ]; then
+        # 从目标行中提取固件全名称
+        start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
+        MOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
+            for(i=1; i<=NF; i++) {
+                if($i ~ pattern) {
+                    print substr($i, index($i, start))
+                    break
+                }
+            }
+        }')
+    fi
+    # 获取固件内核版本
+    KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
+    # 获取本地版本号
+    LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
+    # 提取云端版本号
+    CLOUD_VERSION=$(echo "$MOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
+    if [[ -n "${MOTE_FIRMWARE}" ]]; then
+       echo "${MOTE_FIRMWARE}" > "$tmpfirmware_banben"
+    else
+       echo -n > "$tmpfirmware_banben"
+    fi
+
+    # 获取云端所有最新固件
+    y="${LUCI_EDITION}-${SOURCE}"
+    i=1
+    max_retries=100  # 覆盖最大可能变量数
+    while [ $i -le $max_retries ]; do
+        var_name="R${i}"
+        eval "x=\$$var_name"
+        if [ -z "$x" ]; then
+            i=$((i + 1))
+            continue
+        fi
+        # 固件名称提取
+        Firmware_name=$(
+            grep -Eo "${x}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}" /tmp/api_version \
+            | awk 'END {print}'
+        )
+        # 结果过滤与写入
+        if [ -n "$Firmware_name" ] && [ "$x" != "$y" ]; then
+           echo "$Firmware_name" >> "$tmpfirmware_banben"
+        fi
+        i=$((i + 1))
+    done
+
+    if [[ ! -s "$tmpfirmware_banben" ]]; then
+      TIME r "没有获取到任何数据"
+    else
+      TIME g "获取固件数据成功!"
+    fi
+
+    clear
+    echo
+    echo
+    echo
+    echo -e "\033[36m当前使用固件\033[0m：\033[32m${FIRMWARE_VERSION}\033[0m"
+    echo -e "\033[36m当前固件内核\033[0m：\033[32m${KERNEL_MODE} - ${LUCI_EDITION}\033[0m"
+    echo -e "\033[36m当前固件格式\033[0m：\033[32m${BOOT_TYPE}${FIRMWARE_SUFFIX}\033[0m"
+    echo -e "\033[36m当前设备型号\033[0m：\033[32m${DEVICE_MODEL}\033[0m"
+    echo
+    TIME y "以下为可选升级固件："
+    TIME b " ******************************************************************" 
+        echo
+        cat "$tmpfirmware_banben" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
+    TIME b " ******************************************************************"
+
+    # 比较本地版本号和云端版本号
+    if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
+        if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
+            TIME g "提示：当前版本跟云端同类型固件($y)，版本是一致的"
+        elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
+            TIME g "提示：云端同类型固件($y)，有更高版本固件,可进行更新操作"
+        elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
+            TIME g "提示：不得了啊,兄弟,云端最高版本固件($y)，低于您现在所安装的版本"
+        fi
+    fi
+
+    XYZDSZ="$(cat "$tmpfirmware_banben" |awk '$0=NR" "$0'| awk 'END {print}' |awk '{print $(1)}')"
+    TIME y "请输入您要安装的固件前面对应的数值(1~X)，输入[N/n]则为退出程序"
+    while :; do
+      read -p "请输入您的选择：" YMXZ
+      if [[ "${YMXZ}" =~ ^[Nn]$ ]]; then
+          exit 0
+      elif [[ -z "${YMXZ}" ]]; then
+          TIME z "敬告,输入不能为空"
+      elif [[ "${YMXZ}" == "0" ]]; then
+          TIME z "敬告,请输入正确数值(1~${XYZDSZ})" >&2
+      elif [[ "$YMXZ" =~ ^[0-9]+$ ]]; then
+        if [[ "${YMXZ}" -le "${XYZDSZ}" ]]; then
+          REMOTE_FIRMWARE=$(awk -v line="$YMXZ" 'NR == line {print; exit}' "$tmpfirmware_banben")
+          TIME g "您选择了安装 ${REMOTE_FIRMWARE} 固件"
+          break
+        else
+          TIME z "敬告,请输入正确数值(1~${XYZDSZ})" >&2
+        fi
+      else
+          TIME z "敬告,请输入正确值"
+      fi
+    done
+    # 获取固件 /tmp 空间可用值
+    TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
+    # 提取云端固件的MD5值
+    CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
+    # 提取云端固件的大小
+    X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
+    CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
+    # 检查 /tmp 空间是否足够下载固件
+    if [ "$TMP_AVAILABLE" -lt "$CLOUD_FIRMWARE_SIZE" ]; then
+        TIME r "固件tmp空间值[${TMP_AVAILABLE}M],云端固件体积[${CLOUD_FIRMWARE_SIZE}M],路由器空间不足"
+    fi
+
+    if [[ -n "$(echo "${REMOTE_FIRMWARE}" |grep -E "${y}")" ]]; then
+      echo
+      TIME y "此固件跟您现在所用的固件为同类型固件($y)"
+      TIME g "可以选择保留配置或不保留配置升级"
+      echo
+      xuzqxz="输入[Y/y]为保留配置，输入[N/n]为不保留配置"
+      while :; do
+      read -p "${xuzqxz}：" Bendi_Wsl
+      case ${Bendi_Wsl} in
+      [Yy])
+        upgrade_tions="1"
+        tongzhi="保留配置"
+        TIME y "保留配置更新固件"
+      break
+      ;;
+      [Nn])
+        upgrade_tions="0"
+        tongzhi="不保留配置"
+        TIME z "不保留配置更新固件"
+      break
+      ;;
+      *)
+        xuzqxz="请输入正确选[Y/n]"
+      ;;
+      esac
+      done
+    else
+       upgrade_tions="0"
+       tongzhi="不保留配置"
+       TIME z "不保留配置更新固件"
+       sleep 3
+    fi
+}
+
+# 远程下载函数，下载固件并进行 MD5 校验和备份操作
+Remote_download() {
+    # 创建下载目录并清理旧文件
+    if [ ! -d "${DOWNLOAD_PATH}" ]; then
+        mkdir -p "${DOWNLOAD_PATH}"
+    else
+        rm -rf "${DOWNLOAD_PATH}"/*
+    fi
+
+    cd "${DOWNLOAD_PATH}"
+    TIME y "开始下载云端固件"
+
+    # 检查网络连接
+    if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
+        echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+            curl -# -L -k "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
+        fi
+    else
+        echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+            curl -# -L -k "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
+        fi
+    fi
+
+    # 检查下载是否成功
+    if [ $? -eq 0 ]; then
+        TIME g "云端固件下载成功"
+    else
+        TIME r "云端固件下载失败"
+    fi
+
+    # 计算本地固件的 MD5 和 SHA256 组合值
+    LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
+    CLOUD_MD5256="${CLOUD_MD256}"
+
+    # 进行 MD5 校验
+    if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
+        TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
+    else
+        TIME g "MD5对比成功"
+    fi
+
+    chmod 755 "${REMOTE_FIRMWARE}"
+
+    # 移除 gzip 包
+    if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
+        opkg remove gzip > /dev/null 2>&1
+    fi
+
+    if [[ "${upgrade_tions}" == "1" ]]; then
+       TIME y "正在执行更新固件前的备份"
+       # 执行删除文件操作
+       if [ -f "/etc/deletefile" ]; then
+           . /etc/deletefile
+       fi
+       # 清理配置文件
+       rm -rf /etc/config/luci /tmp/luci
+       # 添加定时任务
+       echo "*/10 * * * * /etc/init.d/check_network check_network" >> /etc/crontabs/root
+       # 重启 cron 服务
+       /etc/init.d/cron restart
+       # 备份系统
+       rm -rf /mnt/*upback.tar.gz
+       sysupgrade -b /mnt/upback.tar.gz
+
+       # 根据备份情况选择升级命令
+       if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
+           UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+       else
+           UPGRADE_COMMAND='sysupgrade -F -q'
+       fi
+    else
+       UPGRADE_COMMAND='sysupgrade -F -n'  
+    fi
+
+    TIME g "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电源或重启设备 ...]"
+    sleep 1
+    seconds=9
+    while [ $seconds -gt 0 ];do
+      echo -n " ${seconds}"
+      sleep 1
+      seconds=$((${seconds} - 1))
+      echo -ne "\r   \r"
+    done
+
+    ${UPGRADE_COMMAND} ${REMOTE_FIRMWARE}
+}
+
+# 根据命令行参数执行相应操作
+case "$1" in
+    "-u")
+        Remote_githuburl
+        Remote_detection
+        Remote_information
+        Remote_download
+        ;;
+      *)
+        Remote_githuburl
+        Remote_detection
+        Remote_information
+        ;;
+esac    
