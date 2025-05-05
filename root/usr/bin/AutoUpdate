@@ -3,6 +3,7 @@
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 # /usr/bin/AutoUpdate
+Select=""
 DOWNLOAD_PATH="/tmp/Downloads"
 tmpcloud_version="/tmp/cloud_version"
 tmpapi_version="/tmp/api_version"
@@ -227,27 +228,31 @@ Remote_download() {
     if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
         opkg remove gzip > /dev/null 2>&1
     fi
+    
+    if [[ "${Select}" == "u" ]]; then
+       TIME y "正在执行更新固件前的备份"
+       # 执行删除文件操作
+       if [ -f "/etc/deletefile" ]; then
+           . /etc/deletefile
+       fi
+       # 清理配置文件
+       rm -rf /etc/config/luci /tmp/luci
+       # 添加定时任务
+       echo "*/10 * * * * /etc/init.d/check_network check_network" >> /etc/crontabs/root
+       # 重启 cron 服务
+       /etc/init.d/cron restart
+       # 备份系统
+       rm -rf /mnt/*upback.tar.gz
+       sysupgrade -b /mnt/upback.tar.gz
 
-    # 执行删除文件操作
-    if [ -f "/etc/deletefile" ]; then
-        . /etc/deletefile
-    fi
-
-    # 清理配置文件
-    rm -rf /etc/config/luci /tmp/luci
-    # 添加定时任务
-    echo "*/10 * * * * /etc/init.d/check_network check_network" >> /etc/crontabs/root
-    # 重启 cron 服务
-    /etc/init.d/cron restart
-    # 备份系统
-    rm -rf /mnt/*upback.tar.gz
-    sysupgrade -b /mnt/upback.tar.gz
-
-    # 根据备份情况选择升级命令
-    if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
-        UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+       # 根据备份情况选择升级命令
+       if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
+           UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+       else
+           UPGRADE_COMMAND='sysupgrade -F -q'
+       fi
     else
-        UPGRADE_COMMAND='sysupgrade -F -q'
+       UPGRADE_COMMAND='sysupgrade -F -n'  
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
@@ -257,11 +262,13 @@ Remote_download() {
 # 根据命令行参数执行相应操作
 case "$1" in
     "-u")
+        Select="u"
         Remote_detection
         Remote_information
         Remote_download
         ;;
     "-k")
+        Select="k"
         Remote_detection
         Remote_information
         Remote_download
