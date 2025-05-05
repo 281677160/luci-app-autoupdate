@@ -66,7 +66,7 @@ local function get_sys_info()
 
     -- 错误处理逻辑调整
     if check_result ~= 0 and not info.no_update then
-        luci.http.write("<script>alert('" .. translate("Check update script failed!") .. "')</script>")
+        luci.http.write("<script>alert('".. translate("Check update script failed!").. "')</script>")
     end
 
     return info
@@ -85,25 +85,25 @@ use_no_config_update.default = use_no_config_update.disabled
 
 -- 升级按钮（带执行功能）
 local button_upgrade_firmware = s:option(Button, "_upgrade", translate("Upgrade to Latest Version"),
-    translatef("Click the button below to upgrade to the latest version. Please wait patiently until the router reboots.") ..
-    "<br><br>" .. translate("Local firmware version:") .. " " .. sys_info.local_version ..
-    "<br>" .. translate("Cloud firmware version:") .. " " .. sys_info.cloud_version ..
-    "<br><br>" .. translate("Equipment_name:") .. " " .. sys_info.equipment_name ..
-    "<br>" .. translate("Kernel version:") .. " " .. sys_info.kernel_type ..
-    "<br>" .. translate("Firmware type:") .. " " .. sys_info.model_type)
+    translatef("Click the button below to upgrade to the latest version. Please wait patiently until the router reboots.")..
+    "<br><br>".. translate("Local firmware version:").. " ".. sys_info.local_version..
+    "<br>".. translate("Cloud firmware version:").. " ".. sys_info.cloud_version..
+    "<br><br>".. translate("Equipment_name:").. " ".. sys_info.equipment_name..
+    "<br>".. translate("Kernel version:").. " ".. sys_info.kernel_type..
+    "<br>".. translate("Firmware type:").. " ".. sys_info.model_type)
 
 button_upgrade_firmware.inputtitle = translate("Start Upgrade")
 button_upgrade_firmware.template = "autoupdate/upgrade_button"
 
 function button_upgrade_firmware.write(self, section)
     -- 从配置文件读取 use_no_config_update 的值
-    local config_value = luci.sys.exec("uci get autoupdate.@login[0].use_no_config_update 2>/dev/null")
+    local config_value = luci.sys.exec("uci get autoupdate.@login[0].use_no_config_update 2>/dev/null"):gsub("\n", "")
     local use_no_config = (config_value == "1")
 
     -- 根据勾选框的值选择升级命令
     local upgrade_command = use_no_config and "AutoUpdate -k" or "AutoUpdate -u"
     -- 执行升级命令
-    local upgrade_result = luci.sys.call(upgrade_command .. " >> /tmp/autoupdate.log 2>&1")
+    local upgrade_result = luci.sys.call(upgrade_command.. " >> /tmp/autoupdate.log 2>&1")
 
     local exit_code_path = "/tmp/autoupgrade.exitcode"
     local exit_code = nil
@@ -119,13 +119,13 @@ function button_upgrade_firmware.write(self, section)
             os.remove(exit_code_path)
             break
         end
-        os.execute("sleep " .. delay)
+        os.execute("sleep ".. delay)
     end
 
     if exit_code == 0 then
-        luci.http.write("<script>alert('" .. translate("Upgrade started successfully! Router will reboot soon.") .. "'); window.location.reload();</script>")
+        luci.http.write("<script>alert('".. translate("Upgrade started successfully! Router will reboot soon.").. "'); window.location.reload();</script>")
     else
-        luci.http.write("<script>alert('" .. translate("Upgrade failed! Check /tmp/autoupdate.log for details.") .. "')</script>")
+        luci.http.write("<script>alert('".. translate("Upgrade failed! Check /tmp/autoupdate.log for details.").. "')</script>")
     end
 
     -- 重定向回页面
