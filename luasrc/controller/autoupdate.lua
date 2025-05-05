@@ -125,7 +125,7 @@ function action_check_status()
                 response = {
                     running = false,
                     success = log_success,
-                    message = log_success and "升级成功" or "升级失败（日志检测）"
+                    message = log_success and "升级成功" or "升级失败,请查看日志/tmp/autoupdate.log"
                 }
             end
         end
