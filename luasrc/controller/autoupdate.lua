@@ -1,7 +1,7 @@
 module("luci.controller.autoupdate", package.seeall)
 
 function index()
-    entry({"admin", "system", "autoupdate"}, cbi("autoupdate"), _("AutoUpdate"), 60)
+    entry({"admin", "system", "autoupdate"}, cbi("autoupdate/autoupdate"), _("AutoUpdate"), 60)
     entry({"admin", "system", "autoupdate", "do_check"}, call("action_check")).leaf = true
     entry({"admin", "system", "autoupdate", "do_upgrade"}, call("action_upgrade")).leaf = true
     entry({"admin", "system", "autoupdate", "check_status"}, call("action_check_status")).leaf = true
