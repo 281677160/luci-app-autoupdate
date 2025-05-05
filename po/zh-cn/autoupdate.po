@@ -30,7 +30,7 @@ msgstr "分 [0~59]"
 msgid "Enable AutoUpdate"
 msgstr "启用定时更新"
 
-msgid "AutoUpdate LUCI supports one-click firmware upgrade and scheduled upgrade"
+msgid "AutoUpdate LUCI supports one - click firmware upgrade and scheduled upgrade"
 msgstr "定时更新设置,也可以SSH连接OpenWrt或OpenWrt内使用TTYD输入[openwrt]此命令进行命令在线更新"
 
 msgid "Upgrade to Latest Version"
@@ -63,6 +63,12 @@ msgstr "内核版本："
 msgid "Firmware type:"
 msgstr "固件类型："
 
+msgid "Are you sure you want to upgrade the firmware?"
+msgstr "您确定要升级固件吗？"
+
+msgid "Upgrade started successfully! Router will reboot soon."
+msgstr "开始升级固件,请耐心等待路由器重启"
+
 msgid "Upgrade failed! Check /tmp/autoupdate.log for details."
 msgstr "请在[/tmp/autoupdate.log]查看日志"
 
@@ -71,6 +77,9 @@ msgstr "提示："
 
 msgid "Check update script failed!"
 msgstr "提示：脚本运行失败,请看页面显示信息"
+
+msgid "Check update failed"
+msgstr "脚本运行失败,请看页面显示信息"
 
 msgid "Check update failed"
 msgstr "脚本运行失败,请看页面显示信息"
