@@ -30,7 +30,6 @@ end
 function action_upgrade()
     -- 从配置文件读取 use_no_config_update 的值
     local config_value = luci.sys.exec("uci get autoupdate.@login[0].use_no_config_update 2>/dev/null"):gsub("\n", "")
-    print("Debug: config_value = " .. tostring(config_value)) -- 调试信息
     local use_no_config = (config_value == "1")
 
     -- 检测锁文件有效性（新增逻辑）
@@ -42,8 +41,8 @@ function action_upgrade()
         if pid_file then
             local pid = pid_file:read("*a")
             pid_file:close()
-            if os.execute("kill -0 " .. pid .. " 2>/dev/null") == 0 then
-                luci.http.write_json({ success = false, message = "已有升级进程运行(PID:" .. pid .. ")" })
+            if os.execute("kill -0 ".. pid.. " 2>/dev/null") == 0 then
+                luci.http.write_json({ success = false, message = "已有升级进程运行(PID:".. pid.. ")" })
                 return
             else  -- 进程已结束但残留锁文件
                 os.remove("/tmp/autoupdate.lock")
@@ -62,12 +61,11 @@ function action_upgrade()
 
     -- 根据勾选框的值选择升级命令
     local upgrade_command = use_no_config and "AutoUpdate -k" or "AutoUpdate -u"
-    print("Debug: upgrade_command = " .. upgrade_command) -- 调试信息
 
     -- 启动升级进程（优化版本）
-    local command = "(" .. upgrade_command .. " > /tmp/autoupdate.log 2>&1; " ..
-        "echo $? > /tmp/autoupgrade.exitcode; " ..
-        "rm -rf /tmp/autoupdate.lock /tmp/autoupgrade.pid) & " ..
+    local command = "(".. upgrade_command.. " > /tmp/autoupdate.log 2>&1; "..
+        "echo $? > /tmp/autoupgrade.exitcode; "..
+        "rm -rf /tmp/autoupdate.lock /tmp/autoupgrade.pid) & "..
         "echo $! > /tmp/autoupgrade.pid"
     os.execute(command)
 
@@ -81,12 +79,12 @@ function action_upgrade()
             pid_file:close()
             luci.http.write_json({
                 success = true,
-                message = "后台升级进程已启动(PID:" .. pid .. ")",
+                message = "后台升级进程已启动(PID:".. pid.. ")",
                 pid = tonumber(pid)
             })
             return
         end
-        os.execute("sleep " .. delay)
+        os.execute("sleep ".. delay)
     end
 
     -- PID文件生成失败处理
@@ -110,7 +108,7 @@ function action_check_status()
         pid_file:close()
 
         -- 验证进程是否存在
-        if os.execute("kill -0 " .. pid .. " 2>/dev/null") == 0 then
+        if os.execute("kill -0 ".. pid.. " 2>/dev/null") == 0 then
             response = { running = true, message = "升级进行中" }
         else
             os.remove(pid_path)
