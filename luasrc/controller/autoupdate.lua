@@ -59,7 +59,7 @@ function action_upgrade()
     end
 
     -- 根据勾选框的值选择升级命令
-    local upgrade_command = use_no_config_update and "AutoUpdate -u" or "AutoUpdate -k"
+    local upgrade_command = use_no_config_update and "AutoUpdate -k" or "AutoUpdate -u"
 
     -- 启动升级进程（优化版本）
     os.execute("("..upgrade_command.." > /tmp/autoupdate.log 2>&1; "..
