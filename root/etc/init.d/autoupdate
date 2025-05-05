@@ -27,9 +27,9 @@ run_autoupdate() {
             # 根据勾选框状态选择命令
             local update_command
             if [ "$use_no_config_update" = "1" ]; then
-                update_command="AutoUpdate -u"
-            else
                 update_command="AutoUpdate -k"
+            else
+                update_command="AutoUpdate -u"
             fi
 
             # 添加新的自动更新任务到 crontab
