@@ -14,7 +14,7 @@ function action_check()
     
     local response = {}
     if check_result == 1 then
-        response = { success = false, message = "检查更新失败" }
+        response = { success = false, message = "检测失败,请查看日志/tmp/autoupdate.log" }
     else
         local has_update = io.open("/tmp/compare_version", "r") ~= nil
         response = {
@@ -117,7 +117,7 @@ function action_check_status()
                 response = {
                     running = false,
                     success = (exit_code == 0),
-                    message = (exit_code == 0) and "升级成功" or ("升级失败，错误代码: "..exit_code)
+                    message = (exit_code == 0) and "升级成功" or ("升级失败,请查看日志/tmp/autoupdate.log)
                 }
             else
                 -- 兼容旧版本日志检测
