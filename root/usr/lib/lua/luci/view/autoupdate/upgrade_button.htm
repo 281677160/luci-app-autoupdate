@@ -32,7 +32,7 @@ function startUpgradeProcess() {
             updateUI(false, '<%:检查更新%>', data.message, false);
         }
     })
-    .catch(() => updateUI(false, '<%:检查更新%>', '检查更新失败', true))
+    .catch(() => updateUI(false, '<%:检查更新%>', '检测失败,请查看日志/tmp/autoupdate.log', true))
     .finally(() => isProcessing = false);
 }
 
@@ -59,7 +59,7 @@ function checkUpgradeStatus(retryCount = 0) {
         } else if (retryCount < 3) {  // 增加重试机制
             setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
         } else {  // 最终失败判定
-            updateUI(false, '<%:检查更新%>', '更新失败', true);
+            updateUI(false, '<%:检查更新%>', '更新失败,请查看日志/tmp/autoupdate.log', true);
         }
     })
     .catch(() => {
