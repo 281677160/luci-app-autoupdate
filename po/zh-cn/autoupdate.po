@@ -63,12 +63,6 @@ msgstr "内核版本："
 msgid "Firmware type:"
 msgstr "固件类型："
 
-msgid "Are you sure you want to upgrade the firmware?"
-msgstr "您确定要升级固件吗？"
-
-msgid "Upgrade started successfully! Router will reboot soon."
-msgstr "开始升级固件,请耐心等待路由器重启"
-
 msgid "Upgrade failed! Check /tmp/autoupdate.log for details."
 msgstr "请在[/tmp/autoupdate.log]查看日志"
 
@@ -80,12 +74,3 @@ msgstr "提示：脚本运行失败,请看页面显示信息"
 
 msgid "Check update failed"
 msgstr "脚本运行失败,请看页面显示信息"
-
-msgid "Upgrade started"
-msgstr "开始升级固件"
-
-msgid "There is no need to update it"
-msgstr "云端没有最新固件,无需更新"
-
-msgid "There is no need to update it."
-msgstr "云端没有最新固件,无需更新"
