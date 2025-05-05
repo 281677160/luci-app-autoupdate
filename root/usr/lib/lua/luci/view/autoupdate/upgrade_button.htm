@@ -1,6 +1,6 @@
 <%+cbi/valueheader%>
 <div class="cbi-value-field">
-    <input class="cbi-button cbi-button-apply" type="button" value="<%:点击更新%>" 
+    <input class="cbi-button cbi-button-apply" type="button" value="<%:检查更新%>" 
         onclick="startUpgradeProcess()" id="upgrade-btn" />
     <div id="status-message" style="margin-left:10px;display:inline-block"></div>
 </div>
@@ -29,7 +29,7 @@ function startUpgradeProcess() {
         if (data.has_update && confirm(data.message)) {
             startUpgrade();
         } else {
-            updateUI(false, '<%:点击更新%>', data.message, false);
+            updateUI(false, '<%:检查更新%>', data.message, false);
         }
     })
     .catch(() => updateUI(false, '<%:检查更新%>', '检查更新失败', true))
@@ -55,11 +55,11 @@ function checkUpgradeStatus(retryCount = 0) {
     .then(res => res.json())
     .then(data => {
         if (data.running) {
-            updateUI(true, '升级中...', `升级中,请耐心等待路由器重启`);
+            updateUI(true, '升级中...', `PID ${data.pid} 运行中`);
         } else if (retryCount < 3) {  // 增加重试机制
             setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
         } else {  // 最终失败判定
-            updateUI(false, '<%:检查更新%>', '更新失败,请查看日志/tmp/autoupdate.log', true);
+            updateUI(false, '<%:检查更新%>', '状态检测异常', true);
         }
     })
     .catch(() => {
