@@ -79,6 +79,10 @@ local github = s:option(Value, "github", translate("GitHub URL"))
 github.default = sys_info.github_url
 github.rmempty = false
 
+-- 新增勾选框
+local use_no_config_update = s:option(Flag, "use_no_config_update", translate("不保留配置更新"))
+use_no_config_update.default = use_no_config_update.disabled
+
 -- 升级按钮（带执行功能）
 local button_upgrade_firmware = s:option(Button, "_upgrade", translate("Upgrade to Latest Version"),
 translatef("Click the button below to upgrade to the latest version. Please wait patiently until the router reboots.") ..
@@ -92,8 +96,10 @@ button_upgrade_firmware.inputtitle = translate("Start Upgrade")
 button_upgrade_firmware.template = "autoupdate/upgrade_button"
 
 function button_upgrade_firmware.write(self, section)
+    -- 根据勾选框的值选择升级命令
+    local upgrade_command = use_no_config_update:formvalue(section) and "AutoUpdate -u" or "AutoUpdate -k"
     -- 执行升级命令
-    local upgrade_result = luci.sys.call("AutoUpdate -u >> /tmp/autoupdate.log 2>&1")
+    local upgrade_result = luci.sys.call(upgrade_command .. " >> /tmp/autoupdate.log 2>&1")
     
     if upgrade_result == 0 then
         luci.http.write("<script>alert('"..translate("Upgrade started successfully! Router will reboot soon.").."')</script>")
