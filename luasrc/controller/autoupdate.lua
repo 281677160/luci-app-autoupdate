@@ -14,7 +14,7 @@ function action_check()
     
     local response = {}
     if check_result == 1 then
-        response = { success = false, message = "检测失败,请查看日志/tmp/autoupdate.log" }
+        response = { success = false, message = "检查更新失败" }
     else
         local has_update = io.open("/tmp/compare_version", "r") ~= nil
         response = {
@@ -28,14 +28,11 @@ end
 
 -- 启动升级
 function action_upgrade()
-    -- 获取勾选框的值
-    local use_no_config_update = luci.http.formvalue("use_no_config_update") == "1"
-
     -- 检测锁文件有效性（新增逻辑）
     local lock_file = io.open("/tmp/autoupdate.lock", "r")
     if lock_file then
         lock_file:close()
-        -- 增加进程存活检测
+        -- 增加进程存活检测:ml-citation{ref="7" data="citationList"}
         local pid_file = io.open("/tmp/autoupgrade.pid", "r")
         if pid_file then
             local pid = pid_file:read("*a")
@@ -48,7 +45,7 @@ function action_upgrade()
                 os.remove("/tmp/autoupgrade.pid")
             end
         else
-            os.remove("/tmp/autoupdate.lock")  -- 清理无效锁文件
+            os.remove("/tmp/autoupdate.lock")  -- 清理无效锁文件:ml-citation{ref="3" data="citationList"}
         end
     end
 
@@ -58,11 +55,8 @@ function action_upgrade()
         return
     end
 
-    -- 根据勾选框的值选择升级命令
-    local upgrade_command = use_no_config_update and "AutoUpdate -k" or "AutoUpdate -u"
-
     -- 启动升级进程（优化版本）
-    os.execute("("..upgrade_command.." > /tmp/autoupdate.log 2>&1; "..
+    os.execute("(AutoUpdate -k > /tmp/autoupdate.log 2>&1; "..
         "echo $? > /tmp/autoupgrade.exitcode; "..
         "rm -rf /tmp/autoupdate.lock /tmp/autoupgrade.pid) & "..
         "echo $! > /tmp/autoupgrade.pid")
@@ -123,7 +117,7 @@ function action_check_status()
                 response = {
                     running = false,
                     success = (exit_code == 0),
-                    message = (exit_code == 0) and "升级成功" or ("升级失败,请查看日志/tmp/autoupdate.log")
+                    message = (exit_code == 0) and "升级成功" or ("升级失败，错误代码: "..exit_code)
                 }
             else
                 -- 兼容旧版本日志检测
@@ -131,7 +125,7 @@ function action_check_status()
                 response = {
                     running = false,
                     success = log_success,
-                    message = log_success and "升级成功" or "升级失败,请查看日志/tmp/autoupdate.log"
+                    message = log_success and "升级成功" or "升级失败（日志检测）"
                 }
             end
         end
