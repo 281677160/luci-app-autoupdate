@@ -252,7 +252,8 @@ Remote_download() {
            UPGRADE_COMMAND='sysupgrade -F -q'
        fi
     else
-       UPGRADE_COMMAND='sysupgrade -F -n'  
+       UPGRADE_COMMAND='sysupgrade -F -n'
+       TIME y "启用不保留配置更新"
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
