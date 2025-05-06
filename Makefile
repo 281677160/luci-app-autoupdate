@@ -7,11 +7,12 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-autoupdate
 
-LUCI_TITLE:=LuCI Support for AutoBuild Firmware/AutoUpdate
-LUCI_DEPENDS:=+ubus +libubus-lua +curl +wget-ssl
+PKG_MAINTAINER:=Lienol <lawlienol@gmail.com>
+
+LUCI_TITLE:=LuCI Support for AutoUpdate
+LUCI_DEPENDS:=+curl +wget-ssl
 LUCI_PKGARCH:=all
-PKG_VERSION:=1.2
-PKG_RELEASE:=$(shell date +%Y%m%d)
+
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
