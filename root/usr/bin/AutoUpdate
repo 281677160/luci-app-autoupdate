@@ -14,7 +14,7 @@ Select=""
 # 参数 $1: 操作码，取值为 'r'（出错并退出）, 'g'（正常输出）, 'z'（正常输出并退出）, 'y'（正常输出并标记更新）
 # 参数 $2: 要输出的信息
 TIME() {
-    local date=$(date "+%Y年%m月%d日%H时%M分%S秒")
+    date=$(date "+%Y年%m月%d日%H时%M分%S秒")
     case $1 in
         r) 
             echo "${2}" > "$tmpcloud_version"
@@ -59,7 +59,7 @@ Remote_detection() {
     if [ -f "/tmp/autoupgrade.pid" ]; then
         for tool in "wget" "curl"; do
             # 获取使用该工具的进程 ID
-            local PROCESS_IDS=$(ps | grep "$tool" | grep -v grep | awk '{print $1}')
+            PROCESS_IDS=$(ps | grep "$tool" | grep -v grep | awk '{print $1}')
             # 如果找到进程 ID，则尝试结束进程
             if [ -n "$PROCESS_IDS" ]; then
                 for pid in $PROCESS_IDS; do
@@ -77,16 +77,16 @@ Remote_detection() {
     # 检查文件是否存在且时间不超过5分钟
     if [ -f "$tmpapi_version" ]; then
         # 获取文件的修改时间（以秒为单位）
-        local file_mtime=$(date -r "$tmpapi_version" +%s 2>/dev/null)
+        file_mtime=$(date -r "$tmpapi_version" +%s 2>/dev/null)
         if [ $? -ne 0 ]; then
             # 如果date命令失败，跳过检查
             echo "无法获取文件修改时间，将重新下载文件。"
             file_mtime=0
         fi
         # 获取当前时间（以秒为单位）
-        local current_time=$(date +%s)
+        current_time=$(date +%s)
         # 计算时间差（以分钟为单位）
-        local time_diff=$(( (current_time - file_mtime) / 60 ))
+        time_diff=$(( (current_time - file_mtime) / 60 ))
         # 判断文件是否在5分钟内被修改过
         if [ $time_diff -gt 5 ]; then
             if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
@@ -116,24 +116,24 @@ Remote_information() {
     # 根据目标板和固件后缀确定引导类型
     if [ "${TARGET_BOARD}" = "x86" ]; then
         if [ -d '/sys/firmware/efi' ]; then
-            local BOOT_TYPE=uefi
+            BOOT_TYPE=uefi
         else
-            local BOOT_TYPE=legacy
+            BOOT_TYPE=legacy
         fi
     elif [ "${FIRMWARE_SUFFIX}" = ".img.gz" ]; then
-        local BOOT_TYPE=legacy
+        BOOT_TYPE=legacy
     else
-        local BOOT_TYPE=sysupgrade
+        BOOT_TYPE=sysupgrade
     fi
 
     # 定义正则表达式以匹配固件信息
-    local regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
+    regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
     # 查找匹配的目标行
-    local target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
+    target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
     if [ -n "$target_line" ]; then
         # 从目标行中提取固件全名称
-        local start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
-        local REMOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
+        start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
+        REMOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
             for(i=1; i<=NF; i++) {
                 if($i ~ pattern) {
                     print substr($i, index($i, start))
@@ -143,12 +143,12 @@ Remote_information() {
         }')
 
         # 提取云端版本号
-        local CLOUD_VERSION=$(echo "$REMOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
+        CLOUD_VERSION=$(echo "$REMOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
         # 提取云端固件的MD5值
-        local CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
+        CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
         # 提取云端固件的大小
-        local X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
-        local CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
+        X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
+        CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
         echo "固件全名称: $REMOTE_FIRMWARE"
         echo "固件时间戳: $CLOUD_VERSION"
         echo "固件MD5值: $CLOUD_MD256"
@@ -158,15 +158,15 @@ Remote_information() {
     fi
 
     # 获取固件内核版本
-    local KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
+    KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
     # 获取固件 /tmp 空间可用值
-    local TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
+    TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
     # 获取固件主机名称
-    local EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
+    EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
     # 获取本地版本号
-    local LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
+    LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
     # 构建云端版本显示名称
-    local CLOUD_FIRMWARE_VERSION="${SOURCE}-${DEVICE_MODEL}-${CLOUD_VERSION}"
+    CLOUD_FIRMWARE_VERSION="${SOURCE}-${DEVICE_MODEL}-${CLOUD_VERSION}"
 
     # 检查本地版本号是否获取成功
     if [ -z "${LOCAL_VERSION}" ]; then
@@ -239,8 +239,8 @@ Remote_download() {
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
-    local LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
-    local CLOUD_MD5256="${CLOUD_MD256}"
+    LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
+    CLOUD_MD5256="${CLOUD_MD256}"
 
     # 进行 MD5 校验
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
@@ -276,12 +276,12 @@ Remote_download() {
 
         # 根据备份情况选择升级命令
         if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
-            local UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+            UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
         else
-            local UPGRADE_COMMAND='sysupgrade -F -q'
+            UPGRADE_COMMAND='sysupgrade -F -q'
         fi
     else
-        local UPGRADE_COMMAND='sysupgrade -F -n'
+        UPGRADE_COMMAND='sysupgrade -F -n'
         TIME y "启用不保留配置更新"
     fi
 
