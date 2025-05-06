@@ -117,8 +117,8 @@ function action_check_status()
             response = {
                 running = false,
                 success = (exit_code == 0),
-                message = exit_code == 0 and "升级成功" 
-                          or exit_code == 1 and "升级失败，日志：/tmp/autoupdate.log"
+                message = exit_code == 0 and "升级成功,稍后请手动刷新页面..." 
+                          or exit_code == 1 and "升级失败,请查看日志/tmp/autoupdate.log"
                           or ("异常退出码："..exit_code)
             }
         else
