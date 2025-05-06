@@ -30,7 +30,7 @@ msgstr "分 [0~59]"
 msgid "Enable AutoUpdate"
 msgstr "启用定时更新"
 
-msgid "AutoUpdate LUCI supports one - click firmware upgrade and scheduled upgrade"
+msgid "AutoUpdate LUCI supports one-click firmware upgrade and scheduled upgrade"
 msgstr "定时更新设置,也可以SSH连接固件或固件Luci内使用TTYD输入[openwrt]此命令进行命令在线更换固件"
 
 msgid "Upgrade to Latest Version"
