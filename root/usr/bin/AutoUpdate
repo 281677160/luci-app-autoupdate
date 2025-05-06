@@ -3,90 +3,99 @@
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 # /usr/bin/AutoUpdate
-Select=""
+
+# 定义全局变量
 DOWNLOAD_PATH="/tmp/Downloads"
 tmpcloud_version="/tmp/cloud_version"
 tmpapi_version="/tmp/api_version"
+Select=""
 
-function TIME() {
-    date=$(date "+%Y年%m月%d日%H时%M分%S秒")
+# TIME 函数，用于记录时间和输出信息，并根据不同的操作码执行不同的操作
+# 参数 $1: 操作码，取值为 'r'（出错并退出）, 'g'（正常输出）, 'z'（正常输出并退出）, 'y'（正常输出并标记更新）
+# 参数 $2: 要输出的信息
+TIME() {
+    local date=$(date "+%Y年%m月%d日%H时%M分%S秒")
     case $1 in
-       r) 
-          echo "${2}" > "$tmpcloud_version"
-          echo -e "$date(出错)：${2}"
-          exit 1
-       ;;
-       g)
-          echo "${2}" > "$tmpcloud_version"
-          echo -e "$date：${2}"
-       ;;
-       z)
-          echo "${2}" > "$tmpcloud_version"
-          echo -e "$date：${2}"
-          exit 0
-       ;;
-       y)
-          echo "${2}" > "$tmpcloud_version"
-          echo "update" > /tmp/compare_version
-          echo -e "$date：${2}"
-       ;;
+        r) 
+            echo "${2}" > "$tmpcloud_version"
+            echo -e "$date(出错)：${2}"
+            exit 1
+            ;;
+        g)
+            echo "${2}" > "$tmpcloud_version"
+            echo -e "$date：${2}"
+            ;;
+        z)
+            echo "${2}" > "$tmpcloud_version"
+            echo -e "$date：${2}"
+            exit 0
+            ;;
+        y)
+            echo "${2}" > "$tmpcloud_version"
+            echo "update" > /tmp/compare_version
+            echo -e "$date：${2}"
+            ;;
     esac
 }
 
-# 远程检测函数，检查必要文件和获取 API 数据
+# Remote_detection 函数，用于远程检测必要文件和获取 API 数据
 Remote_detection() {
     # 清理临时版本文件
-    rm -rf /tmp/*_version
+    rm -rf "${tmpcloud_version}"
+    rm -rf "tmp/tags_version"
+    if ! grep -E "assets" "$tmpapi_version" >/dev/null 2>&1; then
+        rm -rf "${tmpapi_version}"
+    fi
 
     # 检查 openwrt_update 文件是否包含必要信息
     if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
        grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
-       chmod 755 /etc/openwrt_update
-        . /etc/openwrt_update
+        chmod 755 /etc/openwrt_update
+       . /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
     fi
 
     if [ -f "/tmp/autoupgrade.pid" ]; then
-       for tool in "wget" "curl"; do
-           # 获取使用该工具的进程 ID
-           PROCESS_IDS=$(ps | grep "$tool" | grep -v grep | awk '{print $1}')
-           # 如果找到进程 ID，则尝试结束进程
-           if [ -n "$PROCESS_IDS" ]; then
-               for pid in $PROCESS_IDS; do
-                   # 先尝试发送 TERM 信号正常终止进程
-                   kill $pid
-                   # 检查进程是否仍然存在，如果存在则发送 KILL 信号强制终止
-                   if ps | grep "$pid" | grep -v grep > /dev/null; then
-                       kill -9 $pid
-                   fi
-               done
-           fi
-       done
+        for tool in "wget" "curl"; do
+            # 获取使用该工具的进程 ID
+            local PROCESS_IDS=$(ps | grep "$tool" | grep -v grep | awk '{print $1}')
+            # 如果找到进程 ID，则尝试结束进程
+            if [ -n "$PROCESS_IDS" ]; then
+                for pid in $PROCESS_IDS; do
+                    # 先尝试发送 TERM 信号正常终止进程
+                    kill $pid
+                    # 检查进程是否仍然存在，如果存在则发送 KILL 信号强制终止
+                    if ps | grep "$pid" | grep -v grep > /dev/null; then
+                        kill -9 $pid
+                    fi
+                done
+            fi
+        done
     fi
 
     # 检查文件是否存在且时间不超过5分钟
     if [ -f "$tmpapi_version" ]; then
         # 获取文件的修改时间（以秒为单位）
-        file_mtime=$(date -r "$tmpapi_version" +%s 2>/dev/null)
+        local file_mtime=$(date -r "$tmpapi_version" +%s 2>/dev/null)
         if [ $? -ne 0 ]; then
             # 如果date命令失败，跳过检查
             echo "无法获取文件修改时间，将重新下载文件。"
             file_mtime=0
         fi
         # 获取当前时间（以秒为单位）
-        current_time=$(date +%s)
+        local current_time=$(date +%s)
         # 计算时间差（以分钟为单位）
-        time_diff=$(( (current_time - file_mtime) / 60 ))
+        local time_diff=$(( (current_time - file_mtime) / 60 ))
         # 判断文件是否在5分钟内被修改过
         if [ $time_diff -gt 5 ]; then
-           if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-              # 若 wget 失败，使用 curl 下载
-              curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
-           fi
+            if! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+                # 若 wget 失败，使用 curl 下载
+                curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+            fi
         fi
     else
-        if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
             # 若 wget 失败，使用 curl 下载
             curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
         fi
@@ -100,31 +109,31 @@ Remote_detection() {
     fi
 }
 
-# 远程信息函数，获取固件信息并进行版本比较
+# Remote_information 函数，用于获取固件信息并进行版本比较
 Remote_information() {
-    . /etc/openwrt_update
+   . /etc/openwrt_update
 
     # 根据目标板和固件后缀确定引导类型
     if [ "${TARGET_BOARD}" = "x86" ]; then
         if [ -d '/sys/firmware/efi' ]; then
-            BOOT_TYPE=uefi
+            local BOOT_TYPE=uefi
         else
-            BOOT_TYPE=legacy
+            local BOOT_TYPE=legacy
         fi
     elif [ "${FIRMWARE_SUFFIX}" = ".img.gz" ]; then
-        BOOT_TYPE=legacy
+        local BOOT_TYPE=legacy
     else
-        BOOT_TYPE=sysupgrade
+        local BOOT_TYPE=sysupgrade
     fi
 
     # 定义正则表达式以匹配固件信息
-    regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
+    local regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
     # 查找匹配的目标行
-    target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
+    local target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
     if [ -n "$target_line" ]; then
         # 从目标行中提取固件全名称
-        start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
-        REMOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
+        local start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
+        local REMOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
             for(i=1; i<=NF; i++) {
                 if($i ~ pattern) {
                     print substr($i, index($i, start))
@@ -134,12 +143,12 @@ Remote_information() {
         }')
 
         # 提取云端版本号
-        CLOUD_VERSION=$(echo "$REMOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
+        local CLOUD_VERSION=$(echo "$REMOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
         # 提取云端固件的MD5值
-        CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
+        local CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
         # 提取云端固件的大小
-        X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
-        CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
+        local X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
+        local CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
         echo "固件全名称: $REMOTE_FIRMWARE"
         echo "固件时间戳: $CLOUD_VERSION"
         echo "固件MD5值: $CLOUD_MD256"
@@ -149,15 +158,15 @@ Remote_information() {
     fi
 
     # 获取固件内核版本
-    KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
+    local KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
     # 获取固件 /tmp 空间可用值
-    TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
+    local TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
     # 获取固件主机名称
-    EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
+    local EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
     # 获取本地版本号
-    LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
+    local LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
     # 构建云端版本显示名称
-    CLOUD_FIRMWARE_VERSION="${SOURCE}-${DEVICE_MODEL}-${CLOUD_VERSION}"
+    local CLOUD_FIRMWARE_VERSION="${SOURCE}-${DEVICE_MODEL}-${CLOUD_VERSION}"
 
     # 检查本地版本号是否获取成功
     if [ -z "${LOCAL_VERSION}" ]; then
@@ -192,12 +201,12 @@ Remote_information() {
         elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
             TIME y "${CLOUD_FIRMWARE_VERSION} [有可更新固件]"
         elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
-            TIME z "${CLOUD_FIRMWARE_VERSION} [云端最高版本固件,低于您现在所使用版本,请到云端查看原因"
+            TIME z "${CLOUD_FIRMWARE_VERSION} [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
         fi
     fi
 }
 
-# 远程下载函数，下载固件并进行 MD5 校验和备份操作
+# Remote_download 函数，用于远程下载固件并进行 MD5 校验和备份操作
 Remote_download() {
     # 创建下载目录并清理旧文件
     if [ ! -d "${DOWNLOAD_PATH}" ]; then
@@ -212,12 +221,12 @@ Remote_download() {
     # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
             curl -L --max-time 600 -k "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
         fi
     else
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
             curl -L --max-time 600 -k "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
         fi
     fi
@@ -230,8 +239,8 @@ Remote_download() {
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
-    LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
-    CLOUD_MD5256="${CLOUD_MD256}"
+    local LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
+    local CLOUD_MD5256="${CLOUD_MD256}"
 
     # 进行 MD5 校验
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
@@ -249,34 +258,33 @@ Remote_download() {
     fi
     
     if [[ "${Select}" == "u" ]]; then
-       TIME y "正在执行更新固件前的备份"
-       # 执行删除文件操作
-       if [ -f "/etc/deletefile" ]; then
+        TIME y "正在执行更新固件前的备份"
+        # 执行删除文件操作
+        if [ -f "/etc/deletefile" ]; then
            . /etc/deletefile
-       fi
-       # 清理配置文件
-       rm -rf /etc/config/luci /tmp/luci
-       # 添加定时任务
-       sed -i '/check_network/d' /etc/crontabs/root >/dev/null 2>&1
-       echo "*/10 * * * * /usr/bin/check_network" >> /etc/crontabs/root
-       # 重启 cron 服务
-       /etc/init.d/cron restart
-       # 备份系统
-       rm -rf /mnt/*upback.tar.gz
-       sysupgrade -b /mnt/upback.tar.gz
+        fi
+        # 清理配置文件
+        rm -rf /etc/config/luci /tmp/luci
+        # 添加定时任务
+        sed -i '/check_network/d' /etc/crontabs/root >/dev/null 2>&1
+        echo "*/10 * * * * /usr/bin/check_network" >> /etc/crontabs/root
+        # 重启 cron 服务
+        /etc/init.d/cron restart
+        # 备份系统
+        rm -rf /mnt/*upback.tar.gz
+        sysupgrade -b /mnt/upback.tar.gz
 
-       # 根据备份情况选择升级命令
-       if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
-           UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
-       else
-           UPGRADE_COMMAND='sysupgrade -F -q'
-       fi
+        # 根据备份情况选择升级命令
+        if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
+            local UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+        else
+            local UPGRADE_COMMAND='sysupgrade -F -q'
+        fi
     else
-       UPGRADE_COMMAND='sysupgrade -F -n'
-       TIME y "启用不保留配置更新"
+        local UPGRADE_COMMAND='sysupgrade -F -n'
+        TIME y "启用不保留配置更新"
     fi
 
-    echo -n 0 > /tmp/autoupgrade.exitcode
     TIME g "升级固件中，请勿断开路由器电源，END"
     ${UPGRADE_COMMAND} "${REMOTE_FIRMWARE}"
     exit 0
