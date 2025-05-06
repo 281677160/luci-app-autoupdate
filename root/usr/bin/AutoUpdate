@@ -281,4 +281,4 @@ case "$1" in
         Remote_detection
         Remote_information
         ;;
-esac    
+esac
