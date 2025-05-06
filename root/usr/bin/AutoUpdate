@@ -13,22 +13,22 @@ function TIME() {
     case $1 in
        r) 
           echo "${2}" > "$tmpcloud_version"
-          echo -e "\033[31m$date(出错)\033[0m：\033[34m${2}\033[0m"
+          echo -e "$date(出错)：${2}"
           exit 1
        ;;
        g)
           echo "${2}" > "$tmpcloud_version"
-          echo -e "\033[32m$date\033[0m：\033[34m${2}\033[0m"
+          echo -e "$date：${2}"
        ;;
        z)
           echo "${2}" > "$tmpcloud_version"
-          echo -e "\033[32m$date\033[0m：\033[34m${2}\033[0m"
+          echo -e "$date：${2}"
           exit 0
        ;;
        y)
           echo "${2}" > "$tmpcloud_version"
           echo "update" > /tmp/compare_version
-          echo -e "\033[32m$date\033[0m：\033[34m${2}\033[0m"
+          echo -e "$date：${2}"
        ;;
     esac
 }
