@@ -65,10 +65,31 @@ Remote_detection() {
        done
     fi
 
-    # 尝试使用 wget 下载 API 数据
-    if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-        # 若 wget 失败，使用 curl 下载
-        curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+    # 检查文件是否存在且时间不超过5分钟
+    if [ -f "$tmpapi_version" ]; then
+        # 获取文件的修改时间（以秒为单位）
+        file_mtime=$(date -r "$tmpapi_version" +%s 2>/dev/null)
+        if [ $? -ne 0 ]; then
+            # 如果date命令失败，跳过检查
+            echo "无法获取文件修改时间，将重新下载文件。"
+            file_mtime=0
+        fi
+        # 获取当前时间（以秒为单位）
+        current_time=$(date +%s)
+        # 计算时间差（以分钟为单位）
+        time_diff=$(( (current_time - file_mtime) / 60 ))
+        # 判断文件是否在5分钟内被修改过
+        if [ $time_diff -gt 5 ]; then
+           if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+              # 若 wget 失败，使用 curl 下载
+              curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+           fi
+        fi
+    else
+        if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+            # 若 wget 失败，使用 curl 下载
+            curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+        fi
     fi
 
     # 检查 API 数据是否包含有效信息
