@@ -1,10 +1,11 @@
 #!/bin/sh
 
-uci -q batch <<-EOF >/dev/null
-	delete ucitrack.@autoupdate[-1]
-	add ucitrack autoupdate
-	set ucitrack.@autoupdate[-1].init=autoupdate
-	commit ucitrack
-EOF
+# 确保首次安装时正确设置
+[ -f /etc/config/autoupdate ] || {
+    touch /etc/config/autoupdate
+    uci add autoupdate settings
+    uci commit autoupdate
+}
 
 exit 0
+
