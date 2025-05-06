@@ -101,46 +101,58 @@ function action_check_status()
     local pid_path = "/tmp/autoupgrade.pid"
     local exit_code_path = "/tmp/autoupgrade.exitcode"
 
-    -- 检查进程状态
-    if io.open(pid_path, "r") then
-        local pid_file = io.open(pid_path, "r")
-        local pid = pid_file:read("*a")
-        pid_file:close()
+    -- 首先检查退出码文件是否存在（表示进程已结束）
+    local exit_file = io.open(exit_code_path, "r")
+    if exit_file then
+        -- 进程已结束，读取退出码
+        local exit_code_str = exit_file:read("*all")
+        exit_file:close()
+        os.remove(exit_code_path)
+        
+        -- 清洗非数字字符
+        exit_code_str = exit_code_str:gsub("[^%d]", "")
+        local exit_code = tonumber(exit_code_str)
 
-        -- 验证进程是否存在
-        if os.execute("kill -0 ".. pid.. " 2>/dev/null") == 0 then
-            response = { running = true, message = "升级进行中" }
+        if exit_code ~= nil then
+            response = {
+                running = false,
+                success = (exit_code == 0),
+                message = exit_code == 0 and "升级成功" 
+                          or exit_code == 1 and "升级失败，日志：/tmp/autoupdate.log"
+                          or ("异常退出码："..exit_code)
+            }
         else
+            response = {
+                running = false,
+                success = false,
+                message = "退出码无效（清洗后内容为空）"
+            }
+        end
+        -- 清理pid文件（如果存在）
+        if nixio.fs.access(pid_path) then
             os.remove(pid_path)
-            local exit_code = nil
-
-            -- 读取退出码文件
-            if io.open(exit_code_path, "r") then
-                local exit_file = io.open(exit_code_path, "r")
-                exit_code = tonumber(exit_file:read("*l")) or 1
-                exit_file:close()
-                os.remove(exit_code_path)
-            end
-
-            -- 确定升级结果
-            if exit_code ~= nil then
-                response = {
-                    running = false,
-                    success = (exit_code == 0),
-                    message = (exit_code == 0) and "升级成功" or ("升级失败,请查看日志/tmp/autoupdate.log")
-                }
-            else
-                -- 兼容旧版本日志检测
-                local log_success = os.execute("grep -q 'Upgrade succeeded' /tmp/autoupdate.log") == 0
-                response = {
-                    running = false,
-                    success = log_success,
-                    message = log_success and "升级成功" or "升级失败,请查看日志/tmp/autoupdate.log"
-                }
-            end
         end
     else
-        response = { running = false, message = "无进行中的升级" }
+        -- 没有退出码文件，检查进程是否在运行
+        local pid_file = io.open(pid_path, "r")
+        if pid_file then
+            local pid = pid_file:read("*a")
+            pid_file:close()
+
+            if os.execute("kill -0 " .. pid .. " 2>/dev/null") == 0 then
+                response = { running = true, message = "升级进行中" }
+            else
+                -- 进程已结束但没有退出码文件
+                os.remove(pid_path)
+                response = {
+                    running = false,
+                    success = false,
+                    message = "进程异常终止（无退出码文件）"
+                }
+            end
+        else
+            response = { running = false, message = "无进行中的升级" }
+        end
     end
 
     luci.http.write_json(response)
