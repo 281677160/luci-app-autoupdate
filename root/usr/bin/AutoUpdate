@@ -238,6 +238,7 @@ Remote_download() {
        # 清理配置文件
        rm -rf /etc/config/luci /tmp/luci
        # 添加定时任务
+       sed -i '/check_network/d' /etc/crontabs/root >/dev/null 2>&1
        echo "*/10 * * * * /etc/init.d/check_network check_network" >> /etc/crontabs/root
        # 重启 cron 服务
        /etc/init.d/cron restart
@@ -256,6 +257,7 @@ Remote_download() {
        TIME y "启用不保留配置更新"
     fi
 
+    echo -n 0 > /tmp/autoupgrade.exitcode
     TIME g "升级固件中，请勿断开路由器电源，END"
     ${UPGRADE_COMMAND} "${REMOTE_FIRMWARE}"
 }
