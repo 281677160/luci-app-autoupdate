@@ -40,12 +40,12 @@ local function get_sys_info()
     -- 执行检查更新脚本并捕获返回值
     local check_result = luci.sys.call("AutoUpdate > /tmp/autoupdate.log 2>&1")
     -- 获取系统信息
-    info.github_url = luci.sys.exec("awk -F'=' '/GITHUB_LINK=/ {print $2}' /etc/openwrt_update") or ""
-    info.local_version = luci.sys.exec("awk -F'=' '/FIRMWARE_VERSION=/ {print $2}' /etc/openwrt_update") or ""
+    info.github_url = luci.sys.exec("awk -F'=' '/GITHUB_LINK=/ {gsub(/\"/, \"\", $2); print $2}' /etc/openwrt_update") or ""
+    info.local_version = luci.sys.exec("awk -F'=' '/FIRMWARE_VERSION=/ {gsub(/\"/, \"\", $2); print $2}' /etc/openwrt_update") or ""
     info.cloud_version = luci.sys.exec("cat /tmp/cloud_version 2>/dev/null") or ""
-    info.equipment_name = luci.sys.exec("awk -F'=' '/EQUIPMENT_NAME=/ {print $2}' /tmp/tags_version 2>/dev/null") or ""
-    info.model_type = luci.sys.exec("awk -F'=' '/MODEL_TYPE=/ {print $2}' /tmp/tags_version 2>/dev/null") or ""
-    info.kernel_type = luci.sys.exec("awk -F'=' '/KERNEL_TYPE=/ {print $2}' /tmp/tags_version 2>/dev/null") or ""
+    info.equipment_name = luci.sys.exec("awk -F'=' '/EQUIPMENT_NAME=/ {gsub(/\"/, \"\", $2); print $2}' /tmp/tags_version 2>/dev/null") or ""
+    info.model_type = luci.sys.exec("awk -F'=' '/MODEL_TYPE=/ {gsub(/\"/, \"\", $2); print $2}' /tmp/tags_version 2>/dev/null") or ""
+    info.kernel_type = luci.sys.exec("awk -F'=' '/KERNEL_TYPE=/ {gsub(/\"/, \"\", $2); print $2}' /tmp/tags_version 2>/dev/null") or ""
     return info
 end
 
