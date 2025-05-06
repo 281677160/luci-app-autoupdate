@@ -40,7 +40,7 @@ msgid "Start Upgrade"
 msgstr "点击更新"
 
 msgid "Click the button below to upgrade to the latest version. Please wait patiently until the router reboots."
-msgstr "若有更新可点击上方 点击更新 进行手动更新"
+msgstr "手动更新时,若使用不保留配置更新,勾选后请先[保存并应用]再进行更新"
 
 msgid "Automatically update firmware during the specified time"
 msgstr "在指定时间段自动检测云端版本,若有新版本自动更新固件"
