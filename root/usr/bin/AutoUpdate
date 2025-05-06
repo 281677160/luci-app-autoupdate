@@ -89,13 +89,13 @@ Remote_detection() {
         time_diff=$(( (current_time - file_mtime) / 60 ))
         # 判断文件是否在5分钟内被修改过
         if [ $time_diff -gt 5 ]; then
-            if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+            if ! wget -q --show-progress --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
                 # 若 wget 失败，使用 curl 下载
                 curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
             fi
         fi
     else
-        if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if ! wget -q --show-progress --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
             # 若 wget 失败，使用 curl 下载
             curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
         fi
@@ -221,12 +221,12 @@ Remote_download() {
     # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if ! wget -q --show-progress --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
             curl -L --max-time 600 -k "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
         fi
     else
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if ! wget -q --show-progress --timeout=600 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
             curl -L --max-time 600 -k "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
         fi
     fi
