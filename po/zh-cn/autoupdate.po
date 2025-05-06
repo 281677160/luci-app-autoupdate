@@ -63,8 +63,8 @@ msgstr "内核版本："
 msgid "Firmware type:"
 msgstr "固件类型："
 
-msgid "Are you sure you want to upgrade the firmware?"
-msgstr "您确定要升级固件吗？"
+msgid "Do not keep configuration on update"
+msgstr "不保留配置更新"
 
 msgid "Upgrade started successfully! Router will reboot soon."
 msgstr "开始升级固件,请耐心等待路由器重启"
