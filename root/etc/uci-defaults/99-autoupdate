@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# 确保首次安装时正确设置
 [ -f /etc/config/autoupdate ] || {
     touch /etc/config/autoupdate
     uci add autoupdate settings
