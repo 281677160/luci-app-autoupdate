@@ -55,15 +55,28 @@ function checkUpgradeStatus(retryCount = 0) {
     .then(res => res.json())
     .then(data => {
         if (data.running) {
-            updateUI(true, '升级中...', `PID ${data.pid} 运行中`);
-        } else if (retryCount < 3) {  // 增加重试机制
-            setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
-        } else {  // 最终失败判定
-            updateUI(false, '<%:检查更新%>', '更新失败,请查看日志/tmp/autoupdate.log', true);
+            updateUI(true, '升级中...', data.message || '升级进行中');
+        } else {
+            // 清除轮询
+            clearInterval(statusCheckInterval);
+            statusCheckInterval = null;
+            
+            // 根据返回结果更新UI
+            if (data.success) {
+                updateUI(false, '<%:检查更新%>', data.message || '升级成功', false);
+            } else {
+                updateUI(false, '<%:检查更新%>', data.message || '升级失败', true);
+            }
         }
     })
     .catch(() => {
-        if (retryCount < 3) checkUpgradeStatus(retryCount+1);
+        if (retryCount < 3) {
+            setTimeout(() => checkUpgradeStatus(retryCount+1), 1000);
+        } else {
+            clearInterval(statusCheckInterval);
+            statusCheckInterval = null;
+            updateUI(false, '<%:检查更新%>', '状态检查失败', true);
+        }
     });
 }
 </script>
