@@ -160,11 +160,9 @@ Remote_information() {
     fi
 
     # 生成标签版本文件
-    cat > /tmp/tags_version <<EOF
-MODEL_TYPE=${BOOT_TYPE}${FIRMWARE_SUFFIX}
-KERNEL_TYPE=${KERNEL_MODE} - ${LUCI_EDITION}
-EQUIPMENT_NAME=${EQUIPMENT_NAME}
-EOF
+    echo "MODEL_TYPE=\"${BOOT_TYPE}${FIRMWARE_SUFFIX}\""> /tmp/tags_version
+    echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"">> /tmp/tags_version
+    echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"">> /tmp/tags_version
 
     # 比较本地版本号和云端版本号
     if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
