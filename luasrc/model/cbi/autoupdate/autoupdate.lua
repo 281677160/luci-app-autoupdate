@@ -134,7 +134,10 @@ end
 
 -- 应用设置后重启服务
 function m.on_commit(self)
+    m.uci:commit("autoupdate")
+    os.execute("/etc/init.d/autoupdate reload >/dev/null 2>&1")
     luci.sys.call("/etc/init.d/autoupdate restart > /dev/null 2>&1")
 end
+
 
 return m
