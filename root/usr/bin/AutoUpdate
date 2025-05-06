@@ -89,13 +89,13 @@ Remote_detection() {
         local time_diff=$(( (current_time - file_mtime) / 60 ))
         # 判断文件是否在5分钟内被修改过
         if [ $time_diff -gt 5 ]; then
-            if! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+            if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
                 # 若 wget 失败，使用 curl 下载
                 curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
             fi
         fi
     else
-        if! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if ! wget --timeout=40 -t 1 --no-check-certificate "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
             # 若 wget 失败，使用 curl 下载
             curl -fsSL --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
         fi
