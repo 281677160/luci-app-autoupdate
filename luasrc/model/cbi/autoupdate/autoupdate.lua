@@ -37,13 +37,12 @@ local function get_sys_info()
 
     -- 清理旧文件
     os.execute("rm -f /tmp/compare_version 2>/dev/null")
-    os.execute("tee /tmp/autoupdate.log 2>/dev/null")
 
     -- 确保脚本可执行
     os.execute("chmod +x /usr/bin/AutoUpdate")
 
     -- 执行检查更新脚本并捕获返回值
-    local check_result = luci.sys.call("AutoUpdate >> /tmp/autoupdate.log 2>&1")
+    local check_result = luci.sys.call("AutoUpdate > /tmp/autoupdate.log 2>&1")
 
     -- 新增文件检查逻辑（优先级高于返回码）
     local ver_file = io.open("/tmp/compare_version", "r")
