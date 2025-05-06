@@ -80,7 +80,7 @@ github.default = sys_info.github_url
 github.rmempty = false
 
 -- 新增勾选框
-local use_no_config_update = s:option(Flag, "use_no_config_update", translate("勾选后使用不保留配置更新"))
+local use_no_config_update = s:option(Flag, "use_no_config_update", translate("不保留配置更新"))
 use_no_config_update.default = use_no_config_update.disabled
 
 -- 升级按钮（带执行功能）
