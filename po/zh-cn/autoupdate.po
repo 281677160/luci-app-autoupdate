@@ -21,10 +21,10 @@ msgstr "每天"
 msgid "Week Day"
 msgstr "周期"
 
-msgid "Hour"
+msgid "Fixed Hour"
 msgstr "时 [0~23]"
 
-msgid "Minute"
+msgid "Fixed Minute"
 msgstr "分 [0~59]"
 
 msgid "Enable AutoUpdate"
