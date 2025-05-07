@@ -75,25 +75,25 @@ Remote_detection() {
     fi
 
     if [ -f "${tmpapi_version}" ]; then
-       file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
-       if [ -n "$file_info" ]; then
-          file_time=$(echo "$file_info" | awk '{print $6, $7}')
-          file_mtime=$(date -d "$file_time" +%s 2>/dev/null)
-          if [ $? -eq 0 ]; then
-              current_time=$(date +%s)
-              time_diff=$(( (current_time - file_mtime) / 60 ))
-              [ $time_diff -ge 5 ] && \
-              if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-                 # 若 wget 失败，使用 curl 下载
-                 curl -# -L -k --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
-              fi
-          fi
-       fi
+        file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
+        if [ -n "$file_info" ]; then
+            file_time=$(echo "$file_info" | awk '{print $6, $7}')
+            file_mtime=$(date -d "$file_time" +%s 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                current_time=$(date +%s)
+                time_diff=$(( (current_time - file_mtime) / 60 ))
+                [ $time_diff -ge 5 ] && \
+                if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+                    # 若 wget 失败，使用 curl 下载
+                    curl -# -L -k --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+                fi
+            fi
+        fi
     else
-       if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
           # 若 wget 失败，使用 curl 下载
           curl -# -L -k --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
-       fi
+        fi
     fi
 
     # 检查 API 数据是否包含有效信息
