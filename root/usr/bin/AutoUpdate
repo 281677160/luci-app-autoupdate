@@ -1,5 +1,4 @@
 #!/bin/sh
-# https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 # /usr/bin/AutoUpdate
@@ -18,22 +17,22 @@ TIME() {
     case $1 in
         r) 
             echo "${2}" > "$tmpcloud_version"
-            echo -e "$date(出错)：${2}"
+            printf "%s(出错)：%s\n" "$date" "${2}"
             exit 1
             ;;
         g)
             echo "${2}" > "$tmpcloud_version"
-            echo -e "$date：${2}"
+            printf "%s：%s\n" "$date" "${2}"
             ;;
         z)
             echo "${2}" > "$tmpcloud_version"
-            echo -e "$date：${2}"
+            printf "%s：%s\n" "$date" "${2}"
             exit 0
             ;;
         y)
             echo "${2}" > "$tmpcloud_version"
             echo "update" > /tmp/compare_version
-            echo -e "$date：${2}"
+            printf "%s：%s\n" "$date" "${2}"
             ;;
     esac
 }
@@ -51,7 +50,7 @@ Remote_detection() {
     if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
        grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
         chmod 755 /etc/openwrt_update
-       . /etc/openwrt_update
+        . /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
     fi
@@ -187,9 +186,9 @@ Remote_information() {
     fi
 
     # 生成标签版本文件
-    echo "MODEL_TYPE=\"${BOOT_TYPE}${FIRMWARE_SUFFIX}\""> /tmp/tags_version
-    echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"">> /tmp/tags_version
-    echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"">> /tmp/tags_version
+    echo "MODEL_TYPE=\"${BOOT_TYPE}${FIRMWARE_SUFFIX}\"" > /tmp/tags_version
+    echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"" >> /tmp/tags_version
+    echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"" >> /tmp/tags_version
 
     # 比较本地版本号和云端版本号
     if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
@@ -252,7 +251,7 @@ Remote_download() {
         opkg remove gzip > /dev/null 2>&1
     fi
     
-    if [[ "${Select}" == "u" ]]; then
+    if [ "${Select}" = "u" ]; then
         TIME y "正在执行更新固件前的备份"
         # 执行删除文件操作
         if [ -f "/etc/deletefile" ]; then
