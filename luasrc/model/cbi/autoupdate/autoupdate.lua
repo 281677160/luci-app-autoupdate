@@ -16,10 +16,6 @@ o.default = o.disabled
 o.rmempty = false
 
 -- 更新时间设置
-local s = m:section(TypedSection, "login", "")
-s.addremove = false
-s.anonymous = true
-
 local week = s:option(ListValue, "week", translate("Week Day"))
 week:value(7, translate("Everyday"))
 for i = 0, 6 do
