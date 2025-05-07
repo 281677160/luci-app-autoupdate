@@ -101,8 +101,9 @@ function button_upgrade_firmware.write(self, section)
 end
 
 -- 应用设置后重启服务
-function m.on_commit(self)
-    luci.sys.call("/etc/init.d/autoupdate restart > /dev/null 2>&1")
-end
+local uci = require("luci.model.uci").cursor()
+uci:set("autoupdate", "config", "enable", "1")
+uci:commit("autoupdate")
+os.execute("/etc/init.d/autoupdate restart")
 
 return m
