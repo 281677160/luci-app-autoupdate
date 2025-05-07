@@ -39,6 +39,13 @@ local function get_sys_info()
 
     -- 执行检查更新脚本并捕获返回值
     local check_result = luci.sys.call("AutoUpdate > /tmp/autoupdate.log 2>&1")
+    -- 检查退出码是否为1
+    if check_result == 1 then
+        info.check_error = true
+    else
+        info.check_error = false
+    end
+
     -- 获取系统信息
     info.github_url = luci.sys.exec("awk -F'=' '/GITHUB_LINK=/ {gsub(/\"/, \"\", $2); print $2}' /etc/openwrt_update") or ""
     info.local_version = luci.sys.exec("awk -F'=' '/FIRMWARE_VERSION=/ {gsub(/\"/, \"\", $2); print $2}' /etc/openwrt_update") or ""
@@ -68,6 +75,12 @@ local button_upgrade_firmware = s:option(Button, "_upgrade", translate("Upgrade 
     "<br><br>".. translate("Equipment name:").. " ".. sys_info.equipment_name..
     "<br>".. translate("Kernel version:").. " ".. sys_info.kernel_type..
     "<br>".. translate("Firmware type:").. " ".. sys_info.model_type)
+
+-- 如果检查更新失败，显示错误信息
+if sys_info.check_error then
+    button_upgrade_firmware.description = button_upgrade_firmware.description ..
+        "<br><br><span style='color:red;'>" .. translate("Error detected in cloud version number") .. "</span>"
+end
 
 button_upgrade_firmware.inputtitle = translate("Start Upgrade")
 button_upgrade_firmware.template = "autoupdate/upgrade_button"
