@@ -54,7 +54,7 @@ msgstr "本地版本："
 msgid "Cloud firmware version:"
 msgstr "云端版本："
 
-msgid "Equipment_name:"
+msgid "Equipment name:"
 msgstr "主机型号："
 
 msgid "Kernel version:"
