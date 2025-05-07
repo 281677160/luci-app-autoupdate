@@ -44,7 +44,7 @@ run_autoupdate() {
         if echo "${cus_url}" | grep -E "https://github.com/.*/" >/dev/null 2>&1; then
             local custom_github_url
             # 从配置文件中获取已有的自定义 GitHub 网址
-            custom_github_url=$(awk -F'=' '/GITHUB_LINK=/ {print $2}' /etc/openwrt_update)
+            custom_github_url=$(awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}' /etc/openwrt_update)
             local LAN_IP
             # 获取局域网 IP 地址
             LAN_IP=$(uci get network.lan.ipaddr)
