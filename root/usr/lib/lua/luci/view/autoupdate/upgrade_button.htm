@@ -75,7 +75,7 @@ function checkUpgradeStatus(retryCount = 0) {
         } else {
             clearInterval(statusCheckInterval);
             statusCheckInterval = null;
-            updateUI(false, '<%:检查更新%>', '状态检查失败', true);
+            updateUI(false, '<%:检查更新%>', '升级成功,请刷新页面', true);
         }
     });
 }
