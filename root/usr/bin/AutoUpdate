@@ -41,10 +41,10 @@ TIME() {
 # Remote_detection 函数，用于远程检测必要文件和获取 API 数据
 Remote_detection() {
     # 清理临时版本文件
-    rm -rf "${tmpcloud_version}"
-    rm -rf "tmp/tags_version"
+    rm -rf "${tmpcloud_version}" >/dev/null 2>&1
+    rm -rf "tmp/tags_version" >/dev/null 2>&1
     if ! grep -E "assets" "$tmpapi_version" >/dev/null 2>&1; then
-        rm -rf "${tmpapi_version}"
+        rm -rf "${tmpapi_version}" >/dev/null 2>&1
     fi
 
     # 检查 openwrt_update 文件是否包含必要信息
