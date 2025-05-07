@@ -55,7 +55,7 @@ Remote_detection() {
         TIME r "缺少openwrt_update文件"
     fi
 
-    # 清理下载中的固件
+    # 清理下载进程
     if [ -f "/tmp/autoupgrade.pid" ]; then
         for tool in "wget" "curl"; do
             # 获取使用该工具的进程 ID
