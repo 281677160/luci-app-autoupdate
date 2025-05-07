@@ -226,7 +226,7 @@ Remote_download() {
     TIME y "开始下载云端固件"
 
     # 检查网络连接
-    if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
+    if [ "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}"
         if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
           # 若 wget 失败，使用 uclient-fetch 下载
