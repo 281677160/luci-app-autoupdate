@@ -94,9 +94,9 @@ Remote_detection() {
             fi
         fi
     else
-        if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
+          wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
         fi
     fi
 
