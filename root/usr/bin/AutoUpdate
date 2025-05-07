@@ -74,7 +74,7 @@ Remote_detection() {
         done
     fi
 
-    if [ ! -f "${tmpapi_version}" ]; then
+    if [ -f "${tmpapi_version}" ]; then
        file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
        if [ -n "$file_info" ]; then
           file_time=$(echo "$file_info" | awk '{print $6, $7}')
