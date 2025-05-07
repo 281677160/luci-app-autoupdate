@@ -154,14 +154,12 @@ Remote_information() {
     TIME y "请输入您要安装的固件前面对应的数值(1~$XYZDSZ)，输入[N/n]则为退出程序"
     while :; do
         read -p "请输入您的选择：" YMXZ
-        if [[ "${YMXZ}" =~ ^[Nn]$ ]]; then
-            exit 0
-        elif [[ -z "${YMXZ}" ]]; then
+        if [ -z "$YMXZ" ]; then
             TIME z "敬告，输入不能为空"
-        elif [[ "${YMXZ}" == "0" ]]; then
-            TIME z "敬告，请输入正确数值(1~$XYZDSZ)"
-        elif [[ "$YMXZ" =~ ^[0-9]+$ ]]; then
-            if [[ "${YMXZ}" -le "${XYZDSZ}" ]]; then
+        elif echo "$YMXZ" | grep -Ei "^[Nn]$" > /dev/null; then
+            exit 0
+        elif echo "$YMXZ" | grep -E "^[0-9]+$" > /dev/null; then
+            if [ "$YMXZ" -le "$XYZDSZ" ] && [ "$YMXZ" -gt 0 ]; then
                 REMOTE_FIRMWARE=$(awk -v line="$YMXZ" 'NR == line {print; exit}' "$tmpfirmware_banben")
                 TIME g "您选择了安装 ${REMOTE_FIRMWARE} 固件"
                 break
