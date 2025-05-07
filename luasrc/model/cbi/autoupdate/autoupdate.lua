@@ -23,11 +23,11 @@ for i = 0, 6 do
 end
 week.default = 0
 
-local hour = s:option(Value, "hour", translate("Hour"))
+local hour = s:option(Value, "hour", translate("Fixed Hour"))
 hour.datatype = "range(0,23)"
 hour.rmempty = false
 
-local minute = s:option(Value, "minute", translate("Minute"))
+local minute = s:option(Value, "minute", translate("Fixed Minute"))
 minute.datatype = "range(0,59)"
 minute.rmempty = false
 
