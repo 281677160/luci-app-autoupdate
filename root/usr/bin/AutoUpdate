@@ -57,7 +57,7 @@ Remote_detection() {
 
     # 清理下载进程
     if [ -f "/tmp/autoupgrade.pid" ]; then
-        for tool in "wget" "curl"; do
+        for tool in "wget" "uclient-fetch" "curl"; do
             # 获取使用该工具的进程 ID
             PROCESS_IDS=$(ps | grep "$tool" | grep -v grep | awk '{print $1}')
             # 如果找到进程 ID，则尝试结束进程
