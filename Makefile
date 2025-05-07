@@ -10,7 +10,7 @@ PKG_NAME:=luci-app-autoupdate
 PKG_MAINTAINER:=AutoUpdate <281677160@qq.com>
 
 LUCI_TITLE:=LuCI Support for AutoUpdate
-LUCI_DEPENDS:=+curl +wget-ssl
+LUCI_DEPENDS:=+uclient-fetch +wget-ssl
 LUCI_PKGARCH:=all
 
 
