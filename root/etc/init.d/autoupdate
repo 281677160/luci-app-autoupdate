@@ -1,55 +1,63 @@
 #!/bin/sh /etc/rc.common
 START=99
 
+# 检查自动更新脚本和配置文件是否存在
+if [ ! -f "/etc/openwrt_update" ]; then
+    echo "自动更新脚本配置文件不存在，无法运行自动更新"
+    exit 1
+fi
+
 # 运行自动更新的函数
 run_autoupdate() {
-    # 检查自动更新脚本和配置文件是否存在
-    if [ -f "/usr/bin/AutoUpdate" ] && [ -f "/etc/openwrt_update" ]; then
-        local enable
-        local use_no_config_update
-        # 从配置中获取启用状态和勾选框状态
-        config_get_bool enable "$1" enable
-        config_get use_no_config_update "$1" use_no_config_update
+    local config_section="$1"
+    local enable
+    local use_no_config_update
+    local minute
+    local hour
+    local week
+    local update_command
+    local luci_url
+    local update_url_file_content
+    local current_update_url
 
-        if [ "$enable" = "1" ]; then
-            local minute
-            local hour
-            local week
-            # 从配置中获取时间相关设置
-            config_get week "$1" week
-            config_get minute "$1" minute
-            config_get hour "$1" hour
-            # 如果 week 为 7，转换为 * 表示每周
-            [ "$week" = "7" ] && week="*"
-            # 从 crontab 中删除与 AutoUpdate 相关的任务
-            sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
+    # 从 UCI 配置中获取启用状态和勾选框状态
+    enable=$(uci get "autoupdate.$config_section.enable")
+    use_no_config_update=$(uci get "autoupdate.$config_section.use_no_config_update")
 
-            # 根据勾选框状态选择命令
-            local update_command
-            if [ "$use_no_config_update" = "1" ]; then
-                update_command="AutoUpdate -k"
-            else
-                update_command="AutoUpdate -u"
-            fi
+    if [ "$enable" == "1" ]; then
+        # 从 UCI 配置中获取时间相关设置
+        week=$(uci get "autoupdate.$config_section.week")
+        [ "$week" == "7" ] && week="*"
+        minute=$(uci get "autoupdate.$config_section.minute")
+        hour=$(uci get "autoupdate.$config_section.hour")
 
-            # 添加新的自动更新任务到 crontab
-            echo "$minute $hour * * $week $update_command" >> /etc/crontabs/root
-            # 重启 cron 服务使新任务生效
-            /etc/init.d/cron restart
+        # 从 crontab 中删除与 AutoUpdate 相关的任务
+        crontab -l | grep -v AutoUpdate | crontab -
+
+        # 根据勾选框状态选择命令
+        if [ "$use_no_config_update" == "1" ]; then
+            update_command="AutoUpdate -k"
+        else
+            update_command="AutoUpdate -u"
         fi
 
-        local luci_url
-        local update_url
-        luci_url=$(uci get autoupdate.@login[0].github)
-        update_url=$(awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}' /etc/openwrt_update)
-        if echo "${luci_url}" | grep -E "https://github.com/.*/"; then
-            if [ "${luci_url}" != "${update_url}" ]; then
-                sed -i "s?${update_url}?${luci_url}?g" /etc/openwrt_update
-                sleep 2 && /etc/init.d/uhttpd restart
-            fi
-        fi
-    else
-        echo "自动更新脚本或配置文件不存在，无法运行自动更新。"
+        # 添加新的自动更新任务到 crontab
+        (crontab -l 2>/dev/null; echo "$minute $hour * * $week $update_command") | crontab -
+        /etc/init.d/cron restart
+    fi
+
+    # 获取 LuCI 和配置文件中的更新 URL
+    luci_url=$(uci get "autoupdate.$config_section.github")
+    update_url_file_content=$(cat /etc/openwrt_update)
+    current_update_url=$(echo "$update_url_file_content" | awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}')
+
+    # 检查并更新 URL（如果不同）
+    if [[ "$luci_url" =~ ^https://github.com/.*$ ]] && [ "$luci_url" != "$current_update_url" ]; then
+        escaped_current_url=$(printf '%s\n' "$current_update_url" | sed 's:[\/&]:\\&:g')
+        escaped_luci_url=$(printf '%s\n' "$luci_url" | sed 's:[\/&]:\\&:g')
+        sed -i "s#${escaped_current_url}#${escaped_luci_url}#g" /etc/openwrt_update
+        sleep 1
+        /etc/init.d/uhttpd restart
     fi
 }
 
@@ -62,8 +70,7 @@ start() {
 # 停止函数
 stop() {
     # 从 crontab 中删除与 AutoUpdate 相关的任务
-    sed -i '/AutoUpdate/d' /etc/crontabs/root >/dev/null 2>&1
-    # 重启 cron 服务
+    crontab -l | grep -v AutoUpdate | crontab -
     /etc/init.d/cron restart
 }
 
