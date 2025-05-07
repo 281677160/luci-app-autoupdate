@@ -223,21 +223,20 @@ Remote_download() {
         rm -rf "${DOWNLOAD_PATH}"/*
     fi
 
-    cd "${DOWNLOAD_PATH}"
     TIME y "开始下载云端固件"
 
     # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
         fi
     else
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
         fi
     fi
 
@@ -249,14 +248,14 @@ Remote_download() {
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
-    LOCAL_MD5256=$(md5sum "${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${REMOTE_FIRMWARE}" | cut -c1-3)
+    LOCAL_MD5256=$(md5sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)
     CLOUD_MD5256="${CLOUD_MD256}"
 
     # 进行 MD5 校验
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
         TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
     else
-        chmod 755 "${REMOTE_FIRMWARE}"
+        chmod 755 "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
         TIME g "MD5对比成功"
     fi
 
@@ -303,7 +302,7 @@ Remote_download() {
         echo -ne "\r   \r"
     done
 
-    ${UPGRADE_COMMAND} "${REMOTE_FIRMWARE}"
+    ${UPGRADE_COMMAND} "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
 }
 
 # 根据命令行参数执行相应操作
