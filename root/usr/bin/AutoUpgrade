@@ -192,7 +192,7 @@ Remote_information() {
                 [Yy])
                     upgrade_tions="1"
                     tongzhi="保留配置"
-                    TIME y "保留配置更新固件"
+                    TIME b "保留配置更新固件"
                     break
                     ;;
                 [Nn])
@@ -288,6 +288,7 @@ Remote_download() {
         else
             UPGRADE_COMMAND='sysupgrade -F -q'
         fi
+        TIME g "备份完成"
     else
         UPGRADE_COMMAND='sysupgrade -F -n'
     fi
