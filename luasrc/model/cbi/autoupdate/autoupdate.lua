@@ -101,6 +101,9 @@ function button_upgrade_firmware.write(self, section)
     luci.http.redirect(luci.dispatcher.build_url("admin/system/autoupdate"))
 end
 
+-- 删除标记
+os.execute("rm -f /tmp/autotimes 2>&1")
+
 -- 应用设置后重启服务
 local uci = require("luci.model.uci").cursor()
 uci:set("autoupdate", "config", "enable", "1")
