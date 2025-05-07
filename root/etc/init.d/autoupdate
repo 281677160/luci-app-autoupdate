@@ -52,7 +52,7 @@ run_autoupdate() {
     current_update_url=$(echo "$update_url_file_content" | awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}')
 
     # 检查并更新 URL（如果不同）
-    if [[ "$luci_url" =~ ^https://github.com/.*$ ]] && [ "$luci_url" != "$current_update_url" ]; then
+    if [ "$luci_url" != "$current_update_url" ]; then
         escaped_current_url=$(printf '%s\n' "$current_update_url" | sed 's:[\/&]:\\&:g')
         escaped_luci_url=$(printf '%s\n' "$luci_url" | sed 's:[\/&]:\\&:g')
         sed -i "s#${escaped_current_url}#${escaped_luci_url}#g" /etc/openwrt_update
