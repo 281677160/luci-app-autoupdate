@@ -80,3 +80,6 @@ msgstr "提示：脚本运行失败,请看页面显示信息"
 
 msgid "Check update failed"
 msgstr "脚本运行失败,请看页面显示信息"
+
+msgid "Error detected in cloud version number"
+msgstr "获取云端版本号失败,请看[云端版本]显示信息"
