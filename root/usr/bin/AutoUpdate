@@ -254,7 +254,7 @@ Remote_download() {
     fi
     
     if [ "${Select}" = "u" ]; then
-        TIME y "正在执行更新固件前的备份"
+        TIME g "正在执行更新固件前的备份"
         # 执行删除文件操作
         if [ -f "/etc/deletefile" ]; then
            . /etc/deletefile
@@ -276,9 +276,10 @@ Remote_download() {
         else
             UPGRADE_COMMAND='sysupgrade -F -q'
         fi
+        TIME g "备份完成"
     else
         UPGRADE_COMMAND='sysupgrade -F -n'
-        TIME y "启用不保留配置更新"
+        TIME g "启用不保留配置更新"
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
