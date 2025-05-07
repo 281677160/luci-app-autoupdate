@@ -37,6 +37,7 @@ local function get_sys_info()
 
     -- 确保脚本可执行
     os.execute("chmod +x /usr/bin/AutoUpdate")
+    os.execute("tee /tmp/autotimes 2>&1")
 
     -- 执行检查更新脚本并捕获返回值
     local check_result = luci.sys.call("AutoUpdate > /tmp/autoupdate.log 2>&1")
