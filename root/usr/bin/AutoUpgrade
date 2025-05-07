@@ -13,19 +13,24 @@ TIME() {
     case $1 in
         r) # 红色
             printf "\033[31m%s\033[0m\n" "$2"
+            echo
             exit 1
             ;;
         z) # 红色
             printf "\033[31m%s\033[0m\n" "$2"
+            echo
             ;;
         g) # 绿色
             printf "\033[32m%s\033[0m\n" "$2"
+            echo
             ;;
         b) # 蓝色
             printf "\033[34m%s\033[0m\n" "$2"
+            echo
             ;;
         y) # 黄色
             printf "\033[33m%s\033[0m\n" "$2"
+            echo
             ;;
     esac
 }
@@ -131,8 +136,8 @@ Remote_information() {
     echo
     TIME y "以下为可选升级固件："
     TIME b " ******************************************************************"
-    echo
     cat "$tmpfirmware_banben" | awk '$0=NR"、"$0' | awk '{print "  " $0}'
+    echo
     TIME b " ******************************************************************"
 
     if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
