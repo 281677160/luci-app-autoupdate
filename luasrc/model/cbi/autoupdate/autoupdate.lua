@@ -72,7 +72,7 @@ use_no_config_update.default = use_no_config_update.disabled
 -- 升级按钮（带执行功能）
 local button_upgrade_firmware = s:option(Button, "_upgrade", translate("Upgrade to Latest Version"),
     translate("Click the button below to upgrade to the latest version. Please wait patiently until the router reboots.")..
-    "<br><br>".. translate("Local firmware version:").. " ".. sys_info.local_version..
+    "<br><br><br>".. translate("Local firmware version:").. " ".. sys_info.local_version..
     "<br>".. translate("Cloud firmware version:").. " ".. sys_info.cloud_version..
     "<br><br>".. translate("Equipment name:").. " ".. sys_info.equipment_name..
     "<br>".. translate("Kernel version:").. " ".. sys_info.kernel_type..
