@@ -50,9 +50,9 @@ Remote_detection() {
     fi
 
     # 尝试使用 wget 下载 API 数据
-    if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-        # 若 wget 失败，使用 curl 下载
-        curl -# -L -k --max-time 40 "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
+    if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        # 若 wget 失败，使用 uclient-fetch 下载
+        uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
     fi
 
     # 检查 API 数据是否包含有效信息
@@ -229,13 +229,15 @@ Remote_download() {
     # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 github.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! uclient-fetch --no-check-certificate "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
-            curl -# -L -k "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "$tmpapi_version"; then
+          # 若 wget 失败，使用 uclient-fetch 下载
+          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "$tmpapi_version"
         fi
     else
         echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! uclient-fetch --no-check-certificate "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${REMOTE_FIRMWARE}"; then
-            curl -# -L -k "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -o "${REMOTE_FIRMWARE}"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "$tmpapi_version"; then
+          # 若 wget 失败，使用 uclient-fetch 下载
+          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "$tmpapi_version"
         fi
     fi
 
