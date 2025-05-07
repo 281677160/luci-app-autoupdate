@@ -63,7 +63,7 @@ Remote_detection() {
             # 如果找到进程 ID，则尝试结束进程
             if [ -n "$PROCESS_IDS" ]; then
                 for pid in $PROCESS_IDS; do
-                    # 先尝试发送 TERM 信号正常终止进程
+                    TIME g "结束 $pid 下载进程"
                     kill $pid
                     # 检查进程是否仍然存在，如果存在则发送 KILL 信号强制终止
                     if ps | grep "$pid" | grep -v grep > /dev/null; then
@@ -146,10 +146,10 @@ Remote_information() {
         # 提取云端固件的大小
         X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
         CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
-        echo "固件全名称: $REMOTE_FIRMWARE"
-        echo "固件时间戳: $CLOUD_VERSION"
-        echo "固件MD5值: $CLOUD_MD256"
-        echo "大小 (MB): $CLOUD_FIRMWARE_SIZE"
+        TIME g "固件全名称: $REMOTE_FIRMWARE"
+        TIME g "固件时间戳: $CLOUD_VERSION"
+        TIME g "固件MD5值: $CLOUD_MD256"
+        TIME g "大小 (MB): $CLOUD_FIRMWARE_SIZE"
     else
         TIME r "获取固件信息失败"
     fi
@@ -169,14 +169,14 @@ Remote_information() {
     if [ -z "${LOCAL_VERSION}" ]; then
         TIME r "未知原因,获取本地版本号失败!"
     else
-        TIME g "获取本地版本号成功!"
+        TIME g "获取本地版本号 ${CLOUD_VERSION} 成功!"
     fi
 
     # 检查云端版本号是否获取成功
     if [ -z "${CLOUD_VERSION}" ]; then
         TIME r "获取云端信息失败,x86注意本地跟云端固件显示的引导模式是否一致,或者就是云端压根就没您同类型的固件存在,或者作者更了固件获取条件导致您本地跟云端信息不一致!"
     else
-        TIME g "获取云端版本号成功!"
+        TIME g "获取云端版本号 ${CLOUD_VERSION} 成功!"
     fi
 
     # 检查 /tmp 空间是否足够下载固件
@@ -186,7 +186,7 @@ Remote_information() {
         TIME g "固件tmp空间值[${TMP_AVAILABLE}M],云端固件体积[${CLOUD_FIRMWARE_SIZE}M],路由器空间可下载固件"
     fi
 
-    # 生成标签版本文件
+    # 生成Luci页面显示信息
     echo "MODEL_TYPE=\"${BOOT_TYPE}${FIRMWARE_SUFFIX}\"" > /tmp/tags_version
     echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"" >> /tmp/tags_version
     echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"" >> /tmp/tags_version
@@ -213,8 +213,6 @@ Remote_download() {
     fi
 
     TIME g "开始下载云端固件"
-
-    # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" = "301" ]; then
         echo "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}"
         if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
@@ -231,9 +229,9 @@ Remote_download() {
 
     # 检查下载是否成功
     if [ $? -eq 0 ]; then
-        TIME g "云端固件下载成功"
+        TIME g "云端固件 ${REMOTE_FIRMWARE} 下载成功"
     else
-        TIME r "云端固件下载失败"
+        TIME r "云端固件 ${REMOTE_FIRMWARE} 下载失败"
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
@@ -284,7 +282,6 @@ Remote_download() {
 
     TIME g "升级固件中，请勿断开路由器电源，END"
     ${UPGRADE_COMMAND} "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
-    exit 0
 }
 
 # 根据命令行参数执行相应操作
