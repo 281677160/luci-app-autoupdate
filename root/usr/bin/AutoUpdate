@@ -56,6 +56,7 @@ Remote_detection() {
         TIME r "缺少openwrt_update文件"
     fi
 
+    # 清理下载中的固件
     if [ -f "/tmp/autoupgrade.pid" ]; then
         for tool in "wget" "curl"; do
             # 获取使用该工具的进程 ID
@@ -74,6 +75,7 @@ Remote_detection() {
         done
     fi
 
+    # 检查api文件，不超过5分钟不需要重新下载
     if [ -f "${tmpapi_version}" ]; then
         file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
         if [ -n "$file_info" ]; then
@@ -84,14 +86,14 @@ Remote_detection() {
                 time_diff=$(( (current_time - file_mtime) / 60 ))
                 [ $time_diff -ge 5 ] && \
                 if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-                    # 若 wget 失败，使用 curl 下载
+                    # 若 uclient-fetch 失败，使用 curl 下载
                     curl -# -L -k --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
                 fi
             fi
         fi
     else
         if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
-          # 若 wget 失败，使用 curl 下载
+          # 若 uclient-fetch 失败，使用 curl 下载
           curl -# -L -k --max-time 40 -k "${RELEASE_DOWNLOAD2}/zzz_api" -o "$tmpapi_version"
         fi
     fi
