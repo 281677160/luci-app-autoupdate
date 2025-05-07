@@ -243,11 +243,9 @@ Remote_download() {
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
         TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
     else
+        chmod 755 "${REMOTE_FIRMWARE}"
         TIME g "MD5对比成功"
     fi
-
-    TIME g "正在执行更新固件前的备份"
-    chmod 755 "${REMOTE_FIRMWARE}"
 
     # 移除 gzip 包
     if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
