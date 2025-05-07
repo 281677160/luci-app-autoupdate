@@ -38,24 +38,15 @@ run_autoupdate() {
             /etc/init.d/cron restart
         fi
 
-        local cus_url
-        # 获取自定义的 GitHub 网址
-        cus_url=$(uci get autoupdate.@login[0].github)
-        if echo "${cus_url}" | grep -E "https://github.com/.*/" >/dev/null 2>&1; then
-            local custom_github_url
-            # 从配置文件中获取已有的自定义 GitHub 网址
-            custom_github_url=$(awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}' /etc/openwrt_update)
-            local LAN_IP
-            # 获取局域网 IP 地址
-            LAN_IP=$(uci get network.lan.ipaddr)
-        fi
-
-        if [ -n "${custom_github_url}" ] && [ "${cus_url}" != "${custom_github_url}" ]; then
-            # 更新配置文件中的 GitHub 网址
-            sed -i "s?${custom_github_url}?${cus_url}?g" /etc/openwrt_update
-            uci commit autoupdate
-            # 触发 LuCI 页面更新
-            curl "http://$LAN_IP/cgi-bin/luci/admin/system/autoupdate" >/dev/null 2>&1
+        local luci_url
+        local update_url
+        luci_url=$(uci get autoupdate.@login[0].github)
+        update_url=$(awk -F'=' '/GITHUB_LINK=/ {gsub(/"/, "", $2); print $2}' /etc/openwrt_update)
+        if echo "${luci_url}" | grep -E "https://github.com/.*/"; then
+            if [ "${luci_url}" != "${update_url}" ]; then
+                sed -i "s?${update_url}?${luci_url}?g" /etc/openwrt_update
+                sleep 2 && /etc/init.d/uhttpd restart
+            fi
         fi
     else
         echo "自动更新脚本或配置文件不存在，无法运行自动更新。"
