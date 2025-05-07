@@ -42,9 +42,6 @@ Remote_detection() {
     # 清理临时版本文件
     rm -rf "${tmpcloud_version}" >/dev/null 2>&1
     rm -rf "tmp/tags_version" >/dev/null 2>&1
-    if ! grep -E "assets" "$tmpapi_version" >/dev/null 2>&1; then
-        rm -rf "${tmpapi_version}" >/dev/null 2>&1
-    fi
 
     # 检查 openwrt_update 文件是否包含必要信息
     if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
@@ -53,6 +50,13 @@ Remote_detection() {
         . /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
+    fi
+
+    if [ -f "${tmpcloud_version}" ]; then
+        VERSION_URL=$(grep -o 'https://github.com/[^/]*\/[^/]*/releases/download' "$tmpcloud_version" |head -n 1 |sed 's/\/releases.*//g')
+        if [ "$VERSION_URL" != "$GITHUB_LINK" ]; then
+           rm -rf "$tmpcloud_version"
+        fi
     fi
 
     # 清理下载进程
