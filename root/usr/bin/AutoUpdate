@@ -75,7 +75,7 @@ Remote_detection() {
     fi
 
     # 检查api文件，不超过5分钟不需要重新下载
-    if [ -f "${tmpapi_version}" ]; then
+    if [ -f "${tmpapi_version}" ] && [ -f "/tmp/autotimes" ]; then
         file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
         if [ -n "$file_info" ]; then
             file_time=$(echo "$file_info" | awk '{print $6, $7}')
