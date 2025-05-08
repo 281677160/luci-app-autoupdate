@@ -1,12 +1,6 @@
 #!/bin/sh /etc/rc.common
 START=99
 
-# 检查自动更新脚本和配置文件是否存在
-if [ ! -f "/etc/openwrt_update" ]; then
-    echo "自动更新脚本配置文件不存在，无法运行自动更新"
-    exit 1
-fi
-
 # 运行自动更新的函数
 run_autoupdate() {
     local config_section="$1"
