@@ -18,6 +18,7 @@ TIME() {
         r) 
             echo "${2}" > "$tmpcloud_version"
             printf "%s(出错)：%s\n" "$date" "${2}"
+            rm -rf "$tmpapi_version" >/dev/null 2>&1
             exit 1
             ;;
         g)
