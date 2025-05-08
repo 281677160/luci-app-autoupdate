@@ -107,7 +107,8 @@ Remote_detection() {
 
     # 检查 API 数据是否包含有效信息
     if ! grep -E "assets" "$tmpapi_version" >/dev/null 2>&1; then
-        TIME r "获取API数据失败,Github地址不正确?，或此地址没云端存在，或您的仓库为私库，或网络抽风了再次尝试看看?"
+        ASSETS="$(echo "$GITHUB_LINK" |cut -d"/" -f4-5)"
+        TIME r "获取API数据失败,$ASSETS地址是否正确?，或此地址没云端存在，或您的仓库为私库，或网络抽风了再次尝试看看?"
     else
         TIME g "获取API数据成功!"
     fi
