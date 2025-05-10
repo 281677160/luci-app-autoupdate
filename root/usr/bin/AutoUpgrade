@@ -55,10 +55,8 @@ function Remote_githuburl() {
     read -p "请选择：" SNKC
       case ${SNKC} in
       [Yy])
-          if [ "$gith_url" != "$GITHUB_LINK" ]; then          
-            escaped_current_url=$(printf '%s\n' "$gith_url" | sed 's:[\/&]:\\&:g')
-            escaped_luci_url=$(printf '%s\n' "$GITHUB_LINK" | sed 's:[\/&]:\\&:g')
-            sed -i "s#${escaped_luci_url}#${escaped_current_url}#g" /etc/openwrt_update
+          if [ "$gith_url" != "$GITHUB_LINK" ]; then
+            sed -i "s#${GITHUB_LINK}#${gith_url}#g" /etc/openwrt_update
 	    uci set autoupdate.@login[0].github=$gith_url
  	    uci commit autoupdate
             source /etc/openwrt_update
