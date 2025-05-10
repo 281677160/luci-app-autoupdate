@@ -13,9 +13,6 @@ run_autoupdate() {
     local luci_url
     local update_url_file_content
     local current_update_url
-    local aurl
-    local burl
-
 
     # 从 UCI 配置中获取启用状态和勾选框状态
     enable=$(uci get "autoupdate.$config_section.enable")
@@ -50,11 +47,8 @@ run_autoupdate() {
 
     # 检查并更新 URL（如果不同）
     if [ -n "$luci_url" ] && [ "$luci_url" != "$current_update_url" ]; then
-        escaped_current_url=$(printf '%s\n' "$current_update_url" | sed 's:[\/&]:\\&:g')
         escaped_luci_url=$(printf '%s\n' "$luci_url" | sed 's:[\/&]:\\&:g')
-        aurl="GITHUB_LINK\=\\"\"$escaped_current_url\\"\""
-        burl="GITHUB_LINK\=\\"\"$escaped_luci_url\\"\""
-        sed -i "s#$aurl#$burl#g" /etc/openwrt_update
+        sed -i "s#GITHUB_LINK=.*#GITHUB_LINK=\"$escaped_luci_url\"#" /etc/openwrt_update
         sleep 1
         /etc/init.d/uhttpd restart
     fi
