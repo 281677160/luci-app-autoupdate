@@ -168,88 +168,88 @@ Remote_information() {
     # 获取固件主机名称
     EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
     # 获取本地版本号
-    LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
+    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
     # 构建云端版本显示名称
-    CLOUD_FIRMWARE_VERSION="${SOURCE}-${DEVICE_MODEL}-${CLOUD_VERSION}"
+    CLOUD_FIRMWARE_VERSION="$SOURCE-$DEVICE_MODEL-$CLOUD_VERSION"
 
     # 检查本地版本号是否获取成功
-    if [ -z "${LOCAL_VERSION}" ]; then
+    if [ -z "$LOCAL_VERSION" ]; then
         TIME r "未知原因,获取本地版本号失败!"
     else
-        TIME g "获取本地版本号 ${CLOUD_VERSION} 成功!"
+        TIME g "获取本地版本号 $CLOUD_VERSION 成功!"
     fi
 
     # 检查云端版本号是否获取成功
-    if [ -z "${CLOUD_VERSION}" ]; then
+    if [ -z "$CLOUD_VERSION" ]; then
         TIME r "获取云端信息失败,x86注意本地跟云端固件显示的引导模式是否一致,或者就是云端压根就没您同类型的固件存在,或者作者更了固件获取条件导致您本地跟云端信息不一致!"
     else
-        TIME g "获取云端版本号 ${CLOUD_VERSION} 成功!"
+        TIME g "获取云端版本号 $CLOUD_VERSION 成功!"
     fi
 
     # 检查 /tmp 空间是否足够下载固件
     if [ "$TMP_AVAILABLE" -lt "$CLOUD_FIRMWARE_SIZE" ]; then
-        TIME r "固件tmp空间值[${TMP_AVAILABLE}M],云端固件体积[${CLOUD_FIRMWARE_SIZE}M],路由器空间不足"
+        TIME r "固件tmp空间值[$TMP_AVAILABLEM],云端固件体积[$CLOUD_FIRMWARE_SIZEM],路由器空间不足"
     else
-        TIME g "固件tmp空间值[${TMP_AVAILABLE}M],云端固件体积[${CLOUD_FIRMWARE_SIZE}M],路由器空间可下载固件"
+        TIME g "固件tmp空间值[$TMP_AVAILABLEM],云端固件体积[$CLOUD_FIRMWARE_SIZEM],路由器空间可下载固件"
     fi
 
     # 生成Luci页面显示信息
-    echo "MODEL_TYPE=\"${BOOT_TYPE}${FIRMWARE_SUFFIX}\"" > /tmp/tags_version
-    echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"" >> /tmp/tags_version
-    echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"" >> /tmp/tags_version
+    echo "MODEL_TYPE=\"$BOOT_TYPE$FIRMWARE_SUFFIX\"" > /tmp/tags_version
+    echo "KERNEL_TYPE=\"$KERNEL_MODE - $LUCI_EDITION\"" >> /tmp/tags_version
+    echo "EQUIPMENT_NAME=\"$EQUIPMENT_NAME\"" >> /tmp/tags_version
 
     # 比较本地版本号和云端版本号(上面已经检查过版本号是否存在,这里就不检测了)
     if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
-        TIME z "${CLOUD_FIRMWARE_VERSION} [已是最新]"
+        TIME z "$CLOUD_FIRMWARE_VERSION [已是最新]"
     elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
-        TIME y "${CLOUD_FIRMWARE_VERSION} [有可更新固件]"
+        TIME y "$CLOUD_FIRMWARE_VERSION [有可更新固件]"
     elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
-        TIME z "${CLOUD_FIRMWARE_VERSION} [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
+        TIME z "$CLOUD_FIRMWARE_VERSION [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
     else
-        TIME z "${CLOUD_FIRMWARE_VERSION} [未知]"
+        TIME z "$CLOUD_FIRMWARE_VERSION [未知]"
     fi
 }
 
 # Remote_download 函数，用于远程下载固件并进行 MD5 校验和备份操作
 Remote_download() {
     # 创建下载目录并清理旧文件
-    if [ ! -d "${DOWNLOAD_PATH}" ]; then
-        mkdir -p "${DOWNLOAD_PATH}"
+    if [ ! -d "$DOWNLOAD_PATH" ]; then
+        mkdir -p "$DOWNLOAD_PATH"
     else
-        rm -rf "${DOWNLOAD_PATH}"/*
+        rm -rf "$DOWNLOAD_PATH"/*
     fi
 
     TIME g "开始下载云端固件"
     if [ "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" = "301" ]; then
-        echo "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
+        echo "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         fi
     else
-        echo "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
+        echo "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         fi
     fi
 
     # 检查下载是否成功
     if [ $? -eq 0 ]; then
-        TIME g "云端固件 ${REMOTE_FIRMWARE} 下载成功"
+        TIME g "云端固件 $REMOTE_FIRMWARE 下载成功"
     else
-        TIME r "云端固件 ${REMOTE_FIRMWARE} 下载失败"
+        TIME r "云端固件 $REMOTE_FIRMWARE 下载失败"
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
-    LOCAL_MD5256=$(md5sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)
-    CLOUD_MD5256="${CLOUD_MD256}"
+    LOCAL_MD5256=$(md5sum "$DOWNLOAD_PATH/$REMOTE_FIRMWARE" | cut -c1-3)$(sha256sum "$DOWNLOAD_PATH/$REMOTE_FIRMWARE" | cut -c1-3)
+    CLOUD_MD5256="$CLOUD_MD256"
 
     # 进行 MD5 校验
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
         TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
     else
-        chmod 755 "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+        chmod 755 "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         TIME g "MD5对比成功"
     fi
 
@@ -288,7 +288,7 @@ Remote_download() {
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
-    ${UPGRADE_COMMAND} "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+    $UPGRADE_COMMAND "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
 }
 
 # 根据命令行参数执行相应操作
