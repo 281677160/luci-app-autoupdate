@@ -329,7 +329,7 @@ Remote_download() {
     sleep 1
     seconds=9
     while [ $seconds -gt 0 ]; do
-        echo -n "${seconds} "
+        echo -n "${seconds}  "
         sleep 1
         seconds=$((seconds - 1))
         echo -ne "\r   \r"
