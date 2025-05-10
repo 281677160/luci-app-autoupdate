@@ -16,17 +16,15 @@ TIME() {
             exit 1
             ;;
         z) # 红色
-            echo -e "\033[0;31m$2\033[0m\n"
-            ;;
+            echo -e "\033[0;31m$2\033[0m\n";;
         g) # 绿色
-            echo -e "\033[0;32m$2\033[0m\n"
-            ;;
+            echo -e "\033[0;32m$2\033[0m\n";;
         b) # 蓝色
-            echo -e "\033[0;34m$2\033[0m\n"
-            ;;
+            echo -e "\033[0;34m$2\033[0m\n";;
         y) # 黄色
-            echo -e "\033[0;33m$2\033[0m\n"
-            ;;
+            echo -e "\033[0;33m$2\033[0m\n";;
+        *) # 原色
+            echo -e "\033[0;0m$2\033[0m\n";;
     esac
 }
 
@@ -46,7 +44,7 @@ function Remote_githuburl() {
     fi
 
     TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
-    echo "仓库链接格式：https://github.com/账号/仓库"
+    TIME a "仓库链接格式：https://github.com/账号/仓库"
     TIME g "您现在仓库为：${GITHUB_LINK}"
     read -p "请输入：" git_url
     gith_url=${git_url:-"${GITHUB_LINK}"}
