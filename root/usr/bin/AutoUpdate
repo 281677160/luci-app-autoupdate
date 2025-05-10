@@ -53,6 +53,7 @@ Remote_detection() {
         TIME r "缺少openwrt_update文件"
     fi
 
+    # 检查是否更改了仓库链接
     if [ -f "$tmpapi_version" ]; then
         VERSION_URL=$(grep -Eo 'https://github.com/[^/]*\/[^/]*/releases/download' "$tmpapi_version" |head -n 1 |sed 's/\/releases.*//g')
         if [ "$VERSION_URL" != "$GITHUB_LINK" ]; then
