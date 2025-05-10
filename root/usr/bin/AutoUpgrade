@@ -12,25 +12,20 @@ tmpapi_version="/tmp/api_version"
 TIME() {
     case $1 in
         r) # 红色
-            printf "\033[31m%s\033[0m\n" "$2"
-            echo
+            printf "\033[0;31m%s\033[0m\n" "$2"
             exit 1
             ;;
         z) # 红色
-            printf "\033[31m%s\033[0m\n" "$2"
-            echo
+            printf "\033[0;31m%s\033[0m\n" "$2"
             ;;
         g) # 绿色
-            printf "\033[32m%s\033[0m\n" "$2"
-            echo
+            printf "\033[0;32m%s\033[0m\n" "$2"
             ;;
         b) # 蓝色
-            printf "\033[34m%s\033[0m\n" "$2"
-            echo
+            printf "\033[0;34m%s\033[0m\n" "$2"
             ;;
         y) # 黄色
-            printf "\033[33m%s\033[0m\n" "$2"
-            echo
+            printf "\033[0;33m%s\033[0m\n" "$2"
             ;;
     esac
 }
