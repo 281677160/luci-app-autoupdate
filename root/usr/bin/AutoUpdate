@@ -91,7 +91,7 @@ Remote_detection() {
                 TIME g "系统时间戳：$current_time"
                 time_diff=$(( (current_time - file_mtime) / 60 ))
                 TIME g "比对后的时间：$time_diff"
-                [ $time_diff -ge 5 ] && \
+                [ $time_diff -ge 3 ] && \
                 if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
                     # 若 wget 失败，使用 uclient-fetch 下载
                     wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
