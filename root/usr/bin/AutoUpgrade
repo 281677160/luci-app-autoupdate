@@ -30,20 +30,55 @@ TIME() {
     esac
 }
 
-# 远程检测函数，检查必要文件和获取 API 数据
-Remote_detection() {
+# 询问是否更改github链接
+function Remote_githuburl() {
+    clear
     # 清理临时版本文件
     rm -rf /tmp/*_version
 
     # 检查 openwrt_update 文件是否包含必要信息
     if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
        grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
-        chmod 755 /etc/openwrt_update
+       chmod 755 /etc/openwrt_update
         . /etc/openwrt_update
     else
-        TIME r "缺少 openwrt_update 文件"
+        TIME r "缺少openwrt_update文件"
     fi
 
+    TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
+    echo "仓库链接格式：https://github.com/账号/仓库"
+    TIME g "您现在仓库为：${GITHUB_LINK}"
+    read -p "请输入：" git_url
+    gith_url=${git_url:-"${GITHUB_LINK}"}
+    TIME b "您仓库链接为：${gith_url}"
+
+    TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
+    while :; do
+    read -p "请选择：" SNKC
+      case ${SNKC} in
+      [Yy])
+          sed -i "s?${GITHUB_LINK}?${gith_url}?g" /etc/openwrt_update
+          source /etc/openwrt_update
+          break
+      ;;
+      [Qq])
+          clear
+          Remote_githuburl
+          break
+      ;;
+      [Nn])
+          exit 0
+          break
+      ;;
+      *)
+          TIME r "请输入正确选项"
+      ;;
+      esac
+    done
+}
+
+# 远程检测函数，检查必要文件和获取 API 数据
+Remote_detection() {
     # 尝试使用 wget 下载 API 数据
     if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
         # 若 wget 失败，使用 uclient-fetch 下载
@@ -304,11 +339,13 @@ Remote_download() {
 # 根据命令行参数执行相应操作
 case "$1" in
     "-u")
+        Remote_githuburl
         Remote_detection
         Remote_information
         Remote_download
         ;;
     *)
+        Remote_githuburl
         Remote_detection
         Remote_information
         ;;
