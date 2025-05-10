@@ -198,15 +198,15 @@ Remote_information() {
     echo "KERNEL_TYPE=\"${KERNEL_MODE} - ${LUCI_EDITION}\"" >> /tmp/tags_version
     echo "EQUIPMENT_NAME=\"${EQUIPMENT_NAME}\"" >> /tmp/tags_version
 
-    # 比较本地版本号和云端版本号
-    if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
-        if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
-            TIME z "${CLOUD_FIRMWARE_VERSION} [已是最新]"
-        elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
-            TIME y "${CLOUD_FIRMWARE_VERSION} [有可更新固件]"
-        elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
-            TIME z "${CLOUD_FIRMWARE_VERSION} [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
-        fi
+    # 比较本地版本号和云端版本号(上面已经检查过版本号是否存在,这里就不检测了)
+    if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
+        TIME z "${CLOUD_FIRMWARE_VERSION} [已是最新]"
+    elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
+        TIME y "${CLOUD_FIRMWARE_VERSION} [有可更新固件]"
+    elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
+        TIME z "${CLOUD_FIRMWARE_VERSION} [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
+    else
+        TIME z "${CLOUD_FIRMWARE_VERSION} [未知]"
     fi
 }
 
