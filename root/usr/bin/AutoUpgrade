@@ -56,12 +56,12 @@ function Remote_githuburl() {
       case ${SNKC} in
       [Yy])
           if [ "$gith_url" != "$GITHUB_LINK" ]; then
-	    a="GITHUB_LINK\=\\"\"$GITHUB_LINK\\"\""
-	    b="GITHUB_LINK\=\\"\"$gith_url\\"\""
-	    sed -i "s#$a#$b#g" /etc/openwrt_update
-	    uci set autoupdate.@login[0].github=$gith_url
- 	    uci commit autoupdate
-            source /etc/openwrt_update
+	     a="GITHUB_LINK\=\\"\"$GITHUB_LINK\\"\""
+	     b="GITHUB_LINK\=\\"\"$gith_url\\"\""
+	     sed -i "s#$a#$b#g" /etc/openwrt_update
+	     uci set autoupdate.@login[0].github=$gith_url
+ 	     uci commit autoupdate
+             source /etc/openwrt_update
           fi
           break
       ;;
