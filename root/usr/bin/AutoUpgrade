@@ -49,7 +49,7 @@ function Remote_githuburl() {
     read -p "请输入：" git_url
     gith_url=${git_url:-"${GITHUB_LINK}"}
     TIME b "您仓库链接为：${gith_url}"
-
+    echo
     TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
     while :; do
     read -p "请选择：" SNKC
