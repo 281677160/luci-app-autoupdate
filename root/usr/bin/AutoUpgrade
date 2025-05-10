@@ -45,10 +45,10 @@ function Remote_githuburl() {
     echo
     TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
     TIME a "仓库链接格式：https://github.com/账号/仓库"
-    TIME g "您现在仓库为：${GITHUB_LINK}"
+    TIME g "您现在仓库为：$GITHUB_LINK"
     read -p "请输入：" git_url
-    gith_url=${git_url:-"${GITHUB_LINK}"}
-    TIME b "您仓库链接为：${gith_url}"
+    gith_url=${git_url:-"$GITHUB_LINK"}
+    TIME b "您仓库链接为：$gith_url"
     echo
     TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
     while :; do
@@ -56,7 +56,7 @@ function Remote_githuburl() {
       case ${SNKC} in
       [Yy])
           if [ "$gith_url" != "$GITHUB_LINK" ]; then
-            sed -i "s#${GITHUB_LINK}#${gith_url}#g" /etc/openwrt_update
+            sed -i "s#$GITHUB_LINK#$gith_url#g" /etc/openwrt_update
 	    uci set autoupdate.@login[0].github=$gith_url
  	    uci commit autoupdate
             source /etc/openwrt_update
