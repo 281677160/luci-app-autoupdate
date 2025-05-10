@@ -30,7 +30,6 @@ TIME() {
 
 # 询问是否更改github链接
 function Remote_githuburl() {
-    clear
     # 清理临时版本文件
     rm -rf /tmp/*_version
 
@@ -42,7 +41,8 @@ function Remote_githuburl() {
     else
         TIME r "缺少openwrt_update文件"
     fi
-
+    clear
+    echo
     TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
     TIME a "仓库链接格式：https://github.com/账号/仓库"
     TIME g "您现在仓库为：${GITHUB_LINK}"
