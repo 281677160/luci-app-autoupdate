@@ -33,51 +33,60 @@ function Remote_githuburl() {
     # 清理临时版本文件
     rm -rf /tmp/*_version
 
-    # 检查 openwrt_update 文件是否包含必要信息
-    if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
-       grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
-       chmod 755 /etc/openwrt_update
-        . /etc/openwrt_update
+    # 检查 openwrt_update 文件是否存在且包含必要信息
+    if [ -f "/etc/openwrt_update" ] && \
+       grep -qE "GITHUB_LINK" "/etc/openwrt_update" && \
+       grep -qE "RELEASE_DOWNLOAD" "/etc/openwrt_update"; then
+        chmod 755 /etc/openwrt_update
+        source /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
+        exit 1
     fi
-    clear
-    echo
-    TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
-    TIME a "仓库链接格式：https://github.com/账号/仓库"
-    TIME g "您现在仓库为：$GITHUB_LINK"
-    read -p "请输入：" git_url
-    gith_url=${git_url:-"$GITHUB_LINK"}
-    TIME b "您仓库链接为：$gith_url"
-    echo
-    TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
-    while :; do
-    read -p "请选择：" SNKC
-      case ${SNKC} in
-      [Yy])
-          if [ "$gith_url" != "$GITHUB_LINK" ]; then
-	     a="GITHUB_LINK\=\\"\"$GITHUB_LINK\\"\""
-	     b="GITHUB_LINK\=\\"\"$gith_url\\"\""
-	     sed -i "s#$a#$b#g" /etc/openwrt_update
-	     uci set autoupdate.@login[0].github=$gith_url
- 	     uci commit autoupdate
-             source /etc/openwrt_update
-          fi
-          break
-      ;;
-      [Qq])
-          clear
-          Remote_githuburl
-          break
-      ;;
-      [Nn])
-          exit 0
-          break
-      ;;
-      *)
-          TIME r "请输入正确选项"
-      ;;
-      esac
+
+    local current_repo="$GITHUB_LINK"
+    local new_repo=""
+    
+    while true; do
+        clear
+        echo
+        TIME y "是否更换仓库？更换仓库请输入新仓库链接,不需要则留空回车"
+        TIME a "仓库链接格式：https://github.com/账号/仓库"
+        TIME g "您现在仓库为：$current_repo"
+        
+        read -rp "请输入：" new_repo
+        new_repo="${new_repo:-$current_repo}"
+        
+        TIME b "您仓库链接为：$new_repo"
+        echo
+        TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
+        
+        read -rp "请选择：" response
+        case "$response" in
+            [Yy])
+                if [ "$new_repo" != "$current_repo" ]; then
+                    # 使用更安全的sed替换方式
+                    sed -i "s#GITHUB_LINK=.*#GITHUB_LINK=\"$new_repo\"#" /etc/openwrt_update
+                    uci set autoupdate.@login[0].github="$new_repo"
+                    uci commit autoupdate
+                    source /etc/openwrt_update
+                    TIME g "仓库链接已更新"
+                else
+                    TIME g "使用现有仓库链接"
+                fi
+                return 0
+                ;;
+            [Qq])
+                continue  # 直接进入下一次循环，避免递归调用
+                ;;
+            [Nn])
+                echo "操作已取消"
+                return 0
+                ;;
+            *)
+                TIME r "请输入正确选项"
+                ;;
+        esac
     done
 }
 
