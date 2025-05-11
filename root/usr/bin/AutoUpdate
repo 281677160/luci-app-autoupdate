@@ -120,13 +120,13 @@ Remote_detection() {
 # Remote_information 函数，用于获取固件信息并进行版本比较
 Remote_information() {
     # 根据目标板和固件后缀确定引导类型
-    if [ "${TARGET_BOARD}" = "x86" ]; then
+    if [ "$TARGET_BOARD" = "x86" ]; then
         if [ -d '/sys/firmware/efi' ]; then
             BOOT_TYPE=uefi
         else
             BOOT_TYPE=legacy
         fi
-    elif [ "${FIRMWARE_SUFFIX}" = ".img.gz" ]; then
+    elif [ "$FIRMWARE_SUFFIX" = ".img.gz" ]; then
         BOOT_TYPE=legacy
     else
         BOOT_TYPE=sysupgrade
