@@ -16,22 +16,22 @@ TIME() {
     date=$(date "+%Y年%m月%d日%H时%M分%S秒")
     case $1 in
         r) 
-            echo "${2}" > "$tmpcloud_version"
+            echo "$2" > "$tmpcloud_version"
             printf "%s(出错)：%s\n" "$date" "${2}"
             rm -rf "$tmpapi_version" >/dev/null 2>&1
             exit 1
             ;;
         g)
-            echo "${2}" > "$tmpcloud_version"
+            echo "$2" > "$tmpcloud_version"
             printf "%s：%s\n" "$date" "${2}"
             ;;
         z)
-            echo "${2}" > "$tmpcloud_version"
+            echo "$2" > "$tmpcloud_version"
             printf "%s：%s\n" "$date" "${2}"
             exit 0
             ;;
         y)
-            echo "${2}" > "$tmpcloud_version"
+            echo "$2" > "$tmpcloud_version"
             echo "update" > /tmp/compare_version
             printf "%s：%s\n" "$date" "${2}"
             ;;
@@ -41,16 +41,18 @@ TIME() {
 # Remote_detection 函数，用于远程检测必要文件和获取 API 数据
 Remote_detection() {
     # 清理临时版本文件
-    rm -rf "${tmpcloud_version}" >/dev/null 2>&1
+    rm -rf "$tmpcloud_version" >/dev/null 2>&1
     rm -rf "tmp/tags_version" >/dev/null 2>&1
 
     # 检查 openwrt_update 文件是否包含必要信息
-    if grep -E "GITHUB_LINK" "/etc/openwrt_update" >/dev/null 2>&1 && \
-       grep -E "RELEASE_DOWNLOAD" "/etc/openwrt_update" >/dev/null 2>&1; then
+    if [ -f "/etc/openwrt_update" ] && \
+       grep -qE "GITHUB_LINK" "/etc/openwrt_update" && \
+       grep -qE "RELEASE_DOWNLOAD" "/etc/openwrt_update"; then
         chmod 755 /etc/openwrt_update
-        . /etc/openwrt_update
+        source /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
+        exit 1
     fi
 
     # 检查是否更改了仓库链接
@@ -81,7 +83,7 @@ Remote_detection() {
     fi
 
     # 检查api文件，不超过5分钟不需要重新下载
-    if [ -f "${tmpapi_version}" ] && [ -f "/tmp/autotimes" ]; then
+    if [ -f "$tmpapi_version" ] && [ -f "/tmp/autotimes" ]; then
         file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
         if [ -n "$file_info" ]; then
             file_time=$(echo "$file_info" | awk '{print $6, $7}')
@@ -93,16 +95,16 @@ Remote_detection() {
                 time_diff=$(( (current_time - file_mtime) / 60 ))
                 TIME g "比对后的时间：$time_diff"
                 [ $time_diff -ge 3 ] && \
-                if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+                if ! uclient-fetch --no-check-certificate --timeout=40 "$RELEASE_DOWNLOAD1/zzz_api" -O "$tmpapi_version"; then
                     # 若 wget 失败，使用 uclient-fetch 下载
-                    wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
+                    wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "$RELEASE_DOWNLOAD2/zzz_api" -O "$tmpapi_version"
                 fi
             fi
         fi
     else
-        if ! uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+        if ! uclient-fetch --no-check-certificate --timeout=40 "$RELEASE_DOWNLOAD1/zzz_api" -O "$tmpapi_version"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
+          wget -q --show-progress --no-check-certificate --no-use-server-timestamps --timeout=40 -t 1 "$RELEASE_DOWNLOAD2/zzz_api" -O "$tmpapi_version"
         fi
     fi
 
@@ -288,7 +290,7 @@ Remote_download() {
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
-    $UPGRADE_COMMAND "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
+    "$UPGRADE_COMMAND" "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
 }
 
 # 根据命令行参数执行相应操作
