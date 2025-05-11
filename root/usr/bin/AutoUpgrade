@@ -80,7 +80,7 @@ function Remote_githuburl() {
                 continue  # 直接进入下一次循环，避免递归调用
                 ;;
             [Nn])
-                echo "操作已取消"
+                echo "退出程序"
                 exit 0
                 ;;
             *)
