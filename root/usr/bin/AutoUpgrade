@@ -23,6 +23,8 @@ TIME() {
             echo -e "\033[0;33m$2\033[0m\n";;
         b) # 蓝色
             echo -e "\033[0;34m$2\033[0m\n";;
+        q) # 青色
+            echo -e "\033[0;36m$2\033[0m\n";;
         *) # 原色
             echo -e "\033[0;0m$2\033[0m\n";;
     esac
@@ -56,7 +58,7 @@ function Remote_githuburl() {
         read -rp "请输入：" new_repo
         new_repo="${new_repo:-$current_repo}"
 
-        TIME b "您仓库链接为：$new_repo"
+        TIME q "您仓库链接为：$new_repo"
         echo
         TIME y "仓库链接是否正确？正确输入[Y/y]回车继续,重新输入则[Q/q]回车,[N/n]回车退出程序"
 
@@ -231,8 +233,8 @@ Remote_information() {
 
     if [[ -n "$(echo "$REMOTE_FIRMWARE" | grep -E "$y")" ]]; then
         echo
-        TIME y "此固件跟您现在所用的固件为同类型固件($y)"
-        TIME g "可以选择保留配置或不保留配置升级"
+        TIME q "此固件跟您现在所用的固件为同类型固件($y)"
+        TIME q "可以选择保留配置或不保留配置升级"
         echo
         xuzqxz="输入[Y/y]为保留配置，输入[N/n]为不保留配置"
         while :; do
@@ -274,13 +276,13 @@ Remote_download() {
 
     TIME y "开始下载云端固件"
     if [ "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" = "301" ]; then
-        echo "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE"
+        TIME q "固件链接：$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE"
         if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
           uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         fi
     else
-        echo "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE"
+        TIME q "固件链接：$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE"
         if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
           uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
