@@ -93,9 +93,9 @@ function Remote_githuburl() {
 # 远程检测函数，检查必要文件和获取 API 数据
 Remote_detection() {
     # 尝试使用 wget 下载 API 数据
-    if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "${RELEASE_DOWNLOAD1}/zzz_api" -O "$tmpapi_version"; then
+    if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "$RELEASE_DOWNLOAD1/zzz_api" -O "$tmpapi_version"; then
         # 若 wget 失败，使用 uclient-fetch 下载
-        uclient-fetch --no-check-certificate --timeout=40 "${RELEASE_DOWNLOAD2}/zzz_api" -O "$tmpapi_version"
+        uclient-fetch --no-check-certificate --timeout=40 "$RELEASE_DOWNLOAD2/zzz_api" -O "$tmpapi_version"
     fi
 
     # 检查 API 数据是否包含有效信息
@@ -110,13 +110,13 @@ Remote_detection() {
 # 远程信息函数，获取固件信息并进行版本比较
 Remote_information() {
     # 根据目标板和固件后缀确定引导类型
-    if [ "${TARGET_BOARD}" = "x86" ]; then
+    if [ "$TARGET_BOARD" = "x86" ]; then
         if [ -d '/sys/firmware/efi' ]; then
             BOOT_TYPE=uefi
         else
             BOOT_TYPE=legacy
         fi
-    elif [ "${FIRMWARE_SUFFIX}" = ".img.gz" ]; then
+    elif [ "$FIRMWARE_SUFFIX" = ".img.gz" ]; then
         BOOT_TYPE=legacy
     else
         BOOT_TYPE=sysupgrade
@@ -138,10 +138,10 @@ Remote_information() {
     fi
 
     KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
-    LOCAL_VERSION=$(echo "${FIRMWARE_VERSION}" | awk -F'-' '{print $NF}')
+    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
     CLOUD_VERSION=$(echo "$MOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
-    if [ -n "${MOTE_FIRMWARE}" ]; then
-        echo "${MOTE_FIRMWARE}" > "$tmpfirmware_banben"
+    if [ -n "$MOTE_FIRMWARE" ]; then
+        echo "$MOTE_FIRMWARE" > "$tmpfirmware_banben"
     else
         echo -n > "$tmpfirmware_banben"
     fi
@@ -184,7 +184,7 @@ Remote_information() {
     echo
     TIME b " ******************************************************************"
 
-    if [ -n "${LOCAL_VERSION}" ] && [ -n "${CLOUD_VERSION}" ]; then
+    if [ -n "$LOCAL_VERSION" ] && [ -n "$CLOUD_VERSION" ]; then
         if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
             TIME g "提示：当前版本跟云端同类型固件($y)，版本是一致的"
         elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
@@ -216,7 +216,7 @@ Remote_information() {
     done
 
     TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
-    CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
+    CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "${BOOT_TYPE}-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
     X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
     CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
 
@@ -224,7 +224,7 @@ Remote_information() {
         TIME r "固件 tmp 空间值[${TMP_AVAILABLE}M], 云端固件体积[${CLOUD_FIRMWARE_SIZE}M], 路由器空间不足"
     fi
 
-    if [[ -n "$(echo "${REMOTE_FIRMWARE}" | grep -E "${y}")" ]]; then
+    if [[ -n "$(echo "$REMOTE_FIRMWARE" | grep -E "$y")" ]]; then
         echo
         TIME y "此固件跟您现在所用的固件为同类型固件($y)"
         TIME g "可以选择保留配置或不保留配置升级"
@@ -261,26 +261,24 @@ Remote_information() {
 # 远程下载函数，下载固件并进行 MD5 校验和备份操作
 Remote_download() {
     # 创建下载目录并清理旧文件
-    if [ ! -d "${DOWNLOAD_PATH}" ]; then
-        mkdir -p "${DOWNLOAD_PATH}"
+    if [ ! -d "$DOWNLOAD_PATH" ]; then
+        mkdir -p "$DOWNLOAD_PATH"
     else
-        rm -rf "${DOWNLOAD_PATH}"/*
+        rm -rf "$DOWNLOAD_PATH"/*
     fi
 
     TIME y "开始下载云端固件"
-
-    # 检查网络连接
     if [ "$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)" = "301" ]; then
-        TIME b "固件链接：${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
+        echo "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         fi
     else
-        TIME b "固件链接：${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}"
-        if ! wget -q --show-progress --no-check-certificate -t 1 "${RELEASE_DOWNLOAD1}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"; then
+        echo "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE"
+        if ! wget -q --show-progress --no-check-certificate -t 1 "$RELEASE_DOWNLOAD1/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"; then
           # 若 wget 失败，使用 uclient-fetch 下载
-          uclient-fetch --no-check-certificate --timeout=600 "${RELEASE_DOWNLOAD2}/${REMOTE_FIRMWARE}" -O "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+          uclient-fetch --no-check-certificate --timeout=600 "$RELEASE_DOWNLOAD2/$REMOTE_FIRMWARE" -O "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         fi
     fi
 
@@ -292,14 +290,14 @@ Remote_download() {
     fi
 
     # 计算本地固件的 MD5 和 SHA256 组合值
-    LOCAL_MD5256=$(md5sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)$(sha256sum "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}" | cut -c1-3)
-    CLOUD_MD5256="${CLOUD_MD256}"
+    LOCAL_MD5256=$(md5sum "$DOWNLOAD_PATH/$REMOTE_FIRMWARE" | cut -c1-3)$(sha256sum "$DOWNLOAD_PATH/$REMOTE_FIRMWARE" | cut -c1-3)
+    CLOUD_MD5256="$CLOUD_MD256"
 
     # 进行 MD5 校验
     if [ "$CLOUD_MD5256" != "$LOCAL_MD5256" ]; then
         TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
     else
-        chmod 755 "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+        chmod 755 "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
         TIME g "MD5对比成功"
     fi
 
@@ -309,10 +307,10 @@ Remote_download() {
     fi
 
     if [ "${upgrade_tions}" = "1" ]; then
-        TIME y "正在执行更新固件前的备份"
+        TIME g "正在执行更新固件前的备份"
         # 执行删除文件操作
         if [ -f "/etc/deletefile" ]; then
-            . /etc/deletefile
+           . /etc/deletefile
         fi
         # 清理配置文件
         rm -rf /etc/config/luci /tmp/luci
@@ -326,27 +324,19 @@ Remote_download() {
         sysupgrade -b /mnt/upback.tar.gz
 
         # 根据备份情况选择升级命令
-        if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
-            UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+        if [ -f "/mnt/upback.tar.gz" ]; then
+            UPGRADE_COMMAND="sysupgrade -F -f /mnt/upback.tar.gz"
         else
-            UPGRADE_COMMAND='sysupgrade -F -q'
+            UPGRADE_COMMAND="sysupgrade -F -q"
         fi
         TIME g "备份完成"
     else
-        UPGRADE_COMMAND='sysupgrade -F -n'
+        UPGRADE_COMMAND="sysupgrade -F -n"
+        TIME g "启用不保留配置更新"
     fi
 
-    TIME g "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电源或重启设备 ...]"
-    sleep 1
-    seconds=9
-    while [ $seconds -gt 0 ]; do
-        echo -n "${seconds}  "
-        sleep 1
-        seconds=$((seconds - 1))
-        echo -ne "\r   \r"
-    done
-
-    ${UPGRADE_COMMAND} "${DOWNLOAD_PATH}/${REMOTE_FIRMWARE}"
+    TIME g "升级固件中，请勿断开路由器电源，END"
+    "$UPGRADE_COMMAND" "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
 }
 
 # 根据命令行参数执行相应操作
