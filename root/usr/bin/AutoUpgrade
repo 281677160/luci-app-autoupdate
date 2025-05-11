@@ -342,7 +342,7 @@ Remote_download() {
     fi
 
     TIME g "升级固件中，请勿断开路由器电源，END"
-    "$UPGRADE_COMMAND" "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
+    $UPGRADE_COMMAND "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
 }
 
 # 根据命令行参数执行相应操作
