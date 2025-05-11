@@ -80,11 +80,10 @@ function Remote_githuburl() {
                 continue  # 直接进入下一次循环，避免递归调用
                 ;;
             [Nn])
-                echo "退出程序"
-                exit 0
+                TIME r "退出程序"
                 ;;
             *)
-                TIME r "请输入正确选项"
+                TIME z "请输入正确选项"
                 ;;
         esac
     done
