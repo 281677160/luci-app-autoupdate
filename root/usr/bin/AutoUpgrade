@@ -81,7 +81,7 @@ function Remote_githuburl() {
                 ;;
             [Nn])
                 echo "操作已取消"
-                return 0
+                exit 0
                 ;;
             *)
                 TIME r "请输入正确选项"
