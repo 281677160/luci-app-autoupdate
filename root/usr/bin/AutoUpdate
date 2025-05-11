@@ -84,7 +84,7 @@ Remote_detection() {
 
     # 检查api文件，不超过5分钟不需要重新下载
     if [ -f "$tmpapi_version" ] && [ -f "/tmp/autotimes" ]; then
-        file_info=$(ls -l --full-time "${tmpapi_version}" 2>/dev/null)
+        file_info=$(ls -l --full-time "$tmpapi_version" 2>/dev/null)
         if [ -n "$file_info" ]; then
             file_time=$(echo "$file_info" | awk '{print $6, $7}')
             file_mtime=$(date -d "$file_time" +%s 2>/dev/null)
@@ -178,7 +178,7 @@ Remote_information() {
     if [ -z "$LOCAL_VERSION" ]; then
         TIME r "未知原因,获取本地版本号失败!"
     else
-        TIME g "获取本地版本号 $CLOUD_VERSION 成功!"
+        TIME g "获取本地版本号 $LOCAL_VERSION 成功!"
     fi
 
     # 检查云端版本号是否获取成功
@@ -208,7 +208,7 @@ Remote_information() {
     elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
         TIME z "$CLOUD_FIRMWARE_VERSION [云端最高版本固件,低于您现在所使用版本,请到云端查看原因]"
     else
-        TIME z "$CLOUD_FIRMWARE_VERSION [未知]"
+        TIME r "$CLOUD_FIRMWARE_VERSION [未知]"
     fi
 }
 
@@ -278,14 +278,14 @@ Remote_download() {
         sysupgrade -b /mnt/upback.tar.gz
 
         # 根据备份情况选择升级命令
-        if ls -1 /mnt | grep -E 'upback.tar.gz' >/dev/null 2>&1; then
-            UPGRADE_COMMAND='sysupgrade -F -f /mnt/upback.tar.gz'
+        if [ -f "/mnt/upback.tar.gz" ]; then
+            UPGRADE_COMMAND="sysupgrade -F -f /mnt/upback.tar.gz"
         else
-            UPGRADE_COMMAND='sysupgrade -F -q'
+            UPGRADE_COMMAND="sysupgrade -F -q"
         fi
         TIME g "备份完成"
     else
-        UPGRADE_COMMAND='sysupgrade -F -n'
+        UPGRADE_COMMAND="sysupgrade -F -n"
         TIME g "启用不保留配置更新"
     fi
 
