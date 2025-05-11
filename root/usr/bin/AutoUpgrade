@@ -192,6 +192,12 @@ Remote_information() {
         elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
             TIME g "提示：不得了啊，兄弟，云端最高版本固件($y)，低于您现在所安装的版本"
         fi
+    elif [ -z "$LOCAL_VERSION" ]; then
+        TIME r "获取本地版本号失败"
+    elif [ -z "$CLOUD_VERSION" ]; then
+        TIME r "获取云端版本号失败"
+    else
+        TIME r "获取云端和本地版本号失败"
     fi
 
     XYZDSZ=$(cat "$tmpfirmware_banben" | awk '$0=NR" "$0' | awk 'END {print $1}' | awk '{print $1}')
