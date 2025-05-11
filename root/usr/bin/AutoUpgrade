@@ -339,10 +339,16 @@ Remote_download() {
         TIME g "备份完成"
     else
         UPGRADE_COMMAND="sysupgrade -F -n"
-        TIME g "启用不保留配置更新"
     fi
 
-    TIME g "升级固件中，请勿断开路由器电源，END"
+    TIME g "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电源或重启设备 ...]"
+    seconds=10
+    while [ $seconds -gt 0 ]; do
+        echo -n "${seconds}  "
+        sleep 1
+        seconds=$((seconds - 1))
+        echo -ne "\r   \r"
+    done
     $UPGRADE_COMMAND "$DOWNLOAD_PATH/$REMOTE_FIRMWARE"
 }
 
