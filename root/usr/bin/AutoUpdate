@@ -279,7 +279,7 @@ Remote_download() {
            . /etc/deletefile
         fi
         # 清理配置文件
-        rm -rf /etc/config/luci /tmp/luci
+        mv /etc/config/luci /tmp/beifen_luci
         # 添加定时任务
         sed -i '/check_network/d' /etc/crontabs/root >/dev/null 2>&1
         echo "*/10 * * * * /usr/bin/check_network" >> /etc/crontabs/root
@@ -288,6 +288,7 @@ Remote_download() {
         # 备份系统
         rm -rf /mnt/*upback.tar.gz
         sysupgrade -b /mnt/upback.tar.gz
+        mv /tmp/beifen_luci /etc/config/luci
 
         # 根据备份情况选择升级命令
         if [ -f "/mnt/upback.tar.gz" ]; then
