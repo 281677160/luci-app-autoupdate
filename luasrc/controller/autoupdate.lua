@@ -10,7 +10,7 @@ end
 -- 检查更新
 function action_check()
     os.execute("rm -f /tmp/compare_version /tmp/autoupdate.lock /tmp/autoupgrade.*")
-    local check_result = luci.sys.call("AutoUpdate > /tmp/autoupdate.log 2>&1")
+    local check_result = luci.sys.call("AutoUpdate -c > /tmp/autoupdate.log 2>&1")
 
     local response = {}
     if check_result == 1 then
