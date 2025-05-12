@@ -309,7 +309,7 @@ Remote_download() {
     fi
 
     # 移除 gzip 包
-    if [ -f "/etc/apk" ]; then
+    if [ -f "/etc/apk/repositories.d/distfeeds.list" ]; then
         if apk list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
            apk del gzip > /dev/null 2>&1
         fi
