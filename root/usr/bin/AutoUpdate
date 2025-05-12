@@ -41,7 +41,7 @@ TIME() {
 # Remote_detection 函数，用于远程检测必要文件和获取 API 数据
 Remote_detection() {
     # 清理临时版本文件
-    if [ "${Select}" = "c" ]; then
+    if [ "$Select" = "c" ]; then
        rm -rf tmp/*_version
     else
        rm -rf "$tmpcloud_version" >/dev/null 2>&1
