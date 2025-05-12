@@ -165,10 +165,10 @@ Remote_information() {
         i=$((i + 1))
     done
 
-    if [ ! -s "$tmpfirmware_banben" ]; then
-        TIME r "没有获取到任何数据"
-    else
+    if [ -s "$tmpfirmware_banben" ]; then
         TIME g "获取固件数据成功！"
+    else
+        TIME r "没有获取到任何数据"
     fi
 
     clear
