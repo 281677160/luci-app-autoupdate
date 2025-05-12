@@ -228,7 +228,7 @@ Remote_information() {
 
     if [[ -n "$(echo "$REMOTE_FIRMWARE" | grep -E "$y")" ]]; then
         echo
-        TIME g "您已选择同类型固件($y)，可以选择保留配置或不保留配置升级"
+        TIME y "您已选择同类型固件($y)，可以选择保留配置或不保留配置升级"
         echo
         xuzqxz="输入[Y/y]为保留配置，输入[N/n]为不保留配置"
         while :; do
