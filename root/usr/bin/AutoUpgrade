@@ -94,6 +94,7 @@ function Remote_githuburl() {
 # 远程检测函数，检查必要文件和获取 API 数据
 Remote_detection() {
     # 尝试使用 wget 下载 API 数据
+    TIME y "获取API数据中..."
     if ! wget -q --show-progress --no-check-certificate --timeout=40 -t 1 "$RELEASE_DOWNLOAD1/zzz_api" -O "$tmpapi_version"; then
         # 若 wget 失败，使用 uclient-fetch 下载
         uclient-fetch --no-check-certificate --timeout=40 "$RELEASE_DOWNLOAD2/zzz_api" -O "$tmpapi_version"
