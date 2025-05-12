@@ -243,14 +243,14 @@ Remote_information() {
             case ${Bendi_Wsl} in
                 [Yy])
                     upgrade_tions="1"
-                    tongzhi="保留配置"
-                    TIME b "保留配置更新固件"
+                    tongzhi="保留配置更新"
+                    TIME b "将进行保留配置更新固件"
                     break
                     ;;
                 [Nn])
                     upgrade_tions="0"
-                    tongzhi="不保留配置"
-                    TIME z "不保留配置更新固件"
+                    tongzhi="不保留配置更新固件"
+                    TIME z "将进行不保留配置更新固件"
                     break
                     ;;
                 *)
@@ -260,8 +260,8 @@ Remote_information() {
         done
     else
         upgrade_tions="0"
-        tongzhi="不保留配置"
-        TIME z "不保留配置更新固件"
+        tongzhi="不保留配置更换固件"
+        TIME z "将进行不保留配置更换固件"
         sleep 3
     fi
 }
@@ -349,7 +349,7 @@ Remote_download() {
         UPGRADE_COMMAND="sysupgrade -F -n"
     fi
 
-    TIME g "[倒计10秒后,执行[${tongzhi}]更新,更新期间请不要断开电源或重启设备 ...]"
+    echo -e "\033[36m倒计10秒后,执行\033[0m[\033[31m${tongzhi}\033[0m]\033[36m,期间请不要断开电源或重启设备 ...\033[0m"
     seconds=10
     while [ $seconds -gt 0 ]; do
         echo -n "${seconds}  "
