@@ -186,7 +186,7 @@ Remote_information() {
     echo
     TIME b "*******************************************************************"
 
-    if [ -n "$LOCAL_VERSION" ] && [ -n "$CLOUD_VERSION" ]; then
+    if grep -q "$y" "$tmpfirmware_banben"; then
         if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
             TIME q "提示：选项1为您当前版本($y)同类型固件，跟当前安装版本是一致的"
         elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
