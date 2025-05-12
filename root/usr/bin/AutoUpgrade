@@ -319,7 +319,7 @@ Remote_download() {
         fi
     fi
 
-    if [ "${upgrade_tions}" = "1" ]; then
+    if [ "$upgrade_tions" = "1" ]; then
         TIME g "正在执行更新固件前的备份"
         # 执行删除文件操作
         if [ -f "/etc/deletefile" ]; then
