@@ -270,7 +270,7 @@ Remote_download() {
         fi
     fi
 
-    if [ "${Select}" = "u" ]; then
+    if [ "$Select" = "u" ]; then
         TIME g "正在执行更新固件前的备份"
         # 执行删除文件操作
         if [ -f "/etc/deletefile" ]; then
