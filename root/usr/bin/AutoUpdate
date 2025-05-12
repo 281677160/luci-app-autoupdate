@@ -256,10 +256,16 @@ Remote_download() {
     fi
 
     # 移除 gzip 包
-    if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
-        opkg remove gzip > /dev/null 2>&1
+    if [ -f "/etc/apk" ]; then
+        if apk list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
+           apk del gzip > /dev/null 2>&1
+        fi
+    else
+        if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
+           opkg remove gzip > /dev/null 2>&1
+        fi
     fi
-    
+
     if [ "${Select}" = "u" ]; then
         TIME g "正在执行更新固件前的备份"
         # 执行删除文件操作
