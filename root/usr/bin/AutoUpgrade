@@ -188,11 +188,11 @@ Remote_information() {
 
     if grep -q "$y" "$tmpfirmware_banben"; then
         if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
-            TIME q "提示：选项1为您当前版本($y)同类型固件，跟当前安装版本是一致的"
+            TIME q "提示：选项1为您当前版本(${y}-${DEVICE_MODEL})同类型固件，跟当前安装版本是一致的"
         elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
-            TIME q "提示：选项1为您当前版本($y)同类型固件，高级于您现在所安装的版本"
+            TIME q "提示：选项1为您当前版本(${y}-${DEVICE_MODEL})同类型固件，高级于您现在所安装的版本"
         elif [ "$LOCAL_VERSION" -gt "$CLOUD_VERSION" ]; then
-            TIME q "提示：选项1为您当前版本($y)同类型固件，低于您现在所安装的版本"
+            TIME q "提示：选项1为您当前版本(${y}-${DEVICE_MODEL})同类型固件，低于您现在所安装的版本"
         fi
     fi
 
@@ -228,7 +228,7 @@ Remote_information() {
 
     if [[ -n "$(echo "$REMOTE_FIRMWARE" | grep -E "$y")" ]]; then
         echo
-        TIME y "您已选择同类型固件($y)，可以选择保留配置或不保留配置升级"
+        TIME y "您已选择同类型固件(${y}-${DEVICE_MODEL})，可以选择保留配置或不保留配置升级"
         echo
         xuzqxz="输入[Y/y]为保留配置，输入[N/n]为不保留配置"
         while :; do
