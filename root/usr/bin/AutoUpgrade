@@ -309,8 +309,14 @@ Remote_download() {
     fi
 
     # 移除 gzip 包
-    if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
-        opkg remove gzip > /dev/null 2>&1
+    if [ -f "/etc/apk" ]; then
+        if apk list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
+           apk del gzip > /dev/null 2>&1
+        fi
+    else
+        if opkg list | awk '{print $1}' | grep -E 'gzip' >/dev/null 2>&1; then
+           opkg remove gzip > /dev/null 2>&1
+        fi
     fi
 
     if [ "${upgrade_tions}" = "1" ]; then
