@@ -39,7 +39,7 @@ function Remote_githuburl() {
        grep -qE "GITHUB_LINK" "/etc/openwrt_update" && \
        grep -qE "RELEASE_DOWNLOAD" "/etc/openwrt_update"; then
         chmod 755 /etc/openwrt_update
-        source /etc/openwrt_update
+        . /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
         exit 1
