@@ -86,7 +86,7 @@ Remote_detection() {
         done
     fi
 
-    # 检查api文件，不超过5分钟不需要重新下载
+    # 检查api文件，不超过3分钟不需要重新下载
     if [ -f "$tmpapi_version" ] && [ -f "/tmp/autotimes" ]; then
         file_info=$(ls -l --full-time "$tmpapi_version" 2>/dev/null)
         if [ -n "$file_info" ]; then
