@@ -67,7 +67,7 @@ msgid "Automatically update firmware during the specified time"
 msgstr "在指定时间段自动检测云端版本,若有新版本自动更新固件"
 
 msgid "GitHub URL"
-msgstr "Github 地址"
+msgstr "云端地址"
 
 msgid "Local firmware version:"
 msgstr "本地版本："
