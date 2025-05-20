@@ -203,7 +203,7 @@ Remote_information() {
         if [ -z "$YMXZ" ]; then
             TIME z "敬告，输入不能为空"
         elif echo "$YMXZ" | grep -Ei "^[Nn]$" > /dev/null; then
-            exit 0
+            TIME r "退出程序"
         elif echo "$YMXZ" | grep -E "^[0-9]+$" > /dev/null; then
             if [ "$YMXZ" -le "$XYZDSZ" ] && [ "$YMXZ" -gt 0 ]; then
                 REMOTE_FIRMWARE=$(awk -v line="$YMXZ" 'NR == line {print; exit}' "$tmpfirmware_banben")
