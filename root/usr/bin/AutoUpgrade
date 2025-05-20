@@ -42,7 +42,6 @@ function Remote_githuburl() {
         . /etc/openwrt_update
     else
         TIME r "缺少openwrt_update文件"
-        exit 1
     fi
 
     local current_repo="$GITHUB_LINK"
