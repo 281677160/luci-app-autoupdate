@@ -5,7 +5,7 @@
 
 # 定义全局变量
 DOWNLOAD_PATH="/tmp/Downloads"
-tmpfirmware_banben="/tmp/FIRMWARE_BANBEN"
+tmpfirmware_banben="/tmp/firmware_version"
 tmpapi_version="/tmp/api_version"
 
 # TIME 函数，用于输出带颜色的信息
