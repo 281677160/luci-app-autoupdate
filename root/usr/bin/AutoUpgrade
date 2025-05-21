@@ -5,7 +5,7 @@
 
 # 定义全局变量
 DOWNLOAD_PATH="/tmp/Downloads"
-tmpfirmware_banben="/tmp/firmware_version"
+tmpfirmware_version="/tmp/firmware_version"
 tmpapi_version="/tmp/api_version"
 
 # TIME 函数，用于输出带颜色的信息
@@ -142,9 +142,9 @@ Remote_information() {
     LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
     CLOUD_VERSION=$(echo "$MOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
     if [ -n "$MOTE_FIRMWARE" ]; then
-        echo "$MOTE_FIRMWARE" > "$tmpfirmware_banben"
+        echo "$MOTE_FIRMWARE" > "$tmpfirmware_version"
     else
-        echo -n > "$tmpfirmware_banben"
+        echo -n > "$tmpfirmware_version"
     fi
 
     y="${LUCI_EDITION}-${SOURCE}"
@@ -159,12 +159,12 @@ Remote_information() {
         fi
         Firmware_name=$(grep -Eo "${x}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}" /tmp/api_version | awk 'END {print}')
         if [ -n "$Firmware_name" ] && [ "$x" != "$y" ]; then
-            echo "$Firmware_name" >> "$tmpfirmware_banben"
+            echo "$Firmware_name" >> "$tmpfirmware_version"
         fi
         i=$((i + 1))
     done
 
-    if [ -s "$tmpfirmware_banben" ]; then
+    if [ -s "$tmpfirmware_version" ]; then
         TIME g "获取固件数据成功！"
     else
         TIME r "没有获取到任何数据"
@@ -181,11 +181,11 @@ Remote_information() {
     echo
     TIME y "以下为可选升级固件："
     TIME b "*******************************************************************"
-    cat "$tmpfirmware_banben" | awk '$0=NR"、"$0' | awk '{print "  " $0}'
+    cat "$tmpfirmware_version" | awk '$0=NR"、"$0' | awk '{print "  " $0}'
     echo
     TIME b "*******************************************************************"
 
-    if grep -q "$y" "$tmpfirmware_banben"; then
+    if grep -q "$y" "$tmpfirmware_version"; then
         if [ "$LOCAL_VERSION" -eq "$CLOUD_VERSION" ]; then
             TIME q "提示：选项1为您当前版本(${y}-${DEVICE_MODEL})同类型固件，跟当前安装版本是一致的"
         elif [ "$LOCAL_VERSION" -lt "$CLOUD_VERSION" ]; then
@@ -195,7 +195,7 @@ Remote_information() {
         fi
     fi
 
-    XYZDSZ=$(cat "$tmpfirmware_banben" | awk '$0=NR" "$0' | awk 'END {print $1}' | awk '{print $1}')
+    XYZDSZ=$(cat "$tmpfirmware_version" | awk '$0=NR" "$0' | awk 'END {print $1}' | awk '{print $1}')
     TIME y "请输入您要安装的固件前面对应的数值(1~$XYZDSZ)，输入[N/n]则为退出程序"
     while :; do
         read -p "请输入您的选择：" YMXZ
@@ -205,7 +205,7 @@ Remote_information() {
             TIME r "退出程序"
         elif echo "$YMXZ" | grep -E "^[0-9]+$" > /dev/null; then
             if [ "$YMXZ" -le "$XYZDSZ" ] && [ "$YMXZ" -gt 0 ]; then
-                REMOTE_FIRMWARE=$(awk -v line="$YMXZ" 'NR == line {print; exit}' "$tmpfirmware_banben")
+                REMOTE_FIRMWARE=$(awk -v line="$YMXZ" 'NR == line {print; exit}' "$tmpfirmware_version")
                 TIME g "您选择了安装 ${REMOTE_FIRMWARE} 固件"
                 break
             else
