@@ -40,6 +40,8 @@ function Remote_githuburl() {
        grep -qE "RELEASE_DOWNLOAD" "/etc/openwrt_update"; then
         chmod 755 /etc/openwrt_update
         . /etc/openwrt_update
+        RELEASE_DOWNLOAD1="${GitHub_Proxy}/${RELEASE_DOWNLOAD}"
+        RELEASE_DOWNLOAD2="${RELEASE_DOWNLOAD}"
     else
         TIME r "缺少openwrt_update文件"
     fi
