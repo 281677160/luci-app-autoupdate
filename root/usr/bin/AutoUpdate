@@ -141,16 +141,7 @@ Remote_information() {
     target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
     if [ -n "$target_line" ]; then
         # 从目标行中提取固件全名称
-        start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
-        REMOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
-            for(i=1; i<=NF; i++) {
-                if($i ~ pattern) {
-                    print substr($i, index($i, start))
-                    break
-                }
-            }
-        }')
-
+        REMOTE_FIRMWARE=$(echo "$target_line" |grep -Eo "${LUCI_EDITION}.*${FIRMWARE_SUFFIX}")
         # 提取云端版本号
         CLOUD_VERSION=$(echo "$REMOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
         # 提取云端固件的MD5值
