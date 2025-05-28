@@ -149,7 +149,7 @@ Remote_information() {
         # 提取云端固件的MD5值
         CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "$BOOT_TYPE-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
         # 提取云端固件的大小
-        SIZE=$(jq -r --arg rd "$RELEASE_DOWNLOAD2" --arg rf "$REMOTE_FIRMWARE" '.. | objects | select(.browser_download_url? == ($rd + "/" + $rf)) | .size' "$tmpapi_version")
+        SIZE=$(jq -r --arg rd "$RELEASE_DOWNLOAD" --arg rf "$REMOTE_FIRMWARE" '.. | objects | select(.browser_download_url? == ($rd + "/" + $rf)) | .size' "$tmpapi_version")
         CLOUD_FIRMWARE_SIZE="$(echo "scale=0; $SIZE / 1048576 + 1" | bc)"
         TIME g "固件全名称: $REMOTE_FIRMWARE"
         TIME g "固件时间戳: $CLOUD_VERSION"
