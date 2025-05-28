@@ -128,7 +128,7 @@ Remote_information() {
     target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
     MOTE_FIRMWARE=$(echo "$target_line" |grep -Eo "${LUCI_EDITION}.*${FIRMWARE_SUFFIX}")
     KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
-    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
+    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | grep -oE '[0-9]{10,}' | head -n 1)
     CLOUD_VERSION=$(echo "$MOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
     if [ -n "$MOTE_FIRMWARE" ]; then
         echo "$MOTE_FIRMWARE" > "$tmpfirmware_version"
