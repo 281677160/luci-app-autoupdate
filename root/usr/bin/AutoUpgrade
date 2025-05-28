@@ -146,7 +146,7 @@ Remote_information() {
             i=$((i + 1))
             continue
         fi
-        Firmware_name=$(grep -Eo "${x}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}" /tmp/api_version | awk 'END {print}')
+        Firmware_name=$(grep -Eo "${x}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}" "$tmpapi_version" | awk 'END {print}')
         if [ -n "$Firmware_name" ] && [ "$x" != "$y" ]; then
             echo "$Firmware_name" >> "$tmpfirmware_version"
         fi
