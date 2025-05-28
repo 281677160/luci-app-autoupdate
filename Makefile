@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-autoupdate
 LUCI_TITLE:=LuCI Support for AutoUpdate
-LUCI_DEPENDS:=+uclient-fetch +wget-ssl
+LUCI_DEPENDS:=+uclient-fetch +wget-ssl +jq +bc
 LUCI_PKGARCH:=all
 
 
