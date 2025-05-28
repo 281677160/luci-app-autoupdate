@@ -209,7 +209,7 @@ Remote_information() {
 
     TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
     CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "${BOOT_TYPE}-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
-    SIZE=$(jq -r --arg rd "$RELEASE_DOWNLOAD2" --arg rf "$REMOTE_FIRMWARE" '.. | objects | select(.browser_download_url? == ($rd + "/" + $rf)) | .size' "$tmpapi_version")
+    SIZE=$(jq -r --arg rd "$RELEASE_DOWNLOAD" --arg rf "$REMOTE_FIRMWARE" '.. | objects | select(.browser_download_url? == ($rd + "/" + $rf)) | .size' "$tmpapi_version")
     CLOUD_FIRMWARE_SIZE="$(echo "scale=0; $SIZE / 1048576 + 1" | bc)"
 
     if [ "$TMP_AVAILABLE" -lt "$CLOUD_FIRMWARE_SIZE" ]; then
