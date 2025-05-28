@@ -126,18 +126,7 @@ Remote_information() {
     # 获取云端该机在使用的同类型固件
     regex="https://.*${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-[0-9]+-${BOOT_TYPE}-.*${FIRMWARE_SUFFIX}"
     target_line=$(grep -E "$regex" "$tmpapi_version" | tail -n 1)
-    if [ -n "$target_line" ]; then
-        start_str="${LUCI_EDITION}-${SOURCE}-${DEVICE_MODEL}-"
-        MOTE_FIRMWARE=$(echo "$target_line" | awk -v pattern="$regex" -v start="$start_str" -F'"' '{
-            for(i=1; i<=NF; i++) {
-                if($i ~ pattern) {
-                    print substr($i, index($i, start))
-                    break
-                }
-            }
-        }')
-    fi
-
+    MOTE_FIRMWARE=$(echo "$target_line" |grep -Eo "${LUCI_EDITION}.*${FIRMWARE_SUFFIX}")
     KERNEL_MODE=$(uname -rs | cut -d ' ' -f2)
     LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
     CLOUD_VERSION=$(echo "$MOTE_FIRMWARE" | grep -oE '[0-9]{10,}' | head -n 1)
