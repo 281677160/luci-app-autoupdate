@@ -218,8 +218,8 @@ Remote_information() {
 
     TMP_AVAILABLE=$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')
     CLOUD_MD256=$(echo "$REMOTE_FIRMWARE" | grep -oE "${BOOT_TYPE}-([a-zA-Z0-9]{6})\\." | cut -d '-' -f 2 | cut -d '.' -f 1)
-    X=$(grep -n "$REMOTE_FIRMWARE" "$tmpapi_version" | tail -1 | cut -d : -f 1)
-    CLOUD_FIRMWARE_SIZE=$(expr $(sed -n "$((X - 4))p" "$tmpapi_version" | grep -Eo "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}') + 1)
+    SIZE=$(jq -r --arg rd "$RELEASE_DOWNLOAD2" --arg rf "$REMOTE_FIRMWARE" '.. | objects | select(.browser_download_url? == ($rd + "/" + $rf)) | .size' "$tmpapi_version")
+    CLOUD_FIRMWARE_SIZE="$(echo "${SIZE} / 1048576" | bc)"
 
     if [ "$TMP_AVAILABLE" -lt "$CLOUD_FIRMWARE_SIZE" ]; then
         TIME r "固件 tmp 空间值[${TMP_AVAILABLE}M], 云端固件体积[${CLOUD_FIRMWARE_SIZE}M], 路由器空间不足"
