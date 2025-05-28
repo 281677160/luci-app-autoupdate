@@ -164,7 +164,7 @@ Remote_information() {
     # 获取固件主机名称
     EQUIPMENT_NAME=$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)
     # 获取本地版本号
-    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | awk -F'-' '{print $NF}')
+    LOCAL_VERSION=$(echo "$FIRMWARE_VERSION" | grep -oE '[0-9]{10,}' | head -n 1)
     # 构建云端版本显示名称
     CLOUD_FIRMWARE_VERSION="$SOURCE-$DEVICE_MODEL-$CLOUD_VERSION"
 
