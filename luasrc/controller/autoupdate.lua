@@ -17,7 +17,21 @@ local function read_file(path)
     return nil
 end
 
+local function is_upgrade_running()
+    local pid = read_file("/tmp/autoupgrade.pid")
+    return pid and tonumber(pid) and nixio.kill(tonumber(pid), 0)
+end
+
 function action_check()
+    if is_upgrade_running() then
+        luci.http.write_json({
+            success = false,
+            message = "系统正在升级中，请稍后再试",
+            is_upgrading = true
+        })
+        return
+    end
+
     os.execute("rm -f /tmp/compare_version /tmp/autoupdate.lock /tmp/autoupgrade.*")
     local check_result = luci.sys.call("AutoUpdate -c > /tmp/autoupdate.log 2>&1")
 
@@ -28,19 +42,22 @@ function action_check()
         message = check_result == 0 and 
                  (nixio.fs.access("/tmp/compare_version") and 
                   "发现新版本，是否立即升级？" or "当前已是最新版本") or
-                 "检测失败,请查看日志/tmp/autoupdate.log"
+                 "检测失败,请查看日志/tmp/autoupdate.log",
+        is_upgrading = false
     })
 end
 
 function action_upgrade()
-    local use_no_config = luci.sys.exec("uci get autoupdate.@login[0].use_no_config_update 2>/dev/null"):match("1")
-
-    -- Check for running process
-    local pid = read_file("/tmp/autoupgrade.pid")
-    if pid and tonumber(pid) and nixio.kill(tonumber(pid), 0) then
-        luci.http.write_json({ success = false, message = "已有升级进程运行(PID:".. pid.. ")" })
+    if is_upgrade_running() then
+        luci.http.write_json({ 
+            success = false, 
+            message = "已有升级进程正在运行",
+            is_upgrading = true
+        })
         return
     end
+
+    local use_no_config = luci.sys.exec("uci get autoupdate.@login[0].use_no_config_update 2>/dev/null"):match("1")
 
     -- Cleanup old files
     os.execute("rm -f /tmp/autoupdate.lock /tmp/autoupgrade.pid")
@@ -56,25 +73,34 @@ function action_upgrade()
     )
     
     if os.execute(cmd) ~= 0 then
-        luci.http.write_json({ success = false, message = "进程启动失败" })
+        luci.http.write_json({ 
+            success = false, 
+            message = "进程启动失败",
+            is_upgrading = false
+        })
         return
     end
 
     -- Verify PID
     for _ = 1, 3 do
-        pid = read_file("/tmp/autoupgrade.pid")
+        local pid = read_file("/tmp/autoupgrade.pid")
         if pid then
             luci.http.write_json({
                 success = true,
                 message = "后台升级进程已启动(PID:".. pid.. ")",
-                pid = tonumber(pid)
+                pid = tonumber(pid),
+                is_upgrading = true
             })
             return
         end
         nixio.nanosleep(0.5) -- sleep 500ms
     end
 
-    luci.http.write_json({ success = false, message = "无法确认进程状态" })
+    luci.http.write_json({ 
+        success = false, 
+        message = "无法确认进程状态",
+        is_upgrading = false
+    })
 end
 
 function action_check_status()
@@ -90,18 +116,24 @@ function action_check_status()
             success = exit_code == 0,
             message = exit_code == 0 and "升级成功,稍后请手动刷新页面..." or
                      exit_code == 1 and "升级失败,请查看日志/tmp/autoupdate.log" or
-                     "异常退出码：".. exit_code
+                     "异常退出码：".. exit_code,
+            is_upgrading = false
         }
         os.remove("/tmp/autoupgrade.pid")
     else
         local pid = read_file("/tmp/autoupgrade.pid")
         if pid and nixio.kill(tonumber(pid), 0) then
-            response = { running = true, message = "升级进行中" }
+            response = { 
+                running = true, 
+                message = "升级进行中",
+                is_upgrading = true 
+            }
         else
             response = { 
                 running = false, 
                 success = false, 
-                message = pid and "进程异常终止" or "无进行中的升级" 
+                message = pid and "进程异常终止" or "无进行中的升级",
+                is_upgrading = false
             }
             os.remove("/tmp/autoupgrade.pid")
         end
