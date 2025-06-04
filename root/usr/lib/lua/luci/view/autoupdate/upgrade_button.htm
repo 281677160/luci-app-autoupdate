@@ -13,7 +13,7 @@
     let statusInterval = null;
 
     const updateUI = (state) => {
-        elements.btn.disabled = state.disabled;
+        elements.btn.disabled = state.disabled || false;
         if (state.text) elements.btn.value = state.text;
         if (state.status) {
             elements.status.textContent = state.status;
@@ -26,8 +26,12 @@
             const res = await fetch('<%=url("admin/system/autoupdate/check_status")%>');
             const data = await res.json();
             
-            if (data.running) {
-                updateUI({ status: data.message || '升级进行中' });
+            if (data.running || data.is_upgrading) {
+                updateUI({ 
+                    disabled: true,
+                    text: '升级中...',
+                    status: data.message || '升级进行中' 
+                });
             } else {
                 clearInterval(statusInterval);
                 updateUI({
@@ -52,49 +56,60 @@
         }
     };
 
-    const startUpgrade = async () => {
-        try {
-            const res = await fetch('<%=url("admin/system/autoupdate/do_upgrade")%>', { 
-                method: 'POST' 
-            });
-            const data = await res.json();
-            
-            if (!data.success) throw new Error(data.message);
-            
-            updateUI({
-                disabled: true,
-                text: '升级中...',
-                status: '后台升级已启动'
-            });
-            statusInterval = setInterval(checkStatus, 3000);
-        } catch (e) {
-            updateUI({
-                disabled: false,
-                text: '<%:检查更新%>',
-                status: e.message || '启动升级失败',
-                error: true
-            });
-        }
-    };
-
     window.startUpdateProcess = async () => {
-        if (elements.btn.disabled) return;
-        
+        // Immediately disable button to prevent multiple clicks
         updateUI({
             disabled: true,
-            text: '检查中...',
-            status: '正在检查更新...'
+            text: '处理中...',
+            status: '正在处理请求...'
         });
 
         try {
+            // First check if upgrade is already running
+            const statusRes = await fetch('<%=url("admin/system/autoupdate/check_status")%>');
+            const statusData = await statusRes.json();
+            
+            if (statusData.is_upgrading || statusData.running) {
+                updateUI({
+                    disabled: true,
+                    text: '升级中...',
+                    status: '系统正在升级中，请稍候...'
+                });
+                statusInterval = setInterval(checkStatus, 3000);
+                return;
+            }
+
+            // Proceed with normal check
             const res = await fetch('<%=url("admin/system/autoupdate/do_check")%>', { 
                 method: 'POST' 
             });
             const data = await res.json();
             
+            if (data.is_upgrading) {
+                updateUI({
+                    disabled: true,
+                    text: '升级中...',
+                    status: '系统正在升级中，请稍候...'
+                });
+                statusInterval = setInterval(checkStatus, 3000);
+                return;
+            }
+
             if (!data.success) throw new Error(data.message);
             if (data.has_update && confirm(data.message)) {
-                await startUpgrade();
+                const upgradeRes = await fetch('<%=url("admin/system/autoupdate/do_upgrade")%>', { 
+                    method: 'POST' 
+                });
+                const upgradeData = await upgradeRes.json();
+                
+                if (!upgradeData.success) throw new Error(upgradeData.message);
+                
+                updateUI({
+                    disabled: true,
+                    text: '升级中...',
+                    status: upgradeData.message || '后台升级已启动'
+                });
+                statusInterval = setInterval(checkStatus, 3000);
             } else {
                 updateUI({
                     disabled: false,
@@ -106,7 +121,7 @@
             updateUI({
                 disabled: false,
                 text: '<%:检查更新%>',
-                status: e.message || '检测失败,请查看日志',
+                status: e.message || '操作失败,请查看日志',
                 error: true
             });
         }
