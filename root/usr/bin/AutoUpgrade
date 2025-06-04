@@ -40,8 +40,6 @@ function Remote_githuburl() {
        grep -qE "RELEASE_DOWNLOAD" "/etc/openwrt_update"; then
         chmod 755 /etc/openwrt_update
         . /etc/openwrt_update
-        RELEASE_DOWNLOAD1="${GITHUB_PROXY}/${RELEASE_DOWNLOAD}"
-        RELEASE_DOWNLOAD2="${RELEASE_DOWNLOAD}"
     else
         TIME r "缺少openwrt_update文件"
     fi
@@ -90,6 +88,8 @@ function Remote_githuburl() {
             esac
         done
     done
+    RELEASE_DOWNLOAD1="${GITHUB_PROXY}/${RELEASE_DOWNLOAD}"
+    RELEASE_DOWNLOAD2="${RELEASE_DOWNLOAD}"
 }
 
 # 远程检测函数，检查必要文件和获取 API 数据
