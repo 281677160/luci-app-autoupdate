@@ -101,7 +101,7 @@ if sys_info.check_error then
 end
 
 button_upgrade_firmware.inputtitle = translate("Start Upgrade")
-button_upgrade_firmware.template = "autoupdate/upgrade_button"
+button_upgrade_firmware.template = "autoupdate/autoupdate"
 
 function button_upgrade_firmware.write(self, section)
     -- Read config value safely
