@@ -26,7 +26,7 @@ local function get_sys_info()
     
     -- Make sure script is executable
     os.execute("chmod +x /usr/bin/AutoUpdate 2>/dev/null")
-    os.execute("tee /tmp/autotimes 2>/dev/null")
+    os.execute("echo auto > /tmp/autotimes 2>/dev/null")
     
     -- Check for updates and capture exit code
     info.check_error = (os.execute("AutoUpdate > /tmp/autoupdate.log 2>&1") ~= 0)
